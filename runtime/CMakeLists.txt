@@ -11,8 +11,8 @@ project(runtime LANGUAGES C CXX CUDA)
 set(COMMON_FILES
         cuda_util.h
         cuda_util.cu
-#        device.h
-#        device.cu
+        device.h
+        device.cu
 #        context.h
 #        context.cu
 #        graph.h

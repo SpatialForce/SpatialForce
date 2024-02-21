@@ -5,10 +5,14 @@
 #  property of any third parties.
 
 cmake_minimum_required(VERSION 3.27)
-project(SpatialForce CUDA)
+project(SpatialForce C CXX CUDA)
 
 set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CXX_STANDARD 20)
 
+find_package(CUDAToolkit)
+
 add_subdirectory(core)
 add_subdirectory(runtime)
+
+add_subdirectory(tests)
