@@ -7,11 +7,14 @@
 #include "array.h"
 #include "fixed_array.h"
 #include "vec.h"
-
+#include "mat.h"
+#include "quat.h"
 namespace vox {
 void test() {
     fixed_array_t<float, 3> arr{};
     vec_t<float, 2> vec2;
     array_t<float> array;
+    mat22 mat;
+    quat q;
 }
 }// namespace vox
