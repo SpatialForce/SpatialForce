@@ -1,0 +1,18 @@
+{
+  "name" : "spatialforce",
+  "version-string" : "1.0.0",
+  "builtin-baseline" : "13bde2ff13192e1b2fdd37bd9b475c7665ae6ae5",
+  "dependencies" : [ {
+    "name" : "benchmark",
+    "version>=" : "1.8.3#2"
+  }, {
+    "name" : "gtest",
+    "version>=" : "1.14.0"
+  }, {
+    "name" : "vcpkg-cmake-config",
+    "version>=" : "2022-02-06#1"
+  }, {
+    "name" : "vcpkg-cmake",
+    "version>=" : "2023-05-04"
+  } ]
+}
