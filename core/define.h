@@ -8,6 +8,9 @@
 
 #include <cstdlib>
 #include <cstdint>
+#include <cassert>
+#include <cstdio>
+#include <cmath>
 
 namespace vox {
 #if !defined(__CUDACC__)
@@ -17,4 +20,6 @@ namespace vox {
 #define CUDA_CALLABLE __host__ __device__
 #define CUDA_CALLABLE_DEVICE __device__
 #endif
+
+#define kEps 0.0f
 }// namespace vox

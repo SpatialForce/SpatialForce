@@ -5,9 +5,11 @@
 //  property of any third parties.
 
 #include "fixed_array.h"
+#include "vec.h"
 
 namespace vox {
 void test() {
-    fixed_array_t<float, 3> arr;
+    fixed_array_t<float, 3> arr{};
+    vec_t<float, 2> vec2;
 }
 }// namespace vox
