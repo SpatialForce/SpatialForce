@@ -5,9 +5,18 @@
 //  property of any third parties.
 
 #include "device.h"
+#include <cassert>
 
 namespace vox {
-Device::Device() {
+class DeviceInfo {
+public:
+    // cached info for all devices, indexed by ordinal
+    std::vector<Device> all_devices;
+
+    DeviceInfo();
+};
+
+DeviceInfo::DeviceInfo() {
     if (!check_cu(cuInit(0))) return;
 
     int deviceCount = 0;
@@ -20,7 +29,7 @@ Device::Device() {
                 // query device info
                 all_devices[i].device = device;
                 all_devices[i].ordinal = i;
-                check_cu(cuDeviceGetName(all_devices[i].name, DeviceInfo::kNameLen, device));
+                check_cu(cuDeviceGetName(all_devices[i].name, Device::kNameLen, device));
                 check_cu(cuDeviceGetAttribute(&all_devices[i].is_uva, CU_DEVICE_ATTRIBUTE_UNIFIED_ADDRESSING, device));
                 check_cu(cuDeviceGetAttribute(&all_devices[i].is_memory_pool_supported,
                                               CU_DEVICE_ATTRIBUTE_MEMORY_POOLS_SUPPORTED, device));
@@ -34,8 +43,15 @@ Device::Device() {
     }
 }
 
-const Device::DeviceInfo &device_info(uint32_t index) {
-    static Device cuda_device;
+size_t device_count() {
+    int deviceCount = 0;
+    cuDeviceGetCount(&deviceCount);
+    return deviceCount;
+}
+
+const Device &device(uint32_t index) {
+    static DeviceInfo cuda_device;
+    assert(index < cuda_device.all_devices.size());
     return cuda_device.all_devices[index];
 }
 

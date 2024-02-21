@@ -13,16 +13,16 @@ set(COMMON_FILES
         cuda_util.cu
         device.h
         device.cu
-#        context.h
-#        context.cu
-#        graph.h
-#        graph.cu
-#        stream.h
-#        stream.cu
-#        event.h
-#        event.cu
-#        alloc.h
-#        alloc.cu
+        event.h
+        event.cu
+        #        context.h
+        #        context.cu
+        #        graph.h
+        #        graph.cu
+        #        stream.h
+        #        stream.cu
+        #        alloc.h
+        #        alloc.cu
 )
 
 set(TYPE_FILES
@@ -43,7 +43,7 @@ source_group("common\\" FILES ${COMMON_FILES})
 
 set(PROJECT_FILES
         ${COMMON_FILES}
-#        ${TYPE_FILES}
+        #        ${TYPE_FILES}
 )
 
 add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})

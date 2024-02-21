@@ -12,23 +12,18 @@
 namespace vox {
 class Device {
 public:
-    struct DeviceInfo {
-        static constexpr int kNameLen = 128;
+    static constexpr int kNameLen = 128;
 
-        CUdevice device = -1;
-        int ordinal = -1;
-        char name[kNameLen] = "";
-        int arch = 0;
-        int is_uva = 0;
-        int is_memory_pool_supported = 0;
-    };
-
-    // cached info for all devices, indexed by ordinal
-    std::vector<DeviceInfo> all_devices;
-
-    Device();
+    CUdevice device = -1;
+    int ordinal = -1;
+    char name[kNameLen] = "";
+    int arch = 0;
+    int is_uva = 0;
+    int is_memory_pool_supported = 0;
 };
 
-const Device::DeviceInfo &device_info(uint32_t index);
+size_t device_count();
+
+const Device &device(uint32_t index);
 
 }// namespace vox
