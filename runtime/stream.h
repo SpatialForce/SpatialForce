@@ -42,6 +42,7 @@ public:
 private:
     bool owner_{};
     Device &device_;
+    CUcontext context_{};
     CUstream handle_{};
 };
 

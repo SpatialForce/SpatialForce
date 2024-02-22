@@ -8,7 +8,6 @@
 
 #include "../mesh.h"
 #include "geometry_host.h"
-#include "runtime/alloc.h"
 #include <vector>
 
 namespace vox::fields {
@@ -20,7 +19,7 @@ class Mesh {
 public:
     static constexpr uint32_t dim = DIM;
     static constexpr uint32_t dow = DOW;
-    using point_t = vec_t<dow, float>;
+    using point_t = vec_t<float, dow>;
 
     mesh_t<dim, dow> handle;
 

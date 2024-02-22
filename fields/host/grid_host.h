@@ -11,14 +11,13 @@
 #include <string>
 #include <memory>
 #include "mesh_host.h"
-#include "runtime/alloc.h"
 
 namespace vox::fields {
 template<typename TYPE>
 class Grid {
 public:
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<dim, float>;
+    using point_t = vec_t<float, dim>;
 
     mesh_t<dim, dim> mesh_handle;
     grid_t<TYPE> grid_handle;

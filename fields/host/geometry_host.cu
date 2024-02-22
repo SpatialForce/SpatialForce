@@ -5,57 +5,67 @@
 //  property of any third parties.
 
 #include "geometry_host.h"
-#include "runtime/alloc.h"
 
 namespace vox::fields {
 uint32_t Geometry::n_index() const {
-    return ind.size();
+    return ind.host_buffer.size();
 }
 
 int32_t Geometry::index(uint32_t idx) const {
-    return ind[idx];
+    return ind.host_buffer[idx];
 }
 uint32_t Geometry::n_vertex(uint32_t idx) const {
     if (idx == 0) {
-        return vtx_index[0];
+        return vtx_index.host_buffer[0];
     } else {
-        return vtx_index[idx] - vtx_index[idx - 1];
+        return vtx_index.host_buffer[idx] - vtx_index.host_buffer[idx - 1];
     }
 }
 
 uint32_t Geometry::vertex(uint32_t idx, uint32_t j) const {
     if (idx == 0) {
-        return *(vtx.data() + j);
+        return *(vtx.host_buffer.data() + j);
     } else {
-        return *(vtx.data() + vtx_index[idx - 1] + j);
+        return *(vtx.host_buffer.data() + vtx_index.host_buffer[idx - 1] + j);
     }
 }
 
 uint32_t Geometry::n_boundary(uint32_t idx) const {
     if (idx == 0) {
-        return bnd_index[0];
+        return bnd_index.host_buffer[0];
     } else {
-        return bnd_index[idx] - bnd_index[idx - 1];
+        return bnd_index.host_buffer[idx] - bnd_index.host_buffer[idx - 1];
     }
 }
 uint32_t Geometry::boundary(uint32_t idx, uint32_t j) const {
     if (idx == 0) {
-        return *(bnd.data() + j);
+        return *(bnd.host_buffer.data() + j);
     } else {
-        return *(bnd.data() + bnd_index[idx - 1] + j);
+        return *(bnd.host_buffer.data() + bnd_index.host_buffer[idx - 1] + j);
     }
 }
 int32_t Geometry::boundary_mark(uint32_t idx) const {
-    return bm[idx];
+    return bm.host_buffer[idx];
 }
 
 void Geometry::sync_h2d() {
-    handle.ind = alloc_array(ind);
-    handle.vtx_index = alloc_array(vtx_index);
-    handle.vtx = alloc_array(vtx);
-    handle.bnd_index = alloc_array(bnd_index);
-    handle.bnd = alloc_array(bnd);
-    handle.bm = alloc_array(bm);
+    ind.sync_h2d();
+    handle.ind = ind.view();
+
+    vtx_index.sync_h2d();
+    handle.vtx_index = vtx_index.view();
+
+    vtx.sync_h2d();
+    handle.vtx = vtx.view();
+
+    bnd_index.sync_h2d();
+    handle.bnd_index = bnd_index.view();
+
+    bnd.sync_h2d();
+    handle.bnd = bnd.view();
+
+    bm.sync_h2d();
+    handle.bm = bm.view();
 }
 
 }// namespace vox::fields

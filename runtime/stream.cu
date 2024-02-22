@@ -10,9 +10,9 @@
 #include "stream.h"
 
 namespace vox {
-Stream::Stream(Device &device, std::optional<CUstream> cuda_stream) : device_{device} {
+Stream::Stream(Device &device, std::optional<CUstream> cuda_stream) : device_{device}, context_{device.primary_context()} {
     if (!cuda_stream) {
-        ContextGuard guard(device.primary_context());
+        ContextGuard guard(context_);
         check_cu(cuStreamCreate(&handle_, CU_STREAM_DEFAULT));
         owner_ = true;
     } else {
@@ -24,14 +24,15 @@ Stream::Stream(Device &device, std::optional<CUstream> cuda_stream) : device_{de
 Stream::Stream(Stream &&stream) noexcept
     : owner_{stream.owner_},
       handle_{stream.handle_},
-      device_{stream.device_} {
+      device_{stream.device_},
+      context_{stream.context_}{
     stream.owner_ = false;
     stream.handle_ = nullptr;
 }
 
 Stream::~Stream() {
     if (owner_) {
-        ContextGuard guard(device_.primary_context());
+        ContextGuard guard(context_);
         check_cu(cuStreamDestroy(static_cast<CUstream>(handle_)));
     }
 }
@@ -50,7 +51,7 @@ void Stream::wait_stream(Stream &other_stream, Event &event) const {
 }
 
 void Stream::synchronize() const {
-    ContextGuard guard(device().primary_context());
+    ContextGuard guard(context_);
     check_cu(cuStreamSynchronize(handle()));
 }
 

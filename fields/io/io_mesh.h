@@ -94,7 +94,7 @@ bool is_same(const GeometryBM &g0, const GeometryBM &g1);
 template<uint32_t DIM, uint32_t DOW = DIM>
 class IOMesh {
 public:
-    using point_t = vec_t<DOW, float>;
+    using point_t = vec_t<float, DOW>;
     static constexpr uint32_t dim = DIM;
     static constexpr uint32_t dow = DOW;
 

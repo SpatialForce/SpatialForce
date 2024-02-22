@@ -5,7 +5,6 @@
 //  property of any third parties.
 
 #include "host/grid_host.h"
-#include "runtime/alloc.h"
 #include <fstream>
 #include <vector>
 #include <algorithm>

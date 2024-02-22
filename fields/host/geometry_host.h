@@ -7,6 +7,7 @@
 #pragma once
 
 #include <vector>
+#include "runtime/buffer.h"
 #include "../geometry.h"
 
 namespace vox::fields {
@@ -33,14 +34,14 @@ public:
 
 public:
     /// Index of the geometry.
-    std::vector<int32_t> ind;
+    HostDeviceBuffer<int32_t> ind;
     /// Index of vertices.
-    std::vector<uint32_t> vtx_index;
-    std::vector<uint32_t> vtx;
+    HostDeviceBuffer<uint32_t> vtx_index;
+    HostDeviceBuffer<uint32_t> vtx;
     /// Index of boundary geometries.
-    std::vector<uint32_t> bnd_index;
-    std::vector<uint32_t> bnd;
+    HostDeviceBuffer<uint32_t> bnd_index;
+    HostDeviceBuffer<uint32_t> bnd;
     /// Boundary marker.
-    std::vector<int32_t> bm;
+    HostDeviceBuffer<int32_t> bm;
 };
 }// namespace vox::fields
