@@ -13,6 +13,6 @@ TEST(name, Device) {
     vox::init();
 
     std::cout << "total cuda device: " << device_count() << std::endl;
-    std::cout << device(0).name << std::endl;
-    std::cout << device(0).arch << std::endl;
+    std::cout << device(0).name() << std::endl;
+    std::cout << device(0).arch() << std::endl;
 }

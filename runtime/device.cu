@@ -5,18 +5,18 @@
 //  property of any third parties.
 
 #include "device.h"
-#include <cassert>
+#include <map>
 
 namespace vox {
-class DeviceInfo {
-public:
-    // cached info for all devices, indexed by ordinal
-    std::vector<Device> all_devices;
+void DeviceInfo::primary_context_retain() {
+    check_cu(cuDevicePrimaryCtxRetain(&primary_context, handle));
+}
 
-    DeviceInfo();
-};
+static std::vector<DeviceInfo> all_devices;
 
-DeviceInfo::DeviceInfo() {
+void init() {
+    cuInit(0);
+
     int deviceCount = 0;
     if (check_cu(cuDeviceGetCount(&deviceCount))) {
         all_devices.resize(deviceCount);
@@ -27,7 +27,7 @@ DeviceInfo::DeviceInfo() {
                 // query device info
                 all_devices[i].handle = device;
                 all_devices[i].ordinal = i;
-                check_cu(cuDeviceGetName(all_devices[i].name, Device::kNameLen, device));
+                check_cu(cuDeviceGetName(all_devices[i].name, DeviceInfo::kNameLen, device));
                 check_cu(cuDeviceGetUuid(&all_devices[i].uuid, device));
                 check_cu(cuDeviceGetAttribute(&all_devices[i].pci_domain_id, CU_DEVICE_ATTRIBUTE_PCI_DOMAIN_ID, device));
                 check_cu(cuDeviceGetAttribute(&all_devices[i].pci_bus_id, CU_DEVICE_ATTRIBUTE_PCI_BUS_ID, device));
@@ -39,15 +39,10 @@ DeviceInfo::DeviceInfo() {
                 check_cu(cuDeviceGetAttribute(&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, device));
                 check_cu(cuDeviceGetAttribute(&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, device));
                 all_devices[i].arch = 10 * major + minor;
-
-                all_devices[i]._primary_context_retain();
+                all_devices[i].primary_context_retain();
             }
         }
     }
-}
-
-void init() {
-    cuInit(0);
 }
 
 size_t device_count() {
@@ -57,13 +52,30 @@ size_t device_count() {
 }
 
 const Device &device(uint32_t index) {
-    static DeviceInfo cuda_device;
-    assert(index < cuda_device.all_devices.size());
-    return cuda_device.all_devices[index];
+    static std::map<CUdevice, Device> cuda_device;
+
+    auto handle = all_devices[index].handle;
+    auto it = cuda_device.find(handle);
+    if (it != cuda_device.end()) {
+        return it->second;
+    } else {
+        auto result = cuda_device.insert(std::make_pair(handle, Device(&all_devices[index])));
+        return result.first->second;
+    }
 }
 
-void Device::_primary_context_retain() {
-    check_cu(cuDevicePrimaryCtxRetain(&primary_context, handle));
+Device::Device(DeviceInfo *info)
+    : _info{info},
+      null_stream(*this, nullptr),
+      stream(*this) {
+}
+
+const DeviceInfo &Device::info() const {
+    return *_info;
+}
+
+CUcontext Device::primary_context() const {
+    return _info->primary_context;
 }
 
 }// namespace vox

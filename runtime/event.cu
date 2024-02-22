@@ -8,7 +8,7 @@
 
 namespace vox {
 Event::Event(Device &device, bool enable_timing) : device_{device} {
-    ContextGuard guard(device_.primary_context);
+    ContextGuard guard(device_.primary_context());
 
     int flags = CU_EVENT_DEFAULT;
     if (!enable_timing) {
@@ -19,7 +19,7 @@ Event::Event(Device &device, bool enable_timing) : device_{device} {
 }
 
 Event::~Event() {
-    ContextGuard guard(device_.primary_context);
+    ContextGuard guard(device_.primary_context());
     check_cu(cuEventDestroy(event_));
 }
 

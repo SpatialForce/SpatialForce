@@ -7,11 +7,12 @@
 #pragma once
 
 #include <vector>
+#include <string_view>
 #include "cuda_util.h"
+#include "stream.h"
 
 namespace vox {
-class Device {
-public:
+struct DeviceInfo {
     static constexpr int kNameLen = 128;
 
     CUdevice handle = -1;
@@ -27,9 +28,33 @@ public:
 
     CUcontext primary_context{};
 
+public:
+    void primary_context_retain();
+};
+
+class Device {
+public:
+    // asynchronous work
+    Stream stream;
+    // CUDA default stream for some synchronous operations
+    Stream null_stream;
+
+    [[nodiscard]] const DeviceInfo &info() const;
+
+    [[nodiscard]] CUcontext primary_context() const;
+
+    [[nodiscard]] std::string_view name() const {
+        return _info->name;
+    }
+
+    [[nodiscard]] int arch() const {
+        return _info->arch;
+    }
+
+    explicit Device(DeviceInfo *info);
+
 private:
-    friend class DeviceInfo;
-    void _primary_context_retain();
+    DeviceInfo *_info;
 };
 
 void init();

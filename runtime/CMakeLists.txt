@@ -19,8 +19,8 @@ set(COMMON_FILES
         #        context.cu
         #        graph.h
         #        graph.cu
-        #        stream.h
-        #        stream.cu
+        stream.h
+        stream.cu
         #        alloc.h
         #        alloc.cu
 )
