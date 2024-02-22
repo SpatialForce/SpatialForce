@@ -4,11 +4,13 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#pragma once
+#include <gtest/gtest.h>
+#include "runtime/buffer.h"
 
-namespace vox::fields {
+using namespace vox;
 
-template<typename TYPE, uint32_t ORDER>
-class poly_info_t {};
+TEST(Buffer, constructor) {
+    vox::init();
 
-}// namespace vox::fields
+    auto buffer = create_buffer<float>();
+}

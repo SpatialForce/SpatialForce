@@ -7,9 +7,14 @@
 # create sample app project
 project(sim-tests LANGUAGES C CXX CUDA)
 
+set(RUNTIME_TESTS
+        runtime/device_tests.cu
+        runtime/buffer_tests.cu
+)
+
 set(SRC
         main.cpp
-        device_tests.cu
+        ${RUNTIME_TESTS}
 )
 
 add_executable(${PROJECT_NAME} ${SRC})

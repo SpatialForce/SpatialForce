@@ -19,8 +19,7 @@ set(COMMON_FILES
         stream.cu
         graph.h
         graph.cu
-        #        alloc.h
-        #        alloc.cu
+        buffer.h
 )
 
 set(TYPE_FILES

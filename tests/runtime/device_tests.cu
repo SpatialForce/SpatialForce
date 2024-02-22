@@ -9,7 +9,7 @@
 
 using namespace vox;
 
-TEST(name, Device) {
+TEST(Device, constructor) {
     vox::init();
 
     std::cout << "total cuda device: " << device_count() << std::endl;
