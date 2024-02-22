@@ -64,6 +64,13 @@ const Device &device(uint32_t index) {
     }
 }
 
+void synchronize(uint32_t index) {
+    auto &d = device(index);
+    ContextGuard guard(d.primary_context());
+    check_cu(cuCtxSynchronize());
+}
+
+//---------------------------------------------------------------------------------------------------------------
 Device::Device(DeviceInfo *info)
     : _info{info},
       null_stream(*this, nullptr),

@@ -26,7 +26,7 @@ void capture_begin(uint32_t index) {
     check_cuda(cudaStreamBeginCapture(d.stream.handle(), cudaStreamCaptureModeGlobal));
 }
 
-Graph end_capture(uint32_t index) {
+Graph capture_end(uint32_t index) {
     const auto &d = device(index);
     ContextGuard guard(d.primary_context());
 

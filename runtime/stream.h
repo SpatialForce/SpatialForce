@@ -25,9 +25,12 @@ public:
 
     void wait_stream(Stream &other_stream, Event &event) const;
 
-    CUstream handle() const;
+    [[nodiscard]] CUstream handle() const;
 
-    Device &device() { return device_; }
+    [[nodiscard]] const Device &device() const { return device_; }
+
+    /// Manually synchronize the calling CPU thread with any outstanding CUDA work on the specified stream.
+    void synchronize() const;
 
 public:
     void memcpy_h2d(void *dest, void *src, size_t n);

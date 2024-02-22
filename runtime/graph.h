@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "cuda_util.h"
+
 namespace vox {
 class Device;
 
@@ -32,6 +34,6 @@ void capture_begin(uint32_t index = 0);
 /// Ends the capture of a CUDA graph
 /// \param index The device to capture on
 /// \return A handle to a CUDA graph object that can be launched
-Graph end_capture(uint32_t index = 0);
+Graph capture_end(uint32_t index = 0);
 
 }// namespace vox

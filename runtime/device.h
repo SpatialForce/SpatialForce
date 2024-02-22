@@ -58,10 +58,22 @@ public:
     Device(Device &&device) noexcept = default;
 };
 
+/// initialize the CUDA runtime.
 void init();
 
+/// Returns the number of CUDA devices supported in this environment.
 size_t device_count();
 
+/// Returns the device identified by the argument.
+/// \param index device index
+/// \return Device
 const Device &device(uint32_t index = 0);
+
+/// Manually synchronize the calling CPU thread with any outstanding CUDA work on the specified device
+//
+//    This method allows the host application code to ensure that any kernel launches
+//    or memory copies have completed.
+/// \param index Device to synchronize
+void synchronize(uint32_t index = 0);
 
 }// namespace vox

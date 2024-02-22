@@ -49,6 +49,11 @@ void Stream::wait_stream(Stream &other_stream, Event &event) const {
     check_cu(cuStreamWaitEvent(handle_, event.handle(), 0));
 }
 
+void Stream::synchronize() const {
+    ContextGuard guard(device().primary_context());
+    check_cu(cuStreamSynchronize(handle()));
+}
+
 CUstream Stream::handle() const { return handle_; }
 
 void Stream::memcpy_h2d(void *dest, void *src, size_t n) {
