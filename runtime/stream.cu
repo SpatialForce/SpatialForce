@@ -1,4 +1,4 @@
-//  Copyright (c) 2023 Feng Yang
+//  Copyright (c) 2024 Feng Yang
 //
 //  I am making my contributions/submissions to this project solely in my
 //  personal capacity and am not conveying any rights to any intellectual
@@ -36,20 +36,20 @@ Stream::~Stream() {
     }
 }
 
-void Stream::record_event(Event &event) {
+void Stream::record_event(Event &event) const {
     check_cu(cuEventRecord(event.handle(), handle_));
 }
 
-void Stream::wait_event(Event &event) {
+void Stream::wait_event(Event &event) const {
     check_cu(cuStreamWaitEvent(handle_, event.handle(), 0));
 }
 
-void Stream::wait_stream(Stream &other_stream, Event &event) {
+void Stream::wait_stream(Stream &other_stream, Event &event) const {
     check_cu(cuEventRecord(event.handle(), other_stream.handle_));
     check_cu(cuStreamWaitEvent(handle_, event.handle(), 0));
 }
 
-CUstream Stream::handle() { return handle_; }
+CUstream Stream::handle() const { return handle_; }
 
 void Stream::memcpy_h2d(void *dest, void *src, size_t n) {
     check_cuda(cudaMemcpyAsync(dest, src, n, cudaMemcpyHostToDevice, handle_));
@@ -69,4 +69,9 @@ void Stream::memcpy_peer(void *dest, void *src, size_t n) {
 void Stream::memset(void *dest, int value, size_t n) {
     check_cuda(cudaMemsetAsync(dest, value, n, handle_));
 }
+
+const Stream &stream(uint32_t index) {
+    return device(index).stream;
+}
+
 }// namespace vox

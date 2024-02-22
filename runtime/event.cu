@@ -1,4 +1,4 @@
-//  Copyright (c) 2023 Feng Yang
+//  Copyright (c) 2024 Feng Yang
 //
 //  I am making my contributions/submissions to this project solely in my
 //  personal capacity and am not conveying any rights to any intellectual
@@ -21,6 +21,18 @@ Event::Event(Device &device, bool enable_timing) : device_{device} {
 Event::~Event() {
     ContextGuard guard(device_.primary_context());
     check_cu(cuEventDestroy(event_));
+}
+
+void record_event(Event &event) {
+    stream().record_event(event);
+}
+
+void wait_event(Event &event) {
+    stream().wait_event(event);
+}
+
+void wait_stream(Stream &other_stream, Event &event) {
+    stream().wait_stream(other_stream, event);
 }
 
 }// namespace vox

@@ -1,4 +1,4 @@
-//  Copyright (c) 2023 Feng Yang
+//  Copyright (c) 2024 Feng Yang
 //
 //  I am making my contributions/submissions to this project solely in my
 //  personal capacity and am not conveying any rights to any intellectual
@@ -62,6 +62,6 @@ void init();
 
 size_t device_count();
 
-const Device &device(uint32_t index);
+const Device &device(uint32_t index = 0);
 
 }// namespace vox

@@ -1,4 +1,4 @@
-//  Copyright (c) 2023 Feng Yang
+//  Copyright (c) 2024 Feng Yang
 //
 //  I am making my contributions/submissions to this project solely in my
 //  personal capacity and am not conveying any rights to any intellectual
@@ -19,13 +19,13 @@ public:
 
     ~Stream();
 
-    void record_event(Event &event);
+    void record_event(Event &event) const;
 
-    void wait_event(Event &event);
+    void wait_event(Event &event) const;
 
-    void wait_stream(Stream &other_stream, Event &event);
+    void wait_stream(Stream &other_stream, Event &event) const;
 
-    CUstream handle();
+    CUstream handle() const;
 
     Device &device() { return device_; }
 
@@ -41,4 +41,10 @@ private:
     Device &device_;
     CUstream handle_{};
 };
+
+/// Return the stream currently used by the given device
+/// \param index device index
+/// \return Stream
+const Stream &stream(uint32_t index = 0);
+
 }// namespace vox

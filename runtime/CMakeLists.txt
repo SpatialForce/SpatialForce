@@ -15,12 +15,10 @@ set(COMMON_FILES
         device.cu
         event.h
         event.cu
-        #        context.h
-        #        context.cu
-        #        graph.h
-        #        graph.cu
         stream.h
         stream.cu
+        graph.h
+        graph.cu
         #        alloc.h
         #        alloc.cu
 )
