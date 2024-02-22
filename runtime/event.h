@@ -6,16 +6,19 @@
 
 #pragma once
 
+#include "device.h"
+
 namespace vox {
 class Event {
 public:
-    explicit Event(bool enable_timing = false);
+    explicit Event(Device& device, bool enable_timing = false);
 
     ~Event();
 
     CUevent handle() { return event_; }
 
 private:
+    Device& device_;
     CUevent event_{};
 };
 }// namespace vox

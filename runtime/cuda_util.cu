@@ -7,6 +7,8 @@
 #include "cuda_util.h"
 
 namespace vox {
+bool ContextGuard::always_restore = false;
+
 bool check_cuda_result(cudaError_t code, const char *file, int line) {
     if (code == cudaSuccess) return true;
 

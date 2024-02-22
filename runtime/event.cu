@@ -4,11 +4,12 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "cuda_util.h"
 #include "event.h"
 
 namespace vox {
-Event::Event(bool enable_timing) {
+Event::Event(Device &device, bool enable_timing) : device_{device} {
+    ContextGuard guard(device_.primary_context);
+
     int flags = CU_EVENT_DEFAULT;
     if (!enable_timing) {
         flags |= CU_EVENT_DISABLE_TIMING;
@@ -17,6 +18,9 @@ Event::Event(bool enable_timing) {
     check_cu(cuEventCreate(&event_, flags));
 }
 
-Event::~Event() { check_cu(cuEventDestroy(event_)); }
+Event::~Event() {
+    ContextGuard guard(device_.primary_context);
+    check_cu(cuEventDestroy(event_));
+}
 
 }// namespace vox

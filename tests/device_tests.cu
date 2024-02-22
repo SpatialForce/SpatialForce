@@ -10,9 +10,9 @@
 using namespace vox;
 
 TEST(name, Device) {
+    vox::init();
+
+    std::cout << "total cuda device: " << device_count() << std::endl;
     std::cout << device(0).name << std::endl;
     std::cout << device(0).arch << std::endl;
-
-    // device(index) will init cuda, otherwise count will be 0.
-    std::cout << "total cuda device: " << device_count() << std::endl;
 }
