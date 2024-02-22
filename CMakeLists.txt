@@ -14,5 +14,6 @@ find_package(CUDAToolkit)
 
 add_subdirectory(core)
 add_subdirectory(runtime)
+add_subdirectory(fields)
 
 add_subdirectory(tests)
