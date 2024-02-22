@@ -6,13 +6,16 @@
 
 #pragma once
 
+#include <optional>
+
 namespace vox {
 class Device;
 class Event;
 
 class Stream {
 public:
-    explicit Stream(Device &device, CUstream cuda_stream = nullptr);
+    explicit Stream(Device &device, std::optional<CUstream> cuda_stream = std::nullopt);
+    Stream(Stream &&stream) noexcept;
 
     ~Stream();
 

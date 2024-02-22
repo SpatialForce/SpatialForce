@@ -10,20 +10,28 @@
 #include "stream.h"
 
 namespace vox {
-Stream::Stream(Device &device, CUstream cuda_stream) : device_{device} {
+Stream::Stream(Device &device, std::optional<CUstream> cuda_stream) : device_{device} {
     if (!cuda_stream) {
-        ContextGuard guard(device.primary_context(), true);
+        ContextGuard guard(device.primary_context());
         check_cu(cuStreamCreate(&handle_, CU_STREAM_DEFAULT));
         owner_ = true;
     } else {
-        handle_ = cuda_stream;
+        handle_ = cuda_stream.value();
         owner_ = false;
     }
 }
 
+Stream::Stream(Stream &&stream) noexcept
+    : owner_{stream.owner_},
+      handle_{stream.handle_},
+      device_{stream.device_} {
+    stream.owner_ = false;
+    stream.handle_ = nullptr;
+}
+
 Stream::~Stream() {
     if (owner_) {
-        ContextGuard guard(device_.primary_context(), true);
+        ContextGuard guard(device_.primary_context());
         check_cu(cuStreamDestroy(static_cast<CUstream>(handle_)));
     }
 }

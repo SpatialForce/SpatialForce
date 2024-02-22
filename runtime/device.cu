@@ -59,7 +59,7 @@ const Device &device(uint32_t index) {
     if (it != cuda_device.end()) {
         return it->second;
     } else {
-        auto result = cuda_device.insert(std::make_pair(handle, Device(&all_devices[index])));
+        auto result = cuda_device.emplace(handle, Device(&all_devices[index]));
         return result.first->second;
     }
 }

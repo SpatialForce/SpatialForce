@@ -33,6 +33,9 @@ public:
 };
 
 class Device {
+private:
+    DeviceInfo *_info{};
+
 public:
     // asynchronous work
     Stream stream;
@@ -52,9 +55,7 @@ public:
     }
 
     explicit Device(DeviceInfo *info);
-
-private:
-    DeviceInfo *_info;
+    Device(Device &&device) noexcept = default;
 };
 
 void init();
