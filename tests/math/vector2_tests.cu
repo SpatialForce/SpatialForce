@@ -13,20 +13,20 @@ using namespace vox;
 
 CUDA_TEST(Vector2, Constructors) {
     Vector2F vec;
-    ASSERT_FLOAT_EQ(0.f, vec.x);
-    ASSERT_FLOAT_EQ(0.f, vec.y);
+    EXPECT_FLOAT_EQ(0.f, vec.x);
+    EXPECT_FLOAT_EQ(0.f, vec.y);
 
     Vector2F vec2(5.f, 3.f);
-    ASSERT_FLOAT_EQ(5.f, vec2.x);
-    ASSERT_FLOAT_EQ(3.f, vec2.y);
+    EXPECT_FLOAT_EQ(5.f, vec2.x);
+    EXPECT_FLOAT_EQ(3.f, vec2.y);
 
     Vector2F vec5 = {7.f, 6.f};
-    ASSERT_FLOAT_EQ(7.f, vec5.x);
-    ASSERT_FLOAT_EQ(6.f, vec5.y);
+    EXPECT_FLOAT_EQ(7.f, vec5.x);
+    EXPECT_FLOAT_EQ(6.f, vec5.y);
 
     Vector2F vec6(vec5);
-    ASSERT_FLOAT_EQ(7.f, vec6.x);
-    ASSERT_FLOAT_EQ(6.f, vec6.y);
+    EXPECT_FLOAT_EQ(7.f, vec6.x);
+    EXPECT_FLOAT_EQ(6.f, vec6.y);
 }
 
 TEST(Vector2, BasicSetterMethods) {

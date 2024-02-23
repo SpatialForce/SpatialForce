@@ -23,37 +23,15 @@
 #endif
 
 struct TestTransporter {
-    float2 tfloat[10];
-    int2 tint[10];
+    bool result[64];
+    int evaluatedCount;
 
-    int evaluateInt;
-    int evaluateFloat;
-
-    __host__ __device__ TestTransporter() : evaluateInt(0), evaluateFloat(0){};
+    __host__ __device__ TestTransporter() : evaluatedCount(0){};
 };
 
-template<typename T>
-static __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, T expected, T actual);
-
-template<>
-__host__ __device__ void setTestTransporterValue(TestTransporter *transporter, float expected, float actual) {
-    transporter->tfloat[transporter->evaluateFloat].x = expected;
-    transporter->tfloat[transporter->evaluateFloat].y = actual;
-    transporter->evaluateFloat++;
-}
-
-template<>
-__host__ __device__ void setTestTransporterValue(TestTransporter *transporter, int expected, int actual) {
-    transporter->tint[transporter->evaluateInt].x = expected;
-    transporter->tint[transporter->evaluateInt].y = actual;
-    transporter->evaluateInt++;
-}
-
-template<>
-__host__ __device__ void setTestTransporterValue(TestTransporter *transporter, bool expected, bool actual) {
-    transporter->tint[transporter->evaluateInt].x = (int)expected;
-    transporter->tint[transporter->evaluateInt].y = (int)actual;
-    transporter->evaluateInt++;
+__host__ __device__ void setTestTransporterValue(TestTransporter *transporter, bool result) {
+    transporter->result[transporter->evaluatedCount] = result;
+    transporter->evaluatedCount++;
 }
 
 #define CUDA_TEST_CLASS_NAME_(test_case_name, test_name) \
@@ -83,17 +61,14 @@ __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, b
     test;                                               \
     CUDA_TEST_CLASS_NAME_(test_case_name, test_name)<<<1, 1>>>(test, dTestTransporter)
 
-#define CUDA_ASSERT_EQ(expected, actual) \
-    setTestTransporterValue(testTransporter, expected, actual);
+#define CUDA_ASSERT_EQ(expected, actual)
 
 #ifdef __CUDA_ARCH__
-#undef ASSERT_EQ
-#define ASSERT_EQ(val1, val2) CUDA_ASSERT_EQ(val1, val2)
-#endif
+#undef EXPECT_FLOAT_EQ
+#define EXPECT_FLOAT_EQ(val1, val2) setTestTransporterValue(testTransporter, val1 == val2);
 
-#ifdef __CUDA_ARCH__
-#undef ASSERT_FLOAT_EQ
-#define ASSERT_FLOAT_EQ(val1, val2) CUDA_ASSERT_EQ(val1, val2)
+#undef EXPECT_EQ
+#define EXPECT_EQ(val1, val2) setTestTransporterValue(testTransporter, val1 == val2);
 #endif
 
 #define CUDA_TEST_FUNCTION_NAME_(test_case_name, test_name) \
@@ -129,8 +104,8 @@ __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, b
         CUDA_LAST_ERROR("kernel call");                                                                                                                             \
         cudaMemcpy(testTransporter, dTestTransporter, sizeof(TestTransporter), cudaMemcpyDeviceToHost);                                                             \
         CUDA_LAST_ERROR("memcopydevicetohost");                                                                                                                     \
-        for (int i = 0; i < testTransporter->evaluateFloat; i++) ASSERT_FLOAT_EQ(testTransporter->tfloat[i].x, testTransporter->tfloat[i].y);                       \
-        for (int i = 0; i < testTransporter->evaluateInt; i++) GTEST_ASSERT_EQ(testTransporter->tint[i].x, testTransporter->tint[i].y);                             \
+        for (int i = 0; i < testTransporter->evaluatedCount; i++)                                                                                                   \
+            GTEST_ASSERT_EQ(testTransporter->result[i], true) << "assert statement(" << i + 1 << ") failed.\n";                                                    \
     };                                                                                                                                                              \
     __global__ void CUDA_TEST_CLASS_NAME_(test_case_name, test_name)(CUDA_TEST_FUNCTION_NAME_(test_case_name, test_name) test, TestTransporter * testTransporter) { \
         test(testTransporter);                                                                                                                                      \
