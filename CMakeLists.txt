@@ -14,6 +14,7 @@ set(CMAKE_CUDA_ARCHITECTURES 89)
 find_package(CUDAToolkit)
 
 add_subdirectory(core)
+add_subdirectory(math)
 add_subdirectory(runtime)
 add_subdirectory(fields)
 
