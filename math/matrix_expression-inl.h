@@ -158,7 +158,7 @@ CUDA_CALLABLE size_t MatrixExpression<T, Rows, Cols, D>::dominantAxis() const {
     T best = eval(0, 0);
     for (size_t i = 1; i < rows(); ++i) {
         T curr = eval(i, 0);
-        if (std::fabs(curr) > std::fabs(best)) {
+        if (::fabs(curr) > ::fabs(best)) {
             best = curr;
             ret = i;
         }
@@ -174,7 +174,7 @@ CUDA_CALLABLE size_t MatrixExpression<T, Rows, Cols, D>::subminantAxis() const {
     T best = eval(0, 0);
     for (size_t i = 1; i < rows(); ++i) {
         T curr = eval(i, 0);
-        if (std::fabs(curr) < std::fabs(best)) {
+        if (::fabs(curr) < ::fabs(best)) {
             best = curr;
             ret = i;
         }
@@ -370,7 +370,7 @@ MatrixExpression<T, Rows, Cols, D>::tangential() const {
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 3 && Cols == 1)), std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 3 && Cols == 1)), thrust::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
 MatrixExpression<T, Rows, Cols, D>::tangentials() const {
     assert(rows() == 3 && cols() == 1);
 
@@ -380,7 +380,7 @@ MatrixExpression<T, Rows, Cols, D>::tangentials() const {
             .cross(*this)
             .normalized();
     V b = this->cross(a);
-    return std::make_tuple(a, b);
+    return thrust::make_tuple(a, b);
 }
 
 //
@@ -460,11 +460,11 @@ MatrixExpression<T, Rows, Cols, D>::determinant(const MatrixExpression &m) {
     T result = 1;
     for (size_t i = 0; i < m.rows(); ++i) {
         // Search for maximum in this column
-        T maxEl = std::fabs(a(i, i));
+        T maxEl = ::fabs(a(i, i));
         size_t maxRow = i;
         for (size_t k = i + 1; k < m.rows(); ++k) {
-            if (std::fabs(a(k, i)) > maxEl) {
-                maxEl = std::fabs(a(k, i));
+            if (::fabs(a(k, i)) > maxEl) {
+                maxEl = ::fabs(a(k, i));
                 maxRow = k;
             }
         }
@@ -472,7 +472,7 @@ MatrixExpression<T, Rows, Cols, D>::determinant(const MatrixExpression &m) {
         // Swap maximum row with current row (column by column)
         if (maxRow != i) {
             for (size_t k = i; k < m.rows(); ++k) {
-                std::swap(a(maxRow, k), a(i, k));
+                thrust::swap(a(maxRow, k), a(i, k));
             }
             result *= -1;
         }
@@ -683,10 +683,10 @@ CUDA_CALLABLE void MatrixExpression<T, Rows, Cols, Derived>::inverse(
         // Swap maximum row with current row (column by column)
         if (maxRow != i) {
             for (size_t k = i; k < n; ++k) {
-                std::swap(a(maxRow, k), a(i, k));
+                thrust::swap(a(maxRow, k), a(i, k));
             }
             for (size_t k = 0; k < n; ++k) {
-                std::swap(result(maxRow, k), result(i, k));
+                thrust::swap(result(maxRow, k), result(i, k));
             }
         }
 

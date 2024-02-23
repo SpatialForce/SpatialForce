@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "cuda_std_array.h"
+
 namespace vox {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +26,7 @@ CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::copyFrom(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::setDiagonal(const_reference val) {
-    size_t n = std::min(rows(), cols());
+    size_t n = ::min(rows(), cols());
     for (size_t i = 0; i < n; ++i) {
         (*this)(i, i) = val;
     }
@@ -162,7 +164,7 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeScaleMatrix(value_type first,
     static_assert(sizeof...(rest) == Rows - 1,
                   "Number of parameters should match the size of diagonal.");
     D m{};
-    std::array<T, Rows> diag{{first, rest...}};
+    CudaStdArray<T, Rows> diag{{first, rest...}};
     for (size_t i = 0; i < Rows; ++i) {
         m(i, i) = diag[i];
     }
@@ -186,7 +188,7 @@ template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
 CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 2), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeRotationMatrix(T rad) {
-    return D{std::cos(rad), -std::sin(rad), std::sin(rad), std::cos(rad)};
+    return D{::cos(rad), -::sin(rad), ::sin(rad), ::cos(rad)};
 }
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>

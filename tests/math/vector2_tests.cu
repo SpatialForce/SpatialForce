@@ -39,15 +39,9 @@ CUDA_TEST(Vector2, BasicSetterMethods) {
     EXPECT_FLOAT_EQ(4.f, vec.x);
     EXPECT_FLOAT_EQ(4.f, vec.y);
 
-#ifndef __CUDA_ARCH__
-    vec.fill([](size_t i) -> float { return i * 5.f; });
-    EXPECT_FLOAT_EQ(0.f, vec.x);
-    EXPECT_FLOAT_EQ(5.f, vec.y);
-
-    vec.fill([](size_t i, size_t) -> float { return i + 8.f; });
+    vec.fill([](size_t i) -> float { return i + 8.f; });
     EXPECT_FLOAT_EQ(8.f, vec.x);
     EXPECT_FLOAT_EQ(9.f, vec.y);
-#endif
 
     Vector2F vec2{5.f, 3.f};
     vec.swap(vec2);

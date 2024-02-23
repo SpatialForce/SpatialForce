@@ -29,18 +29,18 @@ struct TestTransporter {
     __host__ __device__ TestTransporter() : evaluatedCount(0){};
 };
 
-__host__ __device__ void setTestTransporterValue(TestTransporter *transporter, bool result) {
+__host__ __device__ inline void setTestTransporterValue(TestTransporter *transporter, bool result) {
     transporter->result[transporter->evaluatedCount] = result;
     transporter->evaluatedCount++;
 }
 
 #define CUDA_TEST_CLASS_NAME_(test_case_name, test_name) \
-    kernel_test_case_name##_##test_name##_Test
+    kernel_##test_case_name##_##test_name##_Test
 
 #ifdef __CUDA_ARCH__
 #undef TEST
 #define CUDA_DEAD_FUNCTION_NAME_(test_case_name, test_name) \
-    MAKE_UNIQUE(dead_function_test_case_name##_##test_name##_Test)
+    MAKE_UNIQUE(dead_function_##test_case_name##_##test_name##_Test)
 #define TEST(test_case_name, test_name) void CUDA_DEAD_FUNCTION_NAME_(test_case_name, test_name)(TestTransporter * testTransporter)//GTEST_TEST(test_case_name, test_name)
 #define TESTTRANSPORTERDEFINITIONWITHCOMMA , TestTransporter *testTransporter
 #define TESTTRANSPORTERDEFANDINSTANCE
@@ -81,7 +81,7 @@ __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, b
 #endif
 
 #define CUDA_TEST_FUNCTION_NAME_(test_case_name, test_name) \
-    test_function_test_case_name##_##test_name##_Test
+    test_function_##test_case_name##_##test_name##_Test
 #define TEST_NAME_CUDA(test_name) \
     test_name##_CUDA
 

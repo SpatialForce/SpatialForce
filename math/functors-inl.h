@@ -22,12 +22,12 @@ CUDA_CALLABLE constexpr U TypeCast<T, U>::operator()(const T &a) const {
 
 template<typename T>
 CUDA_CALLABLE constexpr T Ceil<T>::operator()(const T &a) const {
-    return std::ceil(a);
+    return ::ceil(a);
 }
 
 template<typename T>
 CUDA_CALLABLE constexpr T Floor<T>::operator()(const T &a) const {
-    return std::floor(a);
+    return ::floor(a);
 }
 
 template<typename T>
@@ -87,7 +87,7 @@ CUDA_CALLABLE constexpr T AbsMax<T>::operator()(const T &a, const T &b) const {
 
 template<typename T>
 CUDA_CALLABLE constexpr bool SimilarTo<T>::operator()(const T &a, const T &b) const {
-    return std::fabs(a - b) <= tol;
+    return ::fabs(a - b) <= tol;
 }
 
 template<typename T>

@@ -17,7 +17,7 @@ namespace vox {
 template<typename T>
 CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, bool>//
 similar(T x, T y, T eps) {
-    return (std::abs(x - y) <= eps);
+    return (::abs(x - y) <= eps);
 }
 
 template<typename T>
@@ -33,13 +33,13 @@ sign(T x) {
 template<typename T>
 CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 min3(T x, T y, T z) {
-    return std::min(std::min(x, y), z);
+    return ::min(::min(x, y), z);
 }
 
 template<typename T>
 CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 max3(T x, T y, T z) {
-    return std::max(std::max(x, y), z);
+    return ::max(::max(x, y), z);
 }
 
 template<typename T>
@@ -47,7 +47,7 @@ CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 minn(const T *x, size_t n) {
     T m = x[0];
     for (size_t i = 1; i < n; i++) {
-        m = std::min(m, x[i]);
+        m = ::min(m, x[i]);
     }
     return m;
 }
@@ -57,7 +57,7 @@ CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 maxn(const T *x, size_t n) {
     T m = x[0];
     for (size_t i = 1; i < n; i++) {
-        m = std::max(m, x[i]);
+        m = ::max(m, x[i]);
     }
     return m;
 }

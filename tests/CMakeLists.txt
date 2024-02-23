@@ -13,7 +13,15 @@ set(RUNTIME_TESTS
 )
 
 set(MATH_TESTS
+        math/math_utils_tests.cu
         math/vector2_tests.cu
+        math/vector3_tests.cu
+        math/vector4_tests.cu
+        math/vector_tests.cu
+        math/matrix2x2_tests.cu
+        math/matrix3x3_tests.cu
+        math/matrix4x4_tests.cu
+        math/matrix_tests.cu
 )
 
 set(FIELDS_TESTS

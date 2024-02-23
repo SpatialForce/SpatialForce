@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <thrust/limits.h>
+#include "core/define.h"
 
 namespace vox {
 

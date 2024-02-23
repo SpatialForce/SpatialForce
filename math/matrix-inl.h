@@ -194,16 +194,15 @@ CUDA_CALLABLE void Matrix<T, Rows, Cols>::fill(const T &val) {
     }
 }
 
-template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::fill(const std::function<T(size_t i)> &func) {
-    for (size_t i = 0; i < Rows * Cols; ++i) {
-        _elements[i] = func(i);
-    }
-}
+//template<typename T, size_t Rows, size_t Cols>
+//CUDA_CALLABLE void Matrix<T, Rows, Cols>::fill(const nvstd::function<T(size_t i)> &func) {
+//    for (size_t i = 0; i < Rows * Cols; ++i) {
+//        _elements[i] = func(i);
+//    }
+//}
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::fill(
-    const std::function<T(size_t i, size_t j)> &func) {
+CUDA_CALLABLE void Matrix<T, Rows, Cols>::fill(const nvstd::function<T(size_t i, size_t j)> &func) {
     for (size_t i = 0; i < Rows; ++i) {
         for (size_t j = 0; j < Cols; ++j) {
             (*this)(i, j) = func(i, j);
@@ -299,14 +298,14 @@ CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const T &val) {
 }
 
 template<typename T>
-void Matrix<T, 1, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const nvstd::function<T(size_t i)> &func) {
     x = func(0);
 }
 
-template<typename T>
-void Matrix<T, 1, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
-    x = func(0, 0);
-}
+//template<typename T>
+//CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const nvstd::function<T(size_t i, size_t j)> &func) {
+//    x = func(0, 0);
+//}
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 1, 1>::swap(Matrix &other) {
@@ -408,16 +407,16 @@ CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const T &val) {
 }
 
 template<typename T>
-void Matrix<T, 2, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const nvstd::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
 }
 
-template<typename T>
-void Matrix<T, 2, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
-    x = func(0, 0);
-    y = func(1, 0);
-}
+//template<typename T>
+//CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const nvstd::function<T(size_t i, size_t j)> &func) {
+//    x = func(0, 0);
+//    y = func(1, 0);
+//}
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 2, 1>::swap(Matrix &other) {
@@ -526,18 +525,18 @@ CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const T &val) {
 }
 
 template<typename T>
-void Matrix<T, 3, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const nvstd::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
 }
 
-template<typename T>
-void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
-    x = func(0, 0);
-    y = func(1, 0);
-    z = func(2, 0);
-}
+//template<typename T>
+//CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const nvstd::function<T(size_t i, size_t j)> &func) {
+//    x = func(0, 0);
+//    y = func(1, 0);
+//    z = func(2, 0);
+//}
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 3, 1>::swap(Matrix &other) {
@@ -655,20 +654,20 @@ CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const T &val) {
 }
 
 template<typename T>
-void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const nvstd::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
     w = func(3);
 }
 
-template<typename T>
-void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
-    x = func(0, 0);
-    y = func(1, 0);
-    z = func(2, 0);
-    w = func(3, 0);
-}
+//template<typename T>
+//CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const nvstd::function<T(size_t i, size_t j)> &func) {
+//    x = func(0, 0);
+//    y = func(1, 0);
+//    z = func(2, 0);
+//    w = func(3, 0);
+//}
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 4, 1>::swap(Matrix &other) {

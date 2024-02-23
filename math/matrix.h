@@ -10,10 +10,11 @@
 #include "matrix_dense_base.h"
 #include "matrix_expression.h"
 #include "type_helpers.h"
+#include "cuda_std_array.h"
 
-#include <array>
 #include <numeric>
 #include <vector>
+#include <nvfunctional>
 
 namespace vox {
 
@@ -59,9 +60,7 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
-
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const nvstd::function<T(size_t i, size_t j)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -86,7 +85,7 @@ public:
     CUDA_CALLABLE const_reference operator[](size_t i) const;
 
 private:
-    T _elements[Rows * Cols];
+    CudaStdArray<T, Rows * Cols> _elements;
 };
 
 #pragma endregion
@@ -125,9 +124,7 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
-
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const nvstd::function<T(size_t i)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -195,9 +192,7 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
-
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const nvstd::function<T(size_t i)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -273,9 +268,7 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
-
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const nvstd::function<T(size_t i)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -351,9 +344,7 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
-
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const nvstd::function<T(size_t i)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
