@@ -77,10 +77,10 @@ struct vec_t {
     }
 
     CUDA_CALLABLE inline vec_t operator/=(const Type &h);
-
     CUDA_CALLABLE inline vec_t operator*=(const vec_t &h);
-
     CUDA_CALLABLE inline vec_t operator*=(const Type &h);
+    CUDA_CALLABLE inline vec_t operator-=(const vec_t &h);
+    CUDA_CALLABLE inline vec_t operator+=(const vec_t &h);
 };
 
 using vec2b = vec_t<int8_t, 2>;
@@ -293,6 +293,17 @@ inline CUDA_CALLABLE vec_t<Type, 3> add(vec_t<Type, 3> a, vec_t<Type, 3> b) {
     return vec_t<Type, 3>(a.c[0] + b.c[0], a.c[1] + b.c[1], a.c[2] + b.c[2]);
 }
 
+template<typename Type, size_t Length>
+inline CUDA_CALLABLE vec_t<Type, Length> operator+(vec_t<Type, Length> a, vec_t<Type, Length> b) {
+    return add(a, b);
+}
+
+template<typename Type, size_t Length>
+CUDA_CALLABLE inline vec_t<Type, Length> vec_t<Type, Length>::operator+=(const vec_t &h) {
+    *this = add(*this, h);
+    return *this;
+}
+
 // subtraction
 template<typename Type, size_t Length>
 inline CUDA_CALLABLE vec_t<Type, Length> sub(vec_t<Type, Length> a, vec_t<Type, Length> b) {
@@ -311,6 +322,17 @@ inline CUDA_CALLABLE vec_t<Type, 2> sub(vec_t<Type, 2> a, vec_t<Type, 2> b) {
 template<typename Type>
 inline CUDA_CALLABLE vec_t<Type, 3> sub(vec_t<Type, 3> a, vec_t<Type, 3> b) {
     return vec_t<Type, 3>(a.c[0] - b.c[0], a.c[1] - b.c[1], a.c[2] - b.c[2]);
+}
+
+template<typename Type, size_t Length>
+inline CUDA_CALLABLE vec_t<Type, Length> operator-(vec_t<Type, Length> a, vec_t<Type, Length> b) {
+    return sub(a, b);
+}
+
+template<typename Type, size_t Length>
+CUDA_CALLABLE inline vec_t<Type, Length> vec_t<Type, Length>::operator-=(const vec_t &h) {
+    *this = sub(*this, h);
+    return *this;
 }
 
 // dot product:

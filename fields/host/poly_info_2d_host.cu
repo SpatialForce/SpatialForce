@@ -4,8 +4,6 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#pragma once
-
 #include "poly_info_2d_host.h"
 #include "template_geometry.h"
 #include "volume_integrator.h"
@@ -31,7 +29,7 @@ struct BuildBasisFuncFunctor {
             : j(j), k(k), ele_idx(ele_idx), bary_center(bary_center) {}
 
         using RETURN_TYPE = float;
-        CUDA_CALLABLE float operator()(vec_t<2, float> pt) {
+        CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
             Grid2D::point_t bc = bary_center(ele_idx);
             return pow(pt[0] - bc[0], j) * pow(pt[1] - bc[1], k);
         }
@@ -69,17 +67,19 @@ private:
 template<int order>
 void PolyInfo<Triangle, order>::build_basis_func() {
     thrust::for_each(thrust::counting_iterator<size_t>(0), thrust::counting_iterator<size_t>(0) + grid->n_geometry(1),
-                     BuildBasisFuncFunctor<order>(grid->grid_handle, handle.poly_constants));
+                     BuildBasisFuncFunctor<order>(grid->grid_view(), view().poly_constants));
 }
 
 template<int order>
 void PolyInfo<Triangle, order>::sync_h2d() {
-    handle.poly_constants = alloc_array(poly_constants);
+    poly_constants.sync_h2d();
 }
 
 template<int order>
-PolyInfo<Triangle, order>::~PolyInfo() {
-    free_array(handle.poly_constants);
+poly_info_t<Triangle, order> PolyInfo<Triangle, order>::view() {
+    poly_info_t<Triangle, order> handle;
+    handle.poly_constants = poly_constants.view();
+    return handle;
 }
 
 template class PolyInfo<Triangle, 1>;

@@ -16,21 +16,21 @@ class PolyInfo<Triangle, order> {
 public:
     static constexpr int n_unknown = (order + 2) * (order + 1) / 2 - 1;
 
-    poly_info_t<Triangle, order> handle;
+    poly_info_t<Triangle, order> view();
 
     explicit PolyInfo(GridPtr2D grid) : grid{std::move(grid)} {
         build_basis_func();
         sync_h2d();
     }
 
-    ~PolyInfo();
+    ~PolyInfo() = default;
 
 private:
     void build_basis_func();
     void sync_h2d();
 
     GridPtr2D grid;
-    std::vector<fixed_array_t<float, n_unknown>> poly_constants;
+    HostDeviceVector<fixed_array_t<float, n_unknown>> poly_constants;
 };
 
 }// namespace vox::fields

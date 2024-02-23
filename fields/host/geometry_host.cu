@@ -50,22 +50,22 @@ int32_t Geometry::boundary_mark(uint32_t idx) const {
 
 void Geometry::sync_h2d() {
     ind.sync_h2d();
-    handle.ind = ind.view();
-
     vtx_index.sync_h2d();
-    handle.vtx_index = vtx_index.view();
-
     vtx.sync_h2d();
-    handle.vtx = vtx.view();
-
     bnd_index.sync_h2d();
-    handle.bnd_index = bnd_index.view();
-
     bnd.sync_h2d();
-    handle.bnd = bnd.view();
-
     bm.sync_h2d();
+}
+
+geometry_t Geometry::view() {
+    geometry_t handle;
+    handle.ind = ind.view();
+    handle.vtx_index = vtx_index.view();
+    handle.vtx = vtx.view();
+    handle.bnd_index = bnd_index.view();
+    handle.bnd = bnd.view();
     handle.bm = bm.view();
+    return handle;
 }
 
 }// namespace vox::fields

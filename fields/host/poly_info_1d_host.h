@@ -16,21 +16,21 @@ class PolyInfo<Interval, order> {
 public:
     static constexpr int n_unknown = order;
 
-    poly_info_t<Interval, order> handle;
+    poly_info_t<Interval, order> view();
 
     explicit PolyInfo(GridPtr1D grid) : grid{std::move(grid)} {
         build_basis_func();
         sync_h2d();
     }
 
-    ~PolyInfo();
+    ~PolyInfo() = default;
 
 private:
     void build_basis_func();
     void sync_h2d();
 
     GridPtr1D grid;
-    std::vector<fixed_array_t<float, n_unknown>> poly_constants;
+    HostDeviceVector<fixed_array_t<float, n_unknown>> poly_constants;
 };
 
 }// namespace vox::fields

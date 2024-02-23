@@ -4,10 +4,7 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#pragma once
-
 #include "poly_info_1d_host.h"
-#include "runtime/cuda_util.h"
 #include <thrust/for_each.h>
 #include <thrust/iterator/counting_iterator.h>
 
@@ -42,17 +39,19 @@ private:
 template<int order>
 void PolyInfo<Interval, order>::build_basis_func() {
     thrust::for_each(thrust::counting_iterator<size_t>(0), thrust::counting_iterator<size_t>(0) + grid->n_geometry(1),
-                     BuildBasisFuncFunctor<order>(grid->grid_handle, handle.poly_constants));
+                     BuildBasisFuncFunctor<order>(grid->grid_view(), view().poly_constants));
 }
 
 template<int order>
 void PolyInfo<Interval, order>::sync_h2d() {
-    handle.poly_constants = alloc_array(poly_constants);
+    poly_constants.sync_h2d();
 }
 
 template<int order>
-PolyInfo<Interval, order>::~PolyInfo() {
-    free_array(handle.poly_constants);
+poly_info_t<Interval, order> PolyInfo<Interval, order>::view() {
+    poly_info_t<Interval, order> handle;
+    handle.poly_constants = poly_constants.view();
+    return handle;
 }
 
 template class PolyInfo<Interval, 1>;

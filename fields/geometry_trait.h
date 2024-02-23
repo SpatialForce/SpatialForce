@@ -20,8 +20,8 @@ struct FourTetrahedron;
 struct Interval {
     static constexpr uint32_t dim = 1;
     static constexpr uint32_t tdim = 1;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 2;
 
     CUDA_CALLABLE static float volume(const point_t *v) {
@@ -54,8 +54,8 @@ struct Interval {
 struct IntervalTo2D {
     static constexpr uint32_t dim = 1;
     static constexpr uint32_t tdim = 2;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     using associate_t = Interval;
     static constexpr uint32_t arr_len = 2;
 
@@ -93,8 +93,8 @@ struct IntervalTo2D {
 struct Triangle {
     static constexpr uint32_t dim = 2;
     static constexpr uint32_t tdim = 2;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 3;
 
     CUDA_CALLABLE static constexpr float area(point_t a, point_t b, point_t c) {
@@ -141,8 +141,8 @@ struct Triangle {
 struct TriangleTo3D {
     static constexpr uint32_t dim = 2;
     static constexpr uint32_t tdim = 3;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     using associate_t = Triangle;
     static constexpr uint32_t arr_len = 3;
 
@@ -208,8 +208,8 @@ struct TriangleTo3D {
 struct TwinTriangle {
     static constexpr uint32_t dim = 2;
     static constexpr uint32_t tdim = 2;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 4;
 
     CUDA_CALLABLE static float volume(const point_t *v) {
@@ -263,8 +263,8 @@ struct TwinTriangle {
 struct TwinTriangleTo3D {
     static constexpr uint32_t dim = 2;
     static constexpr uint32_t tdim = 3;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     using associate_t = TwinTriangle;
     static constexpr uint32_t arr_len = 4;
 
@@ -308,8 +308,8 @@ struct TwinTriangleTo3D {
 struct Tetrahedron {
     static constexpr uint32_t dim = 3;
     static constexpr uint32_t tdim = 3;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 4;
 
     CUDA_CALLABLE static float volume(const point_t *v) {
@@ -363,8 +363,8 @@ struct Tetrahedron {
 struct TwinTetrahedron {
     static constexpr uint32_t dim = 3;
     static constexpr uint32_t tdim = 3;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 5;
 
     CUDA_CALLABLE static float volume(const point_t *v) {
@@ -411,8 +411,8 @@ struct TwinTetrahedron {
 struct FourTetrahedron {
     static constexpr uint32_t dim = 3;
     static constexpr uint32_t tdim = 3;
-    using point_t = vec_t<dim, float>;
-    using ref_point_t = vec_t<tdim, float>;
+    using point_t = vec_t<float, dim>;
+    using ref_point_t = vec_t<float, tdim>;
     static constexpr uint32_t arr_len = 4;
 
     CUDA_CALLABLE static float volume(const point_t *v) {

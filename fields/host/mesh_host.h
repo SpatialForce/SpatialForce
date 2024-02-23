@@ -21,11 +21,18 @@ public:
     static constexpr uint32_t dow = DOW;
     using point_t = vec_t<float, dow>;
 
-    mesh_t<dim, dow> handle;
+    mesh_t<dim, dow> view() {
+        mesh_t<dim, dow> handle;
+        handle.pnt = pnt.view();
+        for (int i = 0; i <= dim; i++) {
+            handle.geo[i] = geo[i].view();
+        }
+        return handle;
+    }
 
     /// Number of points in the mesh.
     [[nodiscard]] uint32_t n_point() const {
-        return pnt.size();
+        return pnt.host_buffer.size();
     }
 
     /// Number of geometries in certain dimension.
@@ -35,22 +42,22 @@ public:
 
     /// Point array.
     const std::vector<point_t> &point() const {
-        return pnt;
+        return pnt.host_buffer;
     }
 
     /// Point array.
     std::vector<point_t> &point() {
-        return pnt;
+        return pnt.host_buffer;
     }
 
     /// A certain point.
     const point_t &point(int i) const {
-        return pnt[i];
+        return pnt.host_buffer[i];
     }
 
     /// A certain point.
     point_t &point(int i) {
-        return pnt[i];
+        return pnt.host_buffer[i];
     }
 
     /// Geometries array in certain dimension.
@@ -69,10 +76,9 @@ public:
     }
 
     void sync_h2d() {
-        handle.pnt = alloc_array(pnt);
+        pnt.sync_h2d();
         for (int i = 0; i <= dim; i++) {
             geo[i].sync_h2d();
-            handle.geo[i] = geo[i].handle;
         }
     }
 
@@ -80,7 +86,7 @@ private:
     friend class IOMesh<dim, dow>;
 
     /// Point array of the mesh.
-    std::vector<point_t> pnt;
+    HostDeviceVector<point_t> pnt;
     /// Geometries arrays of the mesh.
     /// The geometries in \p n dimension are in the \p n-th entry of the array,
     /// which is still an array.

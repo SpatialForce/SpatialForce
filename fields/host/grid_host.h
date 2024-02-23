@@ -19,21 +19,33 @@ public:
     static constexpr uint32_t dim = TYPE::dim;
     using point_t = vec_t<float, dim>;
 
-    mesh_t<dim, dim> mesh_handle;
-    grid_t<TYPE> grid_handle;
+    mesh_t<dim, dim> mesh_view() {
+        return mesh.view();
+    }
+    grid_t<TYPE> grid_view() {
+        grid_t<TYPE> handle;
+        handle.bary_center = bary_center.view();
+        handle.volume = volume.view();
+        handle.size = size.view();
+        handle.neighbour = neighbour.view();
+        handle.period_bry = period_bry.view();
+        handle.boundary_center = boundary_center.view();
+        handle.bry_size = bry_size.view();
+        handle.boundary_mark = boundary_mark.view();
+        return handle;
+    }
 
     void sync_h2d() {
-        grid_handle.bary_center = alloc_array(bary_center);
-        grid_handle.volume = alloc_array(volume);
-        grid_handle.size = alloc_array(size);
-        grid_handle.neighbour = alloc_array(neighbour);
-        grid_handle.period_bry = alloc_array(period_bry);
-        grid_handle.boundary_center = alloc_array(boundary_center);
-        grid_handle.bry_size = alloc_array(bry_size);
-        grid_handle.boundary_mark = alloc_array(boundary_mark);
+        bary_center.sync_h2d();
+        volume.sync_h2d();
+        size.sync_h2d();
+        neighbour.sync_h2d();
+        period_bry.sync_h2d();
+        boundary_center.sync_h2d();
+        bry_size.sync_h2d();
+        boundary_mark.sync_h2d();
 
         mesh.sync_h2d();
-        mesh_handle = mesh.handle;
     }
 
     /// Number of geometries in certain dimension.
@@ -43,15 +55,15 @@ public:
 
 private:
     Mesh<dim, dim> mesh;
-    std::vector<point_t> bary_center;
-    std::vector<float> volume;
-    std::vector<float> size;
+    HostDeviceVector<point_t> bary_center;
+    HostDeviceVector<float> volume;
+    HostDeviceVector<float> size;
 
-    std::vector<fixed_array_t<int32_t, 2>> neighbour;
-    std::vector<fixed_array_t<int32_t, 2>> period_bry;
-    std::vector<point_t> boundary_center;
-    std::vector<float> bry_size;
-    std::vector<int32_t> boundary_mark;
+    HostDeviceVector<fixed_array_t<int32_t, 2>> neighbour;
+    HostDeviceVector<fixed_array_t<int32_t, 2>> period_bry;
+    HostDeviceVector<point_t> boundary_center;
+    HostDeviceVector<float> bry_size;
+    HostDeviceVector<int32_t> boundary_mark;
 };
 
 using Grid1D = Grid<Interval>;

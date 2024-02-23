@@ -18,7 +18,7 @@ namespace vox::fields {
 template<typename TYPE>
 struct grid_base_t {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<dim, float>;
+    using point_t = vec_t<float, dim>;
 
     array_t<point_t> bary_center;
     array_t<float> volume;

@@ -18,15 +18,15 @@ namespace vox::fields {
 template<typename TYPE, uint32_t Order>
 class ReconAuxiliary {
 public:
-    recon_auxiliary_t<TYPE, Order> handle;
+    recon_auxiliary_t<TYPE, Order> view();
 
-    poly_info_t<TYPE, Order> poly_info_handle() {
-        return polyInfo.handle;
+    poly_info_t<TYPE, Order> poly_info_view() {
+        return polyInfo.view();
     }
 
     explicit ReconAuxiliary(GridPtr<TYPE> grid);
 
-    ~ReconAuxiliary();
+    ~ReconAuxiliary() = default;
 
 private:
     void build_ls_matrix();
@@ -39,10 +39,10 @@ private:
     };
     std::vector<ElementHelper> element_helper;
 
-    std::vector<uint32_t> patch_prefix_sum;
-    std::vector<int32_t> patch;
-    std::vector<fixed_array_t<float, poly_info_t<TYPE, Order>::n_unknown>> patch_polys;
-    std::vector<typename poly_info_t<TYPE, Order>::Mat> G_inv;
+    HostDeviceVector<uint32_t> patch_prefix_sum;
+    HostDeviceVector<int32_t> patch;
+    HostDeviceVector<fixed_array_t<float, poly_info_t<TYPE, Order>::n_unknown>> patch_polys;
+    HostDeviceVector<typename poly_info_t<TYPE, Order>::Mat> G_inv;
 };
 
 template<typename TYPE, uint32_t Order>

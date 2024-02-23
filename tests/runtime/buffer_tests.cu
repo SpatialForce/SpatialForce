@@ -24,7 +24,7 @@ TEST(Buffer, raw) {
 TEST(Buffer, host_device) {
     vox::init();
 
-    auto host_device = HostDeviceBuffer<float>();
+    auto host_device = HostDeviceVector<float>();
     host_device.host_buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     host_device.sync_h2d();
 
@@ -36,7 +36,7 @@ TEST(Buffer, host_device) {
 TEST(Buffer, view) {
     vox::init();
 
-    auto host_device = HostDeviceBuffer<float>();
+    auto host_device = HostDeviceVector<float>();
     host_device.host_buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     host_device.sync_h2d();
     auto view = host_device.view();

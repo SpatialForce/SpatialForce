@@ -15,7 +15,7 @@ namespace vox::fields {
 template<typename TYPE>
 struct grid_data_base_t {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<dim, float>;
+    using point_t = vec_t<float, dim>;
 
     array_t<float> data;
 
@@ -29,19 +29,19 @@ struct grid_data_base_t {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE vec_t<dim, float> gradient(const point_t &pt, uint32_t idx) {
-        return vec_t<dim, float>{};
+    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx) {
+        return vec_t<float, dim>{};
     }
     //! return value of specific point in specific bry
-    CUDA_CALLABLE vec_t<dim, float> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
-        return vec_t<dim, float>{};
+    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
+        return vec_t<float, dim>{};
     }
 };
 
 template<typename TYPE, int order>
 struct grid_data_t : public grid_data_base_t<TYPE> {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<dim, float>;
+    using point_t = vec_t<float, dim>;
 
     typename poly_info_t<TYPE, order>::FuncValueFunctor func_value;
     typename poly_info_t<TYPE, order>::FuncGradientFunctor func_gradient;
@@ -57,11 +57,11 @@ struct grid_data_t : public grid_data_base_t<TYPE> {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE vec_t<dim, float> gradient(const point_t &pt, uint32_t idx) {
+    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx) {
         return func_gradient(idx, pt, slope[idx]);
     }
     //! return value of specific point in specific bry
-    CUDA_CALLABLE vec_t<dim, float> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
+    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
         return func_gradient(idx, pt, slope[idx]);
     }
 };

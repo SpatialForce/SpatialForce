@@ -8,6 +8,8 @@
 
 #include "device.h"
 #include "core/array.h"
+#include <vector>
+#include <array>
 
 namespace vox {
 template<typename T>
@@ -97,12 +99,22 @@ void memset(Buffer<T> &dst, int value) {
 
 //-----------------------------------------------------------------------------------------------------------------------------------
 template<typename T>
-struct HostDeviceBuffer {
+struct HostDeviceVector {
     Buffer<T> device_buffer;
     std::vector<T> host_buffer;
 
-    explicit HostDeviceBuffer(uint32_t index = 0)
+    explicit HostDeviceVector(uint32_t index = 0)
         : device_buffer{create_buffer<T>(index)} {}
+
+    HostDeviceVector<T> &operator=(const std::vector<T> &host) {
+        host_buffer = host;
+        return *this;
+    }
+
+    HostDeviceVector<T> &operator=(std::vector<T> &&host) {
+        host_buffer = std::move(host);
+        return *this;
+    }
 
     void sync_d2h() {
         if (device_buffer.size() != host_buffer.size()) {
@@ -116,6 +128,56 @@ struct HostDeviceBuffer {
             device_buffer.alloc(host_buffer.size());
         }
         vox::sync_h2d(host_buffer.data(), device_buffer);
+    }
+
+    auto begin() {
+        return host_buffer.begin();
+    }
+
+    auto end() {
+        return host_buffer.end();
+    }
+
+    array_t<T> view() {
+        return {device_buffer.handle(), (int)device_buffer.size()};
+    }
+};
+
+//-----------------------------------------------------------------------------------------------------------------------------------
+template<typename T, size_t N>
+struct HostDeviceArray {
+    Buffer<T> device_buffer;
+    std::array<T, N> host_buffer;
+
+    explicit HostDeviceArray(uint32_t index = 0)
+        : device_buffer{create_buffer<T>(index)} {
+        device_buffer.alloc(N);
+    }
+
+    HostDeviceArray<T, N> &operator=(const std::array<T, N> &host) {
+        host_buffer = host;
+        return *this;
+    }
+
+    HostDeviceArray<T, N> &operator=(std::array<T, N> &&host) {
+        host_buffer = std::move(host);
+        return *this;
+    }
+
+    void sync_d2h() {
+        vox::sync_d2h(device_buffer, host_buffer.data());
+    }
+
+    void sync_h2d() {
+        vox::sync_h2d(host_buffer.data(), device_buffer);
+    }
+
+    auto begin() {
+        return host_buffer.begin();
+    }
+
+    auto end() {
+        return host_buffer.end();
     }
 
     array_t<T> view() {

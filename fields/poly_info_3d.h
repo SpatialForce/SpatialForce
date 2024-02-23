@@ -22,8 +22,8 @@ struct poly_info_t<Tetrahedron, ORDER> {
     array_t<fixed_array_t<float, n_unknown>> poly_constants;
     using grid_t = grid_t<Tetrahedron>;
     using point_t = grid_t::point_t;
-    using Mat = mat_t<n_unknown, n_unknown, float>;
-    using Vec = mat_t<n_unknown, 1, float>;
+    using Mat = mat_t<float, n_unknown, n_unknown>;
+    using Vec = mat_t<float, n_unknown, 1>;
 
     struct AverageBasisFuncFunctor {
         CUDA_CALLABLE AverageBasisFuncFunctor(grid_t grid, poly_info_t<Tetrahedron, order> poly)
@@ -146,13 +146,13 @@ struct poly_info_t<Tetrahedron, ORDER> {
     };
 
     struct FuncGradientFunctor {
-        CUDA_CALLABLE vec_t<dim, float> operator()(uint32_t idx, const point_t &coord,
+        CUDA_CALLABLE vec_t<float, dim> operator()(uint32_t idx, const point_t &coord,
                                                    const Vec &para) {
             fixed_array_t<fixed_array_t<float, n_unknown>, dim> aa;
             basis_function_gradient(idx, coord, aa);
 
             float temp = 0.0;
-            vec_t<dim, float> result;
+            vec_t<float, dim> result;
             for (int i = 0; i < dim; ++i) {
                 for (int t = 0; t < n_unknown; ++t) {
                     temp = para[t] * aa[i][t];

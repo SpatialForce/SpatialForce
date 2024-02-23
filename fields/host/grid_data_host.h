@@ -17,17 +17,16 @@ public:
 
 protected:
     const uint32_t idx;
-    std::vector<float> data;
+    HostDeviceVector<float> data;
 };
 
 template<typename TYPE>
 class GridDataSimple : public GridDataBase {
 public:
-    grid_data_base_t<TYPE> handle;
+    grid_data_base_t<TYPE> view();
 
     explicit GridDataSimple(uint32_t idx, GridPtr<TYPE> grid) : GridDataBase{idx}, grid{grid} {}
-
-    ~GridDataSimple();
+    ~GridDataSimple() = default;
 
 private:
     void sync_h2d();
@@ -41,16 +40,15 @@ public:
     using point_t = typename Grid<TYPE>::point_t;
 
     GridData(uint32_t idx, GridPtr<TYPE> grid, ReconAuxiliaryPtr<TYPE, order> aux);
+    ~GridData() = default;
 
-    ~GridData();
-
-    grid_data_t<TYPE, order> handle;
+    grid_data_t<TYPE, order> view();
 
 private:
     void sync_h2d();
 
     const ReconAuxiliaryPtr<TYPE, order> recon_auxiliary;
-    std::vector<typename poly_info_t<TYPE, order>::Vec> slope;
+    HostDeviceVector<typename poly_info_t<TYPE, order>::Vec> slope;
     const GridPtr<TYPE> grid;
 };
 template<typename TYPE, uint32_t order>

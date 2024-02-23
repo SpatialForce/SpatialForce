@@ -19,24 +19,24 @@ void test() {
     {
         Grid<Interval> grid;
         PolyInfo<Interval, 1> poly{nullptr};
-        poly_info_t<Interval, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_handle, poly.handle};
-        poly_info_t<Interval, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_handle, poly.handle};
+        poly_info_t<Interval, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_view(), poly.view()};
+        poly_info_t<Interval, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_view(), poly.view()};
         poly_info_t<Interval, 1>::FuncValueFunctor func_value_functor{};
         poly_info_t<Interval, 1>::FuncGradientFunctor func_gradient_functor{};
     }
     {
         Grid<Triangle> grid;
         PolyInfo<Triangle, 1> poly{nullptr};
-        poly_info_t<Triangle, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_handle, poly.handle};
-        poly_info_t<Triangle, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_handle, poly.handle};
+        poly_info_t<Triangle, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_view(), poly.view()};
+        poly_info_t<Triangle, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_view(), poly.view()};
         poly_info_t<Triangle, 1>::FuncValueFunctor func_value_functor{};
         poly_info_t<Triangle, 1>::FuncGradientFunctor func_gradient_functor{};
     }
     {
         Grid<Tetrahedron> grid;
         PolyInfo<Tetrahedron, 1> poly{nullptr};
-        poly_info_t<Tetrahedron, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_handle, poly.handle};
-        poly_info_t<Tetrahedron, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_handle, poly.handle};
+        poly_info_t<Tetrahedron, 1>::AverageBasisFuncFunctor average_basis_func_functor{grid.grid_view(), poly.view()};
+        poly_info_t<Tetrahedron, 1>::UpdateLSMatrixFunctor update_ls_matrix_functor{grid.grid_view(), poly.view()};
         poly_info_t<Tetrahedron, 1>::FuncValueFunctor func_value_functor{};
         poly_info_t<Tetrahedron, 1>::FuncGradientFunctor func_gradient_functor{};
     }
@@ -46,7 +46,7 @@ void test() {
 void test2() {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
-        CUDA_CALLABLE float operator()(vec_t<1, float> pt) {
+        CUDA_CALLABLE float operator()(vec_t<float, 1> pt) {
             return pt[0];
         }
     };
@@ -59,7 +59,7 @@ void test2() {
 void test3() {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
-        CUDA_CALLABLE float operator()(vec_t<2, float> pt) {
+        CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
             return pt[0];
         }
     };
@@ -72,7 +72,7 @@ void test3() {
 void test4() {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
-        CUDA_CALLABLE float operator()(vec_t<2, float> pt) {
+        CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
             return pt[0];
         }
     };

@@ -20,7 +20,7 @@ struct mesh_t {
     static constexpr uint32_t dow = DOW;
 
     /// Point array of the mesh.
-    array_t<vec_t<dow, float>> pnt;
+    array_t<vec_t<float, dow>> pnt;
 
     /// Geometries arrays of the mesh.
     /// The geometries in \p n dimension are in the \p n-th entry of the array,

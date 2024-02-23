@@ -16,21 +16,21 @@ class PolyInfo<Tetrahedron, order> {
 public:
     static constexpr uint32_t n_unknown = (order + 3) * (order + 2) * (order + 1) / (3 * 2) - 1;
 
-    poly_info_t<Tetrahedron, order> handle;
+    poly_info_t<Tetrahedron, order> view();
 
     explicit PolyInfo(GridPtr3D grid) : grid{std::move(grid)} {
         build_basis_func();
         sync_h2d();
     }
 
-    ~PolyInfo();
+    ~PolyInfo() = default;
 
 private:
     void build_basis_func();
     void sync_h2d();
 
     GridPtr3D grid;
-    std::vector<fixed_array_t<float, n_unknown>> poly_constants;
+    HostDeviceVector<fixed_array_t<float, n_unknown>> poly_constants;
 };
 
 }// namespace vox::fields

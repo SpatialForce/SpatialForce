@@ -8,13 +8,15 @@
 
 namespace vox::fields {
 template<typename TYPE>
-GridDataSimple<TYPE>::~GridDataSimple() {
-    free_array(handle.data);
+void GridDataSimple<TYPE>::sync_h2d() {
+    data.sync_h2d();
 }
 
 template<typename TYPE>
-void GridDataSimple<TYPE>::sync_h2d() {
-    handle.data = alloc_array(data);
+grid_data_base_t<TYPE> GridDataSimple<TYPE>::view() {
+    grid_data_base_t<TYPE> handle;
+    handle.data = data.view();
+    return handle;
 }
 
 template class GridDataSimple<Interval>;
@@ -27,15 +29,17 @@ GridData<TYPE, order>::GridData(uint32_t idx, GridPtr<TYPE> grid, ReconAuxiliary
 }
 
 template<typename TYPE, uint32_t order>
-GridData<TYPE, order>::~GridData() {
-    free_array(handle.data);
-    free_array(handle.slope);
+void GridData<TYPE, order>::sync_h2d() {
+    data.sync_h2d();
+    slope.sync_h2d();
 }
 
 template<typename TYPE, uint32_t order>
-void GridData<TYPE, order>::sync_h2d() {
-    handle.data = alloc_array(data);
-    handle.slope = alloc_array(slope);
+grid_data_t<TYPE, order> GridData<TYPE, order>::view() {
+    grid_data_t<TYPE, order> handle;
+    handle.data = data.view();
+    handle.slope = slope.view();
+    return handle;
 }
 
 template class GridData<Interval, 1>;

@@ -21,7 +21,7 @@ struct VolumeIntegrator {
     template<typename FUNCTOR>
     CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
         constexpr uint32_t arr_len = CoordTransform::arr_len;
-        vec_t<dim, float> arr[arr_len];
+        vec_t<float, dim> arr[arr_len];
         for (uint32_t i = 0; i < arr_len; i++) {
             // global mem to local register
             arr[i] = mesh.pnt[mesh.geo[dim].vertex(index, i)];

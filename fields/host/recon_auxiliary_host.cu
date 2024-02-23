@@ -32,15 +32,25 @@ private:
 template<typename TYPE, uint32_t Order>
 void ReconAuxiliary<TYPE, Order>::build_ls_matrix() {
     thrust::for_each(thrust::counting_iterator<size_t>(0), thrust::counting_iterator<size_t>(0) + grid->n_geometry(TYPE::dim),
-                     UpdateLSMatrixFunctor<TYPE, Order>(grid->grid_handle, polyInfo.handle, handle));
+                     UpdateLSMatrixFunctor<TYPE, Order>(grid->grid_view(), polyInfo.view(), view()));
 }
 
 template<typename TYPE, uint32_t Order>
 void ReconAuxiliary<TYPE, Order>::sync_h2d() {
-    handle.patch_prefix_sum = alloc_array(patch_prefix_sum);
-    handle.patch = alloc_array(patch);
-    handle.patch_polys = alloc_array(patch_polys);
-    handle.G_inv = alloc_array(G_inv);
+    patch_prefix_sum.sync_h2d();
+    patch.sync_h2d();
+    patch_polys.sync_h2d();
+    G_inv.sync_h2d();
+}
+
+template<typename TYPE, uint32_t Order>
+recon_auxiliary_t<TYPE, Order> ReconAuxiliary<TYPE, Order>::view() {
+    recon_auxiliary_t<TYPE, Order> handle;
+    handle.patch_prefix_sum = patch_prefix_sum.view();
+    handle.patch = patch.view();
+    handle.patch_polys = patch_polys.view();
+    handle.G_inv = G_inv.view();
+    return handle;
 }
 
 template<typename TYPE, uint32_t Order>
@@ -48,14 +58,6 @@ ReconAuxiliary<TYPE, Order>::ReconAuxiliary(GridPtr<TYPE> grid)
     : grid{grid}, polyInfo{grid} {
     build_ls_matrix();
     sync_h2d();
-}
-
-template<typename TYPE, uint32_t Order>
-ReconAuxiliary<TYPE, Order>::~ReconAuxiliary() {
-    free_array(handle.patch_prefix_sum);
-    free_array(handle.patch);
-    free_array(handle.patch_polys);
-    free_array(handle.G_inv);
 }
 
 template class ReconAuxiliary<Interval, 1>;

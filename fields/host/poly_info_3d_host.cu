@@ -69,17 +69,19 @@ private:
 template<int order>
 void PolyInfo<Tetrahedron, order>::build_basis_func() {
     thrust::for_each(thrust::counting_iterator<size_t>(0), thrust::counting_iterator<size_t>(0) + grid->n_geometry(1),
-                     BuildBasisFuncFunctor<order>(grid->grid_handle, handle.poly_constants));
+                     BuildBasisFuncFunctor<order>(grid->grid_view(), view().poly_constants));
 }
 
 template<int order>
 void PolyInfo<Tetrahedron, order>::sync_h2d() {
-    handle.poly_constants = alloc_array(poly_constants);
+    poly_constants.sync_h2d();
 }
 
 template<int order>
-PolyInfo<Tetrahedron, order>::~PolyInfo() {
-    free_array(handle.poly_constants);
+poly_info_t<Tetrahedron, order> PolyInfo<Tetrahedron, order>::view() {
+    poly_info_t<Tetrahedron, order> handle;
+    handle.poly_constants = poly_constants.view();
+    return handle;
 }
 
 template class PolyInfo<Tetrahedron, 1>;

@@ -21,7 +21,7 @@ struct SurfaceIntegrator {
     template<typename FUNCTOR>
     CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
         constexpr uint32_t arr_len = CoordTransform::arr_len;
-        vec_t<tdim, float> arr[arr_len];
+        vec_t<float, tdim> arr[arr_len];
         for (uint32_t i = 0; i < arr_len; i++) {
             // global mem to local register
             arr[i] = mesh.pnt[mesh.geo[tdim - 1].vertex(index, i)];
@@ -45,7 +45,7 @@ struct SurfaceIntegrator {
 
 template<uint32_t ACCURACY>
 struct SurfaceIntegrator<Interval, ACCURACY> {
-    array_t<vec_t<1, float>> pnt;
+    array_t<vec_t<float, 1>> pnt;
 
     template<typename FUNCTOR>
     CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t i, FUNCTOR functor) {

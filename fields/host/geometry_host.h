@@ -13,7 +13,7 @@
 namespace vox::fields {
 class Geometry {
 public:
-    geometry_t handle;
+    geometry_t view();
 
     [[nodiscard]] uint32_t n_index() const;
 
@@ -34,14 +34,14 @@ public:
 
 public:
     /// Index of the geometry.
-    HostDeviceBuffer<int32_t> ind;
+    HostDeviceVector<int32_t> ind;
     /// Index of vertices.
-    HostDeviceBuffer<uint32_t> vtx_index;
-    HostDeviceBuffer<uint32_t> vtx;
+    HostDeviceVector<uint32_t> vtx_index;
+    HostDeviceVector<uint32_t> vtx;
     /// Index of boundary geometries.
-    HostDeviceBuffer<uint32_t> bnd_index;
-    HostDeviceBuffer<uint32_t> bnd;
+    HostDeviceVector<uint32_t> bnd_index;
+    HostDeviceVector<uint32_t> bnd;
     /// Boundary marker.
-    HostDeviceBuffer<int32_t> bm;
+    HostDeviceVector<int32_t> bm;
 };
 }// namespace vox::fields

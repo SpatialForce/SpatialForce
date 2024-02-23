@@ -42,11 +42,11 @@ set(HOST_FILES
 
 set(IO_FILES
         io/io_mesh.h
-        io/io_mesh.cpp
+        io/io_mesh.cu
         io/io_mesh_1d.h
-        io/io_mesh_1d.cpp
+        io/io_mesh_1d.cu
         io/gmsh2d_io.h
-        io/gmsh2d_io.cpp
+        io/gmsh2d_io.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})
@@ -63,11 +63,3 @@ set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR} .
         ../)
-
-if (${NEED_LINK_ATOMIC})
-    target_link_libraries(${PROJECT_NAME} PUBLIC atomic)
-endif ()
-
-if (CMAKE_DO_CLANG_TIDY)
-    set_target_properties(framework PROPERTIES CXX_CLANG_TIDY "${CMAKE_DO_CLANG_TIDY}")
-endif ()

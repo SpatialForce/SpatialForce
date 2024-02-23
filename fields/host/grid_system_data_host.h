@@ -15,12 +15,11 @@ class GridSystemData {
 public:
     //! Constructs empty grid system.
     explicit GridSystemData(GridPtr<TYPE> grid);
-
-    ~GridSystemData();
+    ~GridSystemData() = default;
 
     void sync_h2d();
 
-    grid_system_data_t<TYPE, order, dos> handle;
+    grid_system_data_t<TYPE, order, dos> view();
 
 protected:
     const GridPtr<TYPE> _grid;
