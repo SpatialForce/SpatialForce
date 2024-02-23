@@ -12,6 +12,10 @@ set(RUNTIME_TESTS
         runtime/buffer_tests.cu
 )
 
+set(MATH_TESTS
+        math/vector2_tests.cu
+)
+
 set(FIELDS_TESTS
         fields/compile_tests.cu
         fields/volume_integrator_tests.cu
@@ -19,6 +23,7 @@ set(FIELDS_TESTS
 
 set(SRC
         ${RUNTIME_TESTS}
+        ${MATH_TESTS}
         ${FIELDS_TESTS}
 )
 

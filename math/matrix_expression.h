@@ -393,7 +393,7 @@ private:
 #pragma endregion
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-using MatrixNegate = MatrixUnaryOp<T, Rows, Cols, M1, std::negate<T>>;
+using MatrixNegate = MatrixUnaryOp<T, Rows, Cols, M1, thrust::negate<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixCeil = MatrixUnaryOp<T, Rows, Cols, M1, Ceil<T>>;

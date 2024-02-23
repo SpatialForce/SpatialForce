@@ -299,18 +299,18 @@ CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const T &val) {
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const std::function<T(size_t i)> &func) {
+void Matrix<T, 1, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+void Matrix<T, 1, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
 }
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 1, 1>::swap(Matrix &other) {
-    std::swap(x, other.x);
+    thrust::swap(x, other.x);
 }
 
 template<typename T>
@@ -408,21 +408,21 @@ CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const T &val) {
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const std::function<T(size_t i)> &func) {
+void Matrix<T, 2, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+void Matrix<T, 2, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
 }
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 2, 1>::swap(Matrix &other) {
-    std::swap(x, other.x);
-    std::swap(y, other.y);
+    thrust::swap(x, other.x);
+    thrust::swap(y, other.y);
 }
 
 template<typename T>
@@ -526,14 +526,14 @@ CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const T &val) {
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const std::function<T(size_t i)> &func) {
+void Matrix<T, 3, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
     z = func(2, 0);
@@ -541,9 +541,9 @@ CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t 
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 3, 1>::swap(Matrix &other) {
-    std::swap(x, other.x);
-    std::swap(y, other.y);
-    std::swap(z, other.z);
+    thrust::swap(x, other.x);
+    thrust::swap(y, other.y);
+    thrust::swap(z, other.z);
 }
 
 template<typename T>
@@ -655,7 +655,7 @@ CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const T &val) {
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
+void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
@@ -663,7 +663,7 @@ CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func)
 }
 
 template<typename T>
-CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
     z = func(2, 0);
@@ -672,10 +672,10 @@ CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t 
 
 template<typename T>
 CUDA_CALLABLE void Matrix<T, 4, 1>::swap(Matrix &other) {
-    std::swap(x, other.x);
-    std::swap(y, other.y);
-    std::swap(z, other.z);
-    std::swap(w, other.w);
+    thrust::swap(x, other.x);
+    thrust::swap(y, other.y);
+    thrust::swap(z, other.z);
+    thrust::swap(w, other.w);
 }
 
 template<typename T>
@@ -1259,9 +1259,9 @@ template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
 CUDA_CALLABLE constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
     const MatrixExpression<T, Rows, Cols, M1> &a,
     const MatrixExpression<T, Rows, Cols, M2> &b) {
-    return internal::FoldWithAnd<T, Rows, Cols, std::equal_to<T>,
+    return internal::FoldWithAnd<T, Rows, Cols, thrust::equal_to<T>,
                                  Rows * Cols - 1>::call(a, b,
-                                                        std::equal_to<T>());
+                                                        thrust::equal_to<T>());
 }
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,

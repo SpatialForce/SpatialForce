@@ -67,12 +67,12 @@ CUDA_CALLABLE void IDiv<T>::operator()(T &a, const T &b) const {
 
 template<typename T>
 CUDA_CALLABLE constexpr T Min<T>::operator()(const T &a, const T &b) const {
-    return std::min(a, b);
+    return ::min(a, b);
 }
 
 template<typename T>
 CUDA_CALLABLE constexpr T Max<T>::operator()(const T &a, const T &b) const {
-    return std::max(a, b);
+    return ::max(a, b);
 }
 
 template<typename T>

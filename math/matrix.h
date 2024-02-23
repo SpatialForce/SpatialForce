@@ -125,9 +125,9 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
+    void fill(const std::function<T(size_t i)> &func);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
+    void fill(const std::function<T(size_t i, size_t j)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -195,9 +195,9 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
+    void fill(const std::function<T(size_t i)> &func);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
+    void fill(const std::function<T(size_t i, size_t j)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -273,9 +273,9 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
+    void fill(const std::function<T(size_t i)> &func);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
+    void fill(const std::function<T(size_t i, size_t j)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 
@@ -351,9 +351,9 @@ public:
 
     CUDA_CALLABLE void fill(const T &val);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
+    void fill(const std::function<T(size_t i)> &func);
 
-    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
+    void fill(const std::function<T(size_t i, size_t j)> &func);
 
     CUDA_CALLABLE void swap(Matrix &other);
 

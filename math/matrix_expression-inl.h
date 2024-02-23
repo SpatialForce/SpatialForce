@@ -80,11 +80,11 @@ template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE T MatrixExpression<T, Rows, Cols, D>::min() const {
     T s = eval(0, 0);
     for (size_t j = 1; j < cols(); ++j) {
-        s = std::min(s, eval(0, j));
+        s = ::min(s, eval(0, j));
     }
     for (size_t i = 1; i < rows(); ++i) {
         for (size_t j = 0; j < cols(); ++j) {
-            s = std::min(s, eval(i, j));
+            s = ::min(s, eval(i, j));
         }
     }
     return s;
@@ -94,11 +94,11 @@ template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE T MatrixExpression<T, Rows, Cols, D>::max() const {
     T s = eval(0, 0);
     for (size_t j = 1; j < cols(); ++j) {
-        s = std::max(s, eval(0, j));
+        s = ::max(s, eval(0, j));
     }
     for (size_t i = 1; i < rows(); ++i) {
         for (size_t j = 0; j < cols(); ++j) {
-            s = std::max(s, eval(i, j));
+            s = ::max(s, eval(i, j));
         }
     }
     return s;
