@@ -9,7 +9,7 @@
 namespace vox {
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Simple Setters/Modifiers
+#pragma region Simple Setters/Modifiers
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E>
@@ -77,8 +77,10 @@ CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::invert() {
     copyFrom(derived().inverse());
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Operator Overloadings
+#pragma region Operator Overloadings
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE typename MatrixDenseBase<T, Rows, Cols, D>::reference
@@ -102,8 +104,10 @@ CUDA_CALLABLE MatrixDenseBase<T, Rows, Cols, D> &MatrixDenseBase<T, Rows, Cols, 
     return *this;
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Builders
+#pragma region Builders
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
@@ -233,8 +237,10 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeTranslationMatrix(
     return result;
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Private Helpers
+#pragma region Private Helpers
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE constexpr size_t MatrixDenseBase<T, Rows, Cols, D>::rows() const {
@@ -289,5 +295,7 @@ template<typename T, size_t Rows, size_t Cols, typename D>
 CUDA_CALLABLE const D &MatrixDenseBase<T, Rows, Cols, D>::derived() const {
     return static_cast<const D &>(*this);
 }
+
+#pragma endregion
 
 }// namespace vox

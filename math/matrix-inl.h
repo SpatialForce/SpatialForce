@@ -147,7 +147,7 @@ struct FoldWithAnd<T, Rows, Cols, BinaryOperation, 0> {
 }// namespace internal
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix Class (Static)
+#pragma region Matrix Class (Static)
 
 template<typename T, size_t Rows, size_t Cols>
 CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const_reference value) {
@@ -273,8 +273,10 @@ operator[](size_t i) const {
     return _elements[i];
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix<T, 1, 1> (aka Vector1)
+#pragma region Matrix<T, 1, 1> (aka Vector1)
 
 template<typename T>
 template<size_t R, size_t C, typename E>
@@ -377,8 +379,10 @@ CUDA_CALLABLE constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnit(size_t) {
     return makeUnitX();
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix<T, 2, 1> (aka Vector2)
+#pragma region Matrix<T, 2, 1> (aka Vector2)
 
 template<typename T>
 template<size_t R, size_t C, typename E>
@@ -492,8 +496,9 @@ CUDA_CALLABLE constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnit(size_t i) {
     return Matrix<T, 2, 1>(i == 0, i == 1);
 }
 
+#pragma endregion
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix<T, 3, 1> (aka Vector3)
+#pragma region Matrix<T, 3, 1> (aka Vector3)
 
 template<typename T>
 template<size_t R, size_t C, typename E>
@@ -617,8 +622,10 @@ CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnit(size_t i) {
     return Matrix<T, 3, 1>(i == 0, i == 1, i == 2);
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix<T, 4, 1> (aka Vector4)
+#pragma region Matrix<T, 4, 1> (aka Vector4)
 
 template<typename T>
 template<size_t R, size_t C, typename E>
@@ -752,8 +759,10 @@ CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnit(size_t i) {
     return Matrix<T, 4, 1>(i == 0, i == 1, i == 2, i == 3);
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix Class (Dynamic)
+#pragma region Matrix Class (Dynamic)
 
 template<typename T>
 Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>::Matrix() {}
@@ -959,8 +968,10 @@ Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>::operator=(Matrix &&other) {
     return *this;
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Specialized Matrix for Dynamic Vector Type
+#pragma region Specialized Matrix for Dynamic Vector Type
 
 template<typename T>
 Matrix<T, kMatrixSizeDynamic, 1>::Matrix() {}
@@ -1130,10 +1141,12 @@ Matrix<T, kMatrixSizeDynamic, 1> &Matrix<T, kMatrixSizeDynamic, 1>::operator=(
     return *this;
 }
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: Matrix Operators
 
-// MARK: Binary Operators
+#pragma region Binary Operators
 
 // *
 
@@ -1153,7 +1166,9 @@ template<typename T, size_t Rows>
                              const Vector<T, Rows> &>{a, b.derived()};
 }
 
-// MARK: Assignment Operators
+#pragma endregion
+
+#pragma region Assignment Operators
 
 // +=
 
@@ -1236,7 +1251,9 @@ CUDA_CALLABLE void operator/=(Matrix<T, Rows, Cols> &a, const T &b) {
                                                                               b};
 }
 
-// MARK: Comparison Operators
+#pragma endregion
+
+#pragma region Comparison Operators
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
 CUDA_CALLABLE constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
@@ -1272,7 +1289,9 @@ CUDA_CALLABLE bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
     return !(a == b);
 }
 
-// MARK: Simple Utilities
+#pragma endregion
+
+#pragma region Simple Utilities
 
 // Static Accumulate
 
@@ -1349,5 +1368,7 @@ monotonicCatmullRom(const MatrixExpression<T, Rows, Cols, M1> &f0,
 
     return result;
 }
+
+#pragma endregion
 
 }// namespace vox

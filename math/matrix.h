@@ -18,7 +18,7 @@
 namespace vox {
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix Class (Static)
+#pragma region Matrix Class (Static)
 
 template<typename T, size_t Rows, size_t Cols>
 class Matrix final
@@ -89,7 +89,9 @@ private:
     T _elements[Rows * Cols];
 };
 
-// MARK: Specialized Matrix for 1, 2, 3, and 4-D Vector Types
+#pragma endregion
+
+#pragma region Specialized Matrix for 1, 2, 3, and 4-D Vector Types
 
 template<typename T>
 class Matrix<T, 1, 1> final : public MatrixExpression<T, 1, 1, Matrix<T, 1, 1>>,
@@ -392,17 +394,15 @@ public:
     CUDA_CALLABLE constexpr static Matrix makeUnit(size_t i);
 };
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Matrix Class (Dynamic)
+#pragma region Matrix Class (Dynamic)
 
 template<typename T>
 class Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic> final
-    : public MatrixExpression<
-          T, kMatrixSizeDynamic, kMatrixSizeDynamic,
-          Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>>,
-      public MatrixDenseBase<
-          T, kMatrixSizeDynamic, kMatrixSizeDynamic,
-          Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>> {
+    : public MatrixExpression<T, kMatrixSizeDynamic, kMatrixSizeDynamic, Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>>,
+      public MatrixDenseBase<T, kMatrixSizeDynamic, kMatrixSizeDynamic, Matrix<T, kMatrixSizeDynamic, kMatrixSizeDynamic>> {
 public:
     using value_type = T;
     using reference = T &;
@@ -476,7 +476,9 @@ private:
     size_t _cols = 0;
 };
 
-// MARK: Specialized Matrix for Dynamic Vector Type
+#pragma endregion
+
+#pragma region Specialized Matrix for Dynamic Vector Type
 
 template<typename T>
 class Matrix<T, kMatrixSizeDynamic, 1> final
@@ -554,8 +556,10 @@ private:
     std::vector<T> _elements;
 };
 
+#pragma endregion
+
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: Type Aliasing
+#pragma region Type Aliasing
 
 template<typename T>
 using Matrix2x2 = Matrix<T, 2, 2>;
@@ -709,10 +713,10 @@ struct GetScalarType<Matrix<T, Rows, Cols>> {
     using value = T;
 };
 
+#pragma endregion
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: Matrix Operators
-
-// MARK: Binary Operators
+#pragma region Binary Operators
 
 // *
 
@@ -726,7 +730,8 @@ template<typename T, size_t Rows>
 [[deprecated("Use elemDiv instead")]] CUDA_CALLABLE constexpr auto operator/(
     const Vector<T, Rows> &a, const Vector<T, Rows> &b);
 
-// MARK: Assignment Operators
+#pragma endregion
+#pragma region Assignment Operators
 
 // +=
 
@@ -771,7 +776,8 @@ CUDA_CALLABLE void elemIDiv(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, 
 template<typename T, size_t Rows, size_t Cols>
 CUDA_CALLABLE void operator/=(Matrix<T, Rows, Cols> &a, const T &b);
 
-// MARK: Comparison Operators
+#pragma endregion
+#pragma region Comparison Operators
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
 CUDA_CALLABLE constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
@@ -788,7 +794,8 @@ template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
 CUDA_CALLABLE bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
                               const MatrixExpression<T, R2, C2, M2> &b);
 
-// MARK: Simple Utilities
+#pragma endregion
+#pragma region Simple Utilities
 
 // Static Accumulate
 
@@ -836,7 +843,7 @@ monotonicCatmullRom(const MatrixExpression<T, Rows, Cols, M1> &f0,
                     const MatrixExpression<T, Rows, Cols, M2> &f1,
                     const MatrixExpression<T, Rows, Cols, M3> &f2,
                     const MatrixExpression<T, Rows, Cols, M4> &f3, T f);
-
+#pragma endregion
 }// namespace vox
 
 #include "matrix-inl.h"

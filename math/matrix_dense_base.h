@@ -20,7 +20,7 @@ public:
     using reference = T &;
     using const_reference = const T &;
 
-    // MARK: Simple setters/modifiers
+#pragma region Simple setters/modifiers
 
     //! Copies from generic expression.
     template<size_t R, size_t C, typename E>
@@ -47,8 +47,9 @@ public:
 
     //! Inverts this matrix.
     CUDA_CALLABLE void invert();
+#pragma endregion
 
-    // MARK: Operator Overloadings
+#pragma region Operator Overloadings
 
     CUDA_CALLABLE reference operator()(size_t i, size_t j);
 
@@ -57,9 +58,9 @@ public:
     //! Copies from generic expression
     template<size_t R, size_t C, typename E>
     CUDA_CALLABLE MatrixDenseBase &operator=(const MatrixExpression<T, R, C, E> &expression);
+#pragma endregion
 
-    // MARK: Builders
-
+#pragma region Builders
     //! Makes a static matrix with zero entries.
     template<typename D = Derived>
     CUDA_CALLABLE static std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), D> makeZero();
@@ -102,8 +103,7 @@ public:
     //! Makes rotation matrix.
     //! \warning Input angle should be radian.
     template<typename D = Derived>
-    CUDA_CALLABLE static std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 2),
-                                          D>
+    CUDA_CALLABLE static std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 2), D>
     makeRotationMatrix(T rad);
 
     //! Makes rotation matrix.
@@ -115,16 +115,14 @@ public:
 
     //! Makes translation matrix.
     template<size_t R, size_t C, typename E, typename D = Derived>
-    CUDA_CALLABLE static std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 4),
-                                          D>
+    CUDA_CALLABLE static std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 4), D>
     makeTranslationMatrix(const MatrixExpression<T, R, C, E> &t);
-
+#pragma endregion
 protected:
     MatrixDenseBase() = default;
 
 private:
-    // MARK: Private Helpers
-
+#pragma region Private Helpers
     CUDA_CALLABLE constexpr size_t rows() const;
 
     CUDA_CALLABLE constexpr size_t cols() const;
@@ -144,6 +142,7 @@ private:
     CUDA_CALLABLE Derived &derived();
 
     CUDA_CALLABLE const Derived &derived() const;
+#pragma endregion
 };
 
 }// namespace vox
