@@ -13,6 +13,7 @@ set(RUNTIME_TESTS
 )
 
 set(FIELDS_TESTS
+        fields/compile_tests.cu
         fields/volume_integrator_tests.cu
 )
 

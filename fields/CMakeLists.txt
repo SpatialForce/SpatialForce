@@ -16,7 +16,6 @@ set(COMMON_FILES
         templates/triangle.h
         templates/tetrahedron.h
         mesh.h
-        tmp.cu
 )
 
 set(HOST_FILES

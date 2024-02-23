@@ -9,6 +9,7 @@ project(SpatialForce C CXX CUDA)
 
 set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CUDA_ARCHITECTURES 89)
 
 find_package(CUDAToolkit)
 

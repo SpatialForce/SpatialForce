@@ -1,3 +1,10 @@
+//  Copyright (c) 2023 Feng Yang
+//
+//  I am making my contributions/submissions to this project solely in my
+//  personal capacity and am not conveying any rights to any intellectual
+//  property of any third parties.
+
+#include <gtest/gtest.h>
 #include "geometry.h"
 #include "mesh.h"
 #include "template_geometry.h"
@@ -8,10 +15,11 @@
 #include "host/poly_info_3d_host.h"
 #include "host/grid_system_data_host.h"
 #include <iostream>
-#include "grid.h"
 
-namespace vox::fields {
-void test() {
+using namespace vox::fields;
+using namespace vox;
+
+TEST(CompileTests, test1) {
     for (auto &pnt : template_geometry_t<Interval, 6>::quadrature_info().pnts.data) {
         std::cout << pnt[0] << std::endl;
     }
@@ -43,7 +51,7 @@ void test() {
     grid_system_data_t<Interval, 1, 1> system_data;
 }
 
-void test2() {
+TEST(CompileTests, test2) {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
         CUDA_CALLABLE float operator()(vec_t<float, 1> pt) {
@@ -56,7 +64,7 @@ void test2() {
     integrator(0, functor);
 }
 
-void test3() {
+TEST(CompileTests, test3) {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
         CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
@@ -69,7 +77,7 @@ void test3() {
     integrator(0, functor);
 }
 
-void test4() {
+TEST(CompileTests, test4) {
     struct IntegratorFunctor {
         using RETURN_TYPE = float;
         CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
@@ -81,5 +89,3 @@ void test4() {
     IntegratorFunctor functor;
     integrator(0, functor);
 }
-
-}// namespace vox::fields
