@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <limits>
+#include "core/define.h"
 
 namespace vox {
 
@@ -21,19 +22,19 @@ constexpr ssize_t kZeroSSize = 0;
 
 //! Zero for type T.
 template<typename T>
-constexpr T zero() {
+CUDA_CALLABLE constexpr T zero() {
     return 0;
 }
 
 //! Zero for float.
 template<>
-constexpr float zero<float>() {
+CUDA_CALLABLE constexpr float zero<float>() {
     return 0.f;
 }
 
 //! Zero for double.
 template<>
-constexpr double zero<double>() {
+CUDA_CALLABLE constexpr double zero<double>() {
     return 0.0;
 }
 
@@ -47,19 +48,19 @@ constexpr double kOneThirdD = 1.0 / 3.0;
 
 //! 1/3 for type T
 template<typename T>
-constexpr T oneThird() {
+CUDA_CALLABLE constexpr T oneThird() {
     return static_cast<T>(kOneThirdD);
 }
 
 //! 1/3 for float
 template<>
-constexpr float oneThird<float>() {
+CUDA_CALLABLE constexpr float oneThird<float>() {
     return kOneThirdF;
 }
 
 //! 1/3 for double
 template<>
-constexpr double oneThird<double>() {
+CUDA_CALLABLE constexpr double oneThird<double>() {
     return kOneThirdD;
 }
 
@@ -73,19 +74,19 @@ constexpr double kHalfD = 0.5;
 
 //! 1/2 for type T
 template<typename T>
-constexpr T half() {
+CUDA_CALLABLE constexpr T half() {
     return static_cast<T>(kHalfD);
 }
 
 //! 1/2 for float
 template<>
-constexpr float half<float>() {
+CUDA_CALLABLE constexpr float half<float>() {
     return kHalfF;
 }
 
 //! 1/2 for double
 template<>
-constexpr double half<double>() {
+CUDA_CALLABLE constexpr double half<double>() {
     return kHalfD;
 }
 
@@ -99,19 +100,19 @@ constexpr ssize_t kOneSSize = 1;
 
 //! One for type T.
 template<typename T>
-constexpr T one() {
+CUDA_CALLABLE constexpr T one() {
     return 1;
 }
 
 //! One for float.
 template<>
-constexpr float one<float>() {
+CUDA_CALLABLE constexpr float one<float>() {
     return 1.f;
 }
 
 //! One for double.
 template<>
-constexpr double one<double>() {
+CUDA_CALLABLE constexpr double one<double>() {
     return 1.0;
 }
 
@@ -119,19 +120,19 @@ constexpr double one<double>() {
 
 //! 1.5 for type T.
 template<typename T>
-constexpr T oneAndHalf() {
+CUDA_CALLABLE constexpr T oneAndHalf() {
     return static_cast<T>(1.5);
 }
 
 //! 1.5 for float.
 template<>
-constexpr float oneAndHalf<float>() {
+CUDA_CALLABLE constexpr float oneAndHalf<float>() {
     return 1.5f;
 }
 
 //! 1.5 for double.
 template<>
-constexpr double oneAndHalf<double>() {
+CUDA_CALLABLE constexpr double oneAndHalf<double>() {
     return 1.5;
 }
 
@@ -145,19 +146,19 @@ constexpr ssize_t kTwoSSize = 2;
 
 //! Two for type T.
 template<typename T>
-constexpr T two() {
+CUDA_CALLABLE constexpr T two() {
     return 2;
 }
 
 //! Two for float.
 template<>
-constexpr float two<float>() {
+CUDA_CALLABLE constexpr float two<float>() {
     return 2.f;
 }
 
 //! Two for double.
 template<>
-constexpr double two<double>() {
+CUDA_CALLABLE constexpr double two<double>() {
     return 2.0;
 }
 
@@ -193,19 +194,19 @@ constexpr double kPiD = 3.14159265358979323846264338327950288;
 
 //! Pi for type T.
 template<typename T>
-constexpr T pi() {
+CUDA_CALLABLE constexpr T pi() {
     return static_cast<T>(kPiD);
 }
 
 //! Pi for float.
 template<>
-constexpr float pi<float>() {
+CUDA_CALLABLE constexpr float pi<float>() {
     return kPiF;
 }
 
 //! Pi for double.
 template<>
-constexpr double pi<double>() {
+CUDA_CALLABLE constexpr double pi<double>() {
     return kPiD;
 }
 
@@ -219,19 +220,19 @@ constexpr double kHalfPiD = 1.57079632679489661923132169163975144;
 
 //! Pi/2 for type T.
 template<typename T>
-constexpr T halfPi() {
+CUDA_CALLABLE constexpr T halfPi() {
     return static_cast<T>(kHalfPiD);
 }
 
 //! Pi/2 for float.
 template<>
-constexpr float halfPi<float>() {
+CUDA_CALLABLE constexpr float halfPi<float>() {
     return kHalfPiF;
 }
 
 //! Pi/2 for double.
 template<>
-constexpr double halfPi<double>() {
+CUDA_CALLABLE constexpr double halfPi<double>() {
     return kHalfPiD;
 }
 
@@ -245,19 +246,19 @@ constexpr double kQuarterPiD = 0.785398163397448309615660845819875721;
 
 //! Pi/4 for type T.
 template<typename T>
-constexpr T quarterPi() {
+CUDA_CALLABLE constexpr T quarterPi() {
     return static_cast<T>(kQuarterPiD);
 }
 
 //! Pi/2 for float.
 template<>
-constexpr float quarterPi<float>() {
+CUDA_CALLABLE constexpr float quarterPi<float>() {
     return kQuarterPiF;
 }
 
 //! Pi/2 for double.
 template<>
-constexpr double quarterPi<double>() {
+CUDA_CALLABLE constexpr double quarterPi<double>() {
     return kQuarterPiD;
 }
 
@@ -271,19 +272,19 @@ constexpr double kTwoPiD = 2.0 * kPiD;
 
 //! 2*pi for type T.
 template<typename T>
-constexpr T twoPi() {
+CUDA_CALLABLE constexpr T twoPi() {
     return static_cast<T>(kTwoPiD);
 }
 
 //! 2*pi for float.
 template<>
-constexpr float twoPi<float>() {
+CUDA_CALLABLE constexpr float twoPi<float>() {
     return kTwoPiF;
 }
 
 //! 2*pi for double.
 template<>
-constexpr double twoPi<double>() {
+CUDA_CALLABLE constexpr double twoPi<double>() {
     return kTwoPiD;
 }
 
@@ -297,19 +298,19 @@ constexpr double kFourPiD = 4.0 * kPiD;
 
 //! 4*pi for type T.
 template<typename T>
-constexpr T fourPi() {
+CUDA_CALLABLE constexpr T fourPi() {
     return static_cast<T>(kFourPiD);
 }
 
 //! 4*pi for float.
 template<>
-constexpr float fourPi<float>() {
+CUDA_CALLABLE constexpr float fourPi<float>() {
     return kFourPiF;
 }
 
 //! 4*pi for double.
 template<>
-constexpr double fourPi<double>() {
+CUDA_CALLABLE constexpr double fourPi<double>() {
     return kFourPiD;
 }
 
@@ -323,19 +324,19 @@ constexpr double kInvPiD = 1.0 / kPiD;
 
 //! 1/pi for type T.
 template<typename T>
-constexpr T invPi() {
+CUDA_CALLABLE constexpr T invPi() {
     return static_cast<T>(kInvPiD);
 }
 
 //! 1/pi for float.
 template<>
-constexpr float invPi<float>() {
+CUDA_CALLABLE constexpr float invPi<float>() {
     return kInvPiF;
 }
 
 //! 1/pi for double.
 template<>
-constexpr double invPi<double>() {
+CUDA_CALLABLE constexpr double invPi<double>() {
     return kInvPiD;
 }
 
@@ -349,19 +350,19 @@ constexpr double kInvTwoPiD = 0.5 / kPiD;
 
 //! 1/2*pi for type T.
 template<typename T>
-constexpr T invTwoPi() {
+CUDA_CALLABLE constexpr T invTwoPi() {
     return static_cast<T>(kInvTwoPiD);
 }
 
 //! 1/2*pi for float.
 template<>
-constexpr float invTwoPi<float>() {
+CUDA_CALLABLE constexpr float invTwoPi<float>() {
     return kInvTwoPiF;
 }
 
 //! 1/2*pi for double.
 template<>
-constexpr double invTwoPi<double>() {
+CUDA_CALLABLE constexpr double invTwoPi<double>() {
     return kInvTwoPiD;
 }
 
@@ -375,19 +376,19 @@ constexpr double kInvFourPiD = 0.25 / kPiD;
 
 //! 1/4*pi for type T.
 template<typename T>
-constexpr T invFourPi() {
+CUDA_CALLABLE constexpr T invFourPi() {
     return static_cast<T>(kInvFourPiD);
 }
 
 //! 1/4*pi for float.
 template<>
-constexpr float invFourPi<float>() {
+CUDA_CALLABLE constexpr float invFourPi<float>() {
     return kInvFourPiF;
 }
 
 //! 1/4*pi for double.
 template<>
-constexpr double invFourPi<double>() {
+CUDA_CALLABLE constexpr double invFourPi<double>() {
     return kInvFourPiD;
 }
 

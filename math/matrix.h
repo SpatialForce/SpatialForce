@@ -108,56 +108,56 @@ public:
 
     value_type x;
 
-    constexpr Matrix() : x(T{}) {}
+    CUDA_CALLABLE constexpr Matrix() : x(T{}) {}
 
-    constexpr Matrix(const T &x_) : x(x_) {}
+    CUDA_CALLABLE constexpr Matrix(const T &x_) : x(x_) {}
 
-    constexpr Matrix(const Matrix &other) : x(other.x) {}
+    CUDA_CALLABLE constexpr Matrix(const Matrix &other) : x(other.x) {}
 
     template<size_t R, size_t C, typename E>
-    Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
-    void fill(const T &val);
+    CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
 
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
 
-    void swap(Matrix &other);
+    CUDA_CALLABLE void swap(Matrix &other);
 
     // Simple getters
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    iterator begin();
+    CUDA_CALLABLE iterator begin();
 
-    constexpr const_iterator begin() const;
+    CUDA_CALLABLE constexpr const_iterator begin() const;
 
-    iterator end();
+    CUDA_CALLABLE iterator end();
 
-    constexpr const_iterator end() const;
+    CUDA_CALLABLE constexpr const_iterator end() const;
 
-    pointer data();
+    CUDA_CALLABLE pointer data();
 
-    constexpr const_pointer data() const;
+    CUDA_CALLABLE constexpr const_pointer data() const;
 
     // Operator overloadings
 
-    reference operator[](size_t i);
+    CUDA_CALLABLE reference operator[](size_t i);
 
-    const_reference operator[](size_t i) const;
+    CUDA_CALLABLE const_reference operator[](size_t i) const;
 
     // Builders
 
-    constexpr static Matrix makeUnitX();
+    CUDA_CALLABLE constexpr static Matrix makeUnitX();
 
-    constexpr static Matrix makeUnit(size_t i);
+    CUDA_CALLABLE constexpr static Matrix makeUnit(size_t i);
 };
 
 template<typename T>
@@ -178,58 +178,58 @@ public:
     value_type x;
     value_type y;
 
-    constexpr Matrix() : x(T{}), y(T{}) {}
+    CUDA_CALLABLE constexpr Matrix() : x(T{}), y(T{}) {}
 
-    constexpr Matrix(const T &x_, const T &y_) : x(x_), y(y_) {}
+    CUDA_CALLABLE constexpr Matrix(const T &x_, const T &y_) : x(x_), y(y_) {}
 
-    constexpr Matrix(const Matrix &other) : x(other.x), y(other.y) {}
+    CUDA_CALLABLE constexpr Matrix(const Matrix &other) : x(other.x), y(other.y) {}
 
     template<size_t R, size_t C, typename E>
-    Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
-    void fill(const T &val);
+    CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
 
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
 
-    void swap(Matrix &other);
+    CUDA_CALLABLE void swap(Matrix &other);
 
     // Simple getters
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    iterator begin();
+    CUDA_CALLABLE iterator begin();
 
-    constexpr const_iterator begin() const;
+    CUDA_CALLABLE constexpr const_iterator begin() const;
 
-    iterator end();
+    CUDA_CALLABLE iterator end();
 
-    constexpr const_iterator end() const;
+    CUDA_CALLABLE constexpr const_iterator end() const;
 
-    pointer data();
+    CUDA_CALLABLE pointer data();
 
-    constexpr const_pointer data() const;
+    CUDA_CALLABLE constexpr const_pointer data() const;
 
     // Operator overloadings
 
-    reference operator[](size_t i);
+    CUDA_CALLABLE reference operator[](size_t i);
 
-    const_reference operator[](size_t i) const;
+    CUDA_CALLABLE const_reference operator[](size_t i) const;
 
     // Builders
 
-    constexpr static Matrix makeUnitX();
+    CUDA_CALLABLE constexpr static Matrix makeUnitX();
 
-    constexpr static Matrix makeUnitY();
+    CUDA_CALLABLE constexpr static Matrix makeUnitY();
 
-    constexpr static Matrix makeUnit(size_t i);
+    CUDA_CALLABLE constexpr static Matrix makeUnit(size_t i);
 };
 
 template<typename T>
@@ -251,65 +251,65 @@ public:
     value_type y;
     value_type z;
 
-    constexpr Matrix() : x(T{}), y(T{}), z(T{}) {}
+    CUDA_CALLABLE constexpr Matrix() : x(T{}), y(T{}), z(T{}) {}
 
-    constexpr Matrix(const Matrix<T, 2, 1> &xy_, const T &z_)
+    CUDA_CALLABLE constexpr Matrix(const Matrix<T, 2, 1> &xy_, const T &z_)
         : x(xy_.x), y(xy_.y), z(z_) {}
 
-    constexpr Matrix(const T &x_, const T &y_, const T &z_)
+    CUDA_CALLABLE constexpr Matrix(const T &x_, const T &y_, const T &z_)
         : x(x_), y(y_), z(z_) {}
 
-    constexpr Matrix(const Matrix &other)
+    CUDA_CALLABLE constexpr Matrix(const Matrix &other)
         : x(other.x), y(other.y), z(other.z) {}
 
     template<size_t R, size_t C, typename E>
-    Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
-    void fill(const T &val);
+    CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
 
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
 
-    void swap(Matrix &other);
+    CUDA_CALLABLE void swap(Matrix &other);
 
     // Simple getters
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    iterator begin();
+    CUDA_CALLABLE iterator begin();
 
-    constexpr const_iterator begin() const;
+    CUDA_CALLABLE constexpr const_iterator begin() const;
 
-    iterator end();
+    CUDA_CALLABLE iterator end();
 
-    constexpr const_iterator end() const;
+    CUDA_CALLABLE constexpr const_iterator end() const;
 
-    pointer data();
+    CUDA_CALLABLE pointer data();
 
-    constexpr const_pointer data() const;
+    CUDA_CALLABLE constexpr const_pointer data() const;
 
     // Operator overloadings
 
-    reference operator[](size_t i);
+    CUDA_CALLABLE reference operator[](size_t i);
 
-    const_reference operator[](size_t i) const;
+    CUDA_CALLABLE const_reference operator[](size_t i) const;
 
     // Builders
 
-    constexpr static Matrix makeUnitX();
+    CUDA_CALLABLE constexpr static Matrix makeUnitX();
 
-    constexpr static Matrix makeUnitY();
+    CUDA_CALLABLE constexpr static Matrix makeUnitY();
 
-    constexpr static Matrix makeUnitZ();
+    CUDA_CALLABLE constexpr static Matrix makeUnitZ();
 
-    constexpr static Matrix makeUnit(size_t i);
+    CUDA_CALLABLE constexpr static Matrix makeUnit(size_t i);
 };
 
 template<typename T>
@@ -332,64 +332,64 @@ public:
     value_type z;
     value_type w;
 
-    constexpr Matrix() : x(T{}), y(T{}), z(T{}), w(T{}) {}
+    CUDA_CALLABLE constexpr Matrix() : x(T{}), y(T{}), z(T{}), w(T{}) {}
 
-    constexpr Matrix(const T &x_, const T &y_, const T &z_, const T &w_)
+    CUDA_CALLABLE constexpr Matrix(const T &x_, const T &y_, const T &z_, const T &w_)
         : x(x_), y(y_), z(z_), w(w_) {}
 
-    constexpr Matrix(const Matrix &other)
+    CUDA_CALLABLE constexpr Matrix(const Matrix &other)
         : x(other.x), y(other.y), z(other.z), w(other.w) {}
 
     template<size_t R, size_t C, typename E>
-    Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
-    void fill(const T &val);
+    CUDA_CALLABLE void fill(const T &val);
 
-    void fill(const std::function<T(size_t i)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i)> &func);
 
-    void fill(const std::function<T(size_t i, size_t j)> &func);
+    CUDA_CALLABLE void fill(const std::function<T(size_t i, size_t j)> &func);
 
-    void swap(Matrix &other);
+    CUDA_CALLABLE void swap(Matrix &other);
 
     // Simple getters
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    iterator begin();
+    CUDA_CALLABLE iterator begin();
 
-    constexpr const_iterator begin() const;
+    CUDA_CALLABLE constexpr const_iterator begin() const;
 
-    iterator end();
+    CUDA_CALLABLE iterator end();
 
-    constexpr const_iterator end() const;
+    CUDA_CALLABLE constexpr const_iterator end() const;
 
-    pointer data();
+    CUDA_CALLABLE pointer data();
 
-    constexpr const_pointer data() const;
+    CUDA_CALLABLE constexpr const_pointer data() const;
 
     // Operator overloadings
 
-    reference operator[](size_t i);
+    CUDA_CALLABLE reference operator[](size_t i);
 
-    const_reference operator[](size_t i) const;
+    CUDA_CALLABLE const_reference operator[](size_t i) const;
 
     // Builders
 
-    constexpr static Matrix makeUnitX();
+    CUDA_CALLABLE constexpr static Matrix makeUnitX();
 
-    constexpr static Matrix makeUnitY();
+    CUDA_CALLABLE constexpr static Matrix makeUnitY();
 
-    constexpr static Matrix makeUnitZ();
+    CUDA_CALLABLE constexpr static Matrix makeUnitZ();
 
-    constexpr static Matrix makeUnitW();
+    CUDA_CALLABLE constexpr static Matrix makeUnitW();
 
-    constexpr static Matrix makeUnit(size_t i);
+    CUDA_CALLABLE constexpr static Matrix makeUnit(size_t i);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -717,13 +717,13 @@ struct GetScalarType<Matrix<T, Rows, Cols>> {
 // *
 
 template<typename T, size_t Rows>
-[[deprecated("Use elemMul instead")]] constexpr auto operator*(
+[[deprecated("Use elemMul instead")]] CUDA_CALLABLE constexpr auto operator*(
     const Vector<T, Rows> &a, const Vector<T, Rows> &b);
 
 // /
 
 template<typename T, size_t Rows>
-[[deprecated("Use elemDiv instead")]] constexpr auto operator/(
+[[deprecated("Use elemDiv instead")]] CUDA_CALLABLE constexpr auto operator/(
     const Vector<T, Rows> &a, const Vector<T, Rows> &b);
 
 // MARK: Assignment Operators
@@ -731,62 +731,62 @@ template<typename T, size_t Rows>
 // +=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator+=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE void operator+=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols>
-void operator+=(Matrix<T, Rows, Cols> &a, const T &b);
+CUDA_CALLABLE void operator+=(Matrix<T, Rows, Cols> &a, const T &b);
 
 // -=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator-=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE void operator-=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols>
-void operator-=(Matrix<T, Rows, Cols> &a, const T &b);
+CUDA_CALLABLE void operator-=(Matrix<T, Rows, Cols> &a, const T &b);
 
 // *=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator*=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE void operator*=(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t R1, size_t R2, size_t C2, typename M2>
-[[deprecated("Use elemIMul instead")]] void operator*=(
+[[deprecated("Use elemIMul instead")]] CUDA_CALLABLE void operator*=(
     Matrix<T, R1, 1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void elemIMul(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE void elemIMul(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols>
-void operator*=(Matrix<T, Rows, Cols> &a, const T &b);
+CUDA_CALLABLE void operator*=(Matrix<T, Rows, Cols> &a, const T &b);
 
 // /=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-[[deprecated("Use elemIDiv instead")]] void operator/=(
+[[deprecated("Use elemIDiv instead")]] CUDA_CALLABLE void operator/=(
     Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void elemIDiv(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE void elemIDiv(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols>
-void operator/=(Matrix<T, Rows, Cols> &a, const T &b);
+CUDA_CALLABLE void operator/=(Matrix<T, Rows, Cols> &a, const T &b);
 
 // MARK: Comparison Operators
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
+CUDA_CALLABLE constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
     const MatrixExpression<T, Rows, Cols, M1> &a,
     const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
          typename M2>
-bool operator==(const MatrixExpression<T, R1, C1, M1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE bool operator==(const MatrixExpression<T, R1, C1, M1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b);
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
          typename M2>
-bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b);
 
 // MARK: Simple Utilities
 
@@ -794,44 +794,44 @@ bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
 
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename BinaryOperation>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a, const T &init,
     BinaryOperation op);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a, const T &init);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a);
 
 // Dynamic Accumulate
 
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename BinaryOperation>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init,
            BinaryOperation op);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a);
 
 // Product
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr T product(const MatrixExpression<T, Rows, Cols, M1> &a,
-                    const T &init);
+CUDA_CALLABLE constexpr T product(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                  const T &init);
 
 // Interpolation
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2,
          typename M3, typename M4>
-std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), Matrix<T, Rows, Cols>>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), Matrix<T, Rows, Cols>>
 monotonicCatmullRom(const MatrixExpression<T, Rows, Cols, M1> &f0,
                     const MatrixExpression<T, Rows, Cols, M2> &f1,
                     const MatrixExpression<T, Rows, Cols, M3> &f2,

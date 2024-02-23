@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "matrix.h"
-
 #include <cmath>
 #include <cassert>
 
@@ -20,14 +18,14 @@ namespace internal {
 // TODO: With C++17, fold expression could be used instead.
 template<typename M1, typename M2, size_t J>
 struct DotProduct {
-    constexpr static auto call(const M1 &a, const M2 &b, size_t i, size_t j) {
+    CUDA_CALLABLE constexpr static auto call(const M1 &a, const M2 &b, size_t i, size_t j) {
         return DotProduct<M1, M2, J - 1>::call(a, b, i, j) + a(i, J) * b(J, j);
     }
 };
 
 template<typename M1, typename M2>
 struct DotProduct<M1, M2, 0> {
-    constexpr static auto call(const M1 &a, const M2 &b, size_t i, size_t j) {
+    CUDA_CALLABLE constexpr static auto call(const M1 &a, const M2 &b, size_t i, size_t j) {
         return a(i, 0) * b(0, j);
     }
 };
@@ -38,7 +36,7 @@ template<typename T, size_t Rows, size_t Cols, typename ReduceOperation,
 struct Reduce {
     // For vector-like Matrix
     template<typename U = T>
-    constexpr static std::enable_if_t<(Cols == 1), U> call(
+    CUDA_CALLABLE constexpr static std::enable_if_t<(Cols == 1), U> call(
         const Matrix<T, Rows, 1> &a, const T &init, ReduceOperation op,
         UnaryOperation uop) {
         return op(
@@ -49,7 +47,7 @@ struct Reduce {
 
     // For vector-like Matrix with zero init
     template<typename U = T>
-    constexpr static std::enable_if_t<(Cols == 1), U> call(
+    CUDA_CALLABLE constexpr static std::enable_if_t<(Cols == 1), U> call(
         const Matrix<T, Rows, 1> &a, ReduceOperation op, UnaryOperation uop) {
         return op(
             Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, I - 1>::call(
@@ -58,8 +56,8 @@ struct Reduce {
     }
 
     // For Matrix
-    constexpr static T call(const Matrix<T, Rows, Cols> &a, const T &init,
-                            ReduceOperation op, UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T call(const Matrix<T, Rows, Cols> &a, const T &init,
+                                          ReduceOperation op, UnaryOperation uop) {
         return op(
             Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, I - 1>::call(
                 a, init, op, uop),
@@ -67,8 +65,8 @@ struct Reduce {
     }
 
     // For Matrix with zero init
-    constexpr static T call(const Matrix<T, Rows, Cols> &a, ReduceOperation op,
-                            UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T call(const Matrix<T, Rows, Cols> &a, ReduceOperation op,
+                                          UnaryOperation uop) {
         return op(
             Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, I - 1>::call(
                 a, op, uop),
@@ -76,8 +74,8 @@ struct Reduce {
     }
 
     // For diagonal elements on Matrix
-    constexpr static T callDiag(const Matrix<T, Rows, Cols> &a, const T &init,
-                                ReduceOperation op, UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T callDiag(const Matrix<T, Rows, Cols> &a, const T &init,
+                                              ReduceOperation op, UnaryOperation uop) {
         return op(Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation,
                          I - 1>::callDiag(a, init, op, uop),
                   uop(a(I, I)));
@@ -89,7 +87,7 @@ template<typename T, size_t Rows, size_t Cols, typename ReduceOperation,
 struct Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, 0> {
     // For vector-like Matrix
     template<typename U = T>
-    constexpr static std::enable_if_t<(Cols > 1), U> call(
+    CUDA_CALLABLE constexpr static std::enable_if_t<(Cols > 1), U> call(
         const Matrix<T, Rows, 1> &a, const T &init, ReduceOperation op,
         UnaryOperation uop) {
         return op(uop(a(0, 0)), init);
@@ -97,26 +95,26 @@ struct Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, 0> {
 
     // For vector-like Matrix with zero init
     template<typename U = T>
-    constexpr static std::enable_if_t<(Cols == 1), U> call(
+    CUDA_CALLABLE constexpr static std::enable_if_t<(Cols == 1), U> call(
         const Matrix<T, Rows, 1> &a, ReduceOperation op, UnaryOperation uop) {
         return uop(a(0, 0));
     }
 
     // For Matrix
-    constexpr static T call(const Matrix<T, Rows, Cols> &a, const T &init,
-                            ReduceOperation op, UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T call(const Matrix<T, Rows, Cols> &a, const T &init,
+                                          ReduceOperation op, UnaryOperation uop) {
         return op(uop(a[0]), init);
     }
 
     // For MatrixBase with zero init
-    constexpr static T call(const Matrix<T, Rows, Cols> &a, ReduceOperation op,
-                            UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T call(const Matrix<T, Rows, Cols> &a, ReduceOperation op,
+                                          UnaryOperation uop) {
         return uop(a[0]);
     }
 
     // For diagonal elements on MatrixBase
-    constexpr static T callDiag(const Matrix<T, Rows, Cols> &a, const T &init,
-                                ReduceOperation op, UnaryOperation uop) {
+    CUDA_CALLABLE constexpr static T callDiag(const Matrix<T, Rows, Cols> &a, const T &init,
+                                              ReduceOperation op, UnaryOperation uop) {
         return op(uop(a(0, 0)), init);
     }
 };
@@ -128,9 +126,9 @@ struct Reduce<T, Rows, Cols, ReduceOperation, UnaryOperation, 0> {
 template<typename T, size_t Rows, size_t Cols, typename BinaryOperation,
          size_t I>
 struct FoldWithAnd {
-    constexpr static bool call(const Matrix<T, Rows, Cols> &a,
-                               const Matrix<T, Rows, Cols> &b,
-                               BinaryOperation op) {
+    CUDA_CALLABLE constexpr static bool call(const Matrix<T, Rows, Cols> &a,
+                                             const Matrix<T, Rows, Cols> &b,
+                                             BinaryOperation op) {
         return FoldWithAnd<T, Rows, Cols, BinaryOperation, I - 1>::call(a, b,
                                                                         op) &&
                op(a[I], b[I]);
@@ -139,9 +137,9 @@ struct FoldWithAnd {
 
 template<typename T, size_t Rows, size_t Cols, typename BinaryOperation>
 struct FoldWithAnd<T, Rows, Cols, BinaryOperation, 0> {
-    constexpr static bool call(const Matrix<T, Rows, Cols> &a,
-                               const Matrix<T, Rows, Cols> &b,
-                               BinaryOperation op) {
+    CUDA_CALLABLE constexpr static bool call(const Matrix<T, Rows, Cols> &a,
+                                             const Matrix<T, Rows, Cols> &b,
+                                             BinaryOperation op) {
         return op(a[0], b[0]);
     }
 };
@@ -159,7 +157,7 @@ Matrix<T, Rows, Cols>::Matrix(const_reference value) {
 template<typename T, size_t Rows, size_t Cols>
 template<size_t R, size_t C, typename E>
 Matrix<T, Rows, Cols>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.rows() == Rows && expression.cols() == Cols);
+    assert(expression.rows() == Rows && expression.cols() == Cols);
 
     copyFrom(expression);
 }
@@ -278,102 +276,102 @@ operator[](size_t i) const {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-Matrix<T, 1, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.rows() == 1 && expression.cols() == 1);
+CUDA_CALLABLE Matrix<T, 1, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+    assert(expression.rows() == 1 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
 }
 
 template<typename T>
-Matrix<T, 1, 1>::Matrix(const std::initializer_list<T> &lst) {
-    JET_ASSERT(lst.size() > 0);
+CUDA_CALLABLE Matrix<T, 1, 1>::Matrix(const std::initializer_list<T> &lst) {
+    assert(lst.size() > 0);
 
     x = *lst.begin();
 }
 
 template<typename T>
-void Matrix<T, 1, 1>::fill(const T &val) {
+CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const T &val) {
     x = val;
 }
 
 template<typename T>
-void Matrix<T, 1, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
 }
 
 template<typename T>
-void Matrix<T, 1, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+CUDA_CALLABLE void Matrix<T, 1, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
 }
 
 template<typename T>
-void Matrix<T, 1, 1>::swap(Matrix &other) {
+CUDA_CALLABLE void Matrix<T, 1, 1>::swap(Matrix &other) {
     std::swap(x, other.x);
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 1, 1>::rows() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 1, 1>::rows() const {
     return 1;
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 1, 1>::cols() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 1, 1>::cols() const {
     return 1;
 }
 
 template<typename T>
-typename Matrix<T, 1, 1>::iterator Matrix<T, 1, 1>::begin() {
+CUDA_CALLABLE typename Matrix<T, 1, 1>::iterator Matrix<T, 1, 1>::begin() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 1, 1>::const_iterator Matrix<T, 1, 1>::begin()
+CUDA_CALLABLE constexpr typename Matrix<T, 1, 1>::const_iterator Matrix<T, 1, 1>::begin()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 1, 1>::iterator Matrix<T, 1, 1>::end() {
+CUDA_CALLABLE typename Matrix<T, 1, 1>::iterator Matrix<T, 1, 1>::end() {
     return begin() + 1;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 1, 1>::const_iterator Matrix<T, 1, 1>::end()
+CUDA_CALLABLE constexpr typename Matrix<T, 1, 1>::const_iterator Matrix<T, 1, 1>::end()
     const {
     return begin() + 1;
 }
 
 template<typename T>
-typename Matrix<T, 1, 1>::pointer Matrix<T, 1, 1>::data() {
+CUDA_CALLABLE typename Matrix<T, 1, 1>::pointer Matrix<T, 1, 1>::data() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 1, 1>::const_pointer Matrix<T, 1, 1>::data()
+CUDA_CALLABLE constexpr typename Matrix<T, 1, 1>::const_pointer Matrix<T, 1, 1>::data()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 1, 1>::reference Matrix<T, 1, 1>::operator[](size_t i) {
+CUDA_CALLABLE typename Matrix<T, 1, 1>::reference Matrix<T, 1, 1>::operator[](size_t i) {
     assert(i < 1);
     return (&x)[i];
 }
 
 template<typename T>
-typename Matrix<T, 1, 1>::const_reference Matrix<T, 1, 1>::operator[](
+CUDA_CALLABLE typename Matrix<T, 1, 1>::const_reference Matrix<T, 1, 1>::operator[](
     size_t i) const {
     assert(i < 1);
     return (&x)[i];
 }
 
 template<typename T>
-constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnitX() {
+CUDA_CALLABLE constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnitX() {
     return Matrix<T, 1, 1>(1);
 }
 
 template<typename T>
-constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnit(size_t) {
+CUDA_CALLABLE constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnit(size_t) {
     return makeUnitX();
 }
 
@@ -382,16 +380,16 @@ constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnit(size_t) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-Matrix<T, 2, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.rows() == 2 && expression.cols() == 1);
+CUDA_CALLABLE Matrix<T, 2, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+    assert(expression.rows() == 2 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
     y = expression.eval(1, 0);
 }
 
 template<typename T>
-Matrix<T, 2, 1>::Matrix(const std::initializer_list<T> &lst) {
-    JET_ASSERT(lst.size() > 1);
+CUDA_CALLABLE Matrix<T, 2, 1>::Matrix(const std::initializer_list<T> &lst) {
+    assert(lst.size() > 1);
 
     auto iter = lst.begin();
     x = *(iter++);
@@ -399,96 +397,96 @@ Matrix<T, 2, 1>::Matrix(const std::initializer_list<T> &lst) {
 }
 
 template<typename T>
-void Matrix<T, 2, 1>::fill(const T &val) {
+CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const T &val) {
     x = y = val;
 }
 
 template<typename T>
-void Matrix<T, 2, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
 }
 
 template<typename T>
-void Matrix<T, 2, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+CUDA_CALLABLE void Matrix<T, 2, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
 }
 
 template<typename T>
-void Matrix<T, 2, 1>::swap(Matrix &other) {
+CUDA_CALLABLE void Matrix<T, 2, 1>::swap(Matrix &other) {
     std::swap(x, other.x);
     std::swap(y, other.y);
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 2, 1>::rows() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 2, 1>::rows() const {
     return 2;
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 2, 1>::cols() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 2, 1>::cols() const {
     return 1;
 }
 
 template<typename T>
-typename Matrix<T, 2, 1>::iterator Matrix<T, 2, 1>::begin() {
+CUDA_CALLABLE typename Matrix<T, 2, 1>::iterator Matrix<T, 2, 1>::begin() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 2, 1>::const_iterator Matrix<T, 2, 1>::begin()
+CUDA_CALLABLE constexpr typename Matrix<T, 2, 1>::const_iterator Matrix<T, 2, 1>::begin()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 2, 1>::iterator Matrix<T, 2, 1>::end() {
+CUDA_CALLABLE typename Matrix<T, 2, 1>::iterator Matrix<T, 2, 1>::end() {
     return begin() + 2;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 2, 1>::const_iterator Matrix<T, 2, 1>::end()
+CUDA_CALLABLE constexpr typename Matrix<T, 2, 1>::const_iterator Matrix<T, 2, 1>::end()
     const {
     return begin() + 2;
 }
 
 template<typename T>
-typename Matrix<T, 2, 1>::pointer Matrix<T, 2, 1>::data() {
+CUDA_CALLABLE typename Matrix<T, 2, 1>::pointer Matrix<T, 2, 1>::data() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 2, 1>::const_pointer Matrix<T, 2, 1>::data()
+CUDA_CALLABLE constexpr typename Matrix<T, 2, 1>::const_pointer Matrix<T, 2, 1>::data()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 2, 1>::reference Matrix<T, 2, 1>::operator[](size_t i) {
+CUDA_CALLABLE typename Matrix<T, 2, 1>::reference Matrix<T, 2, 1>::operator[](size_t i) {
     assert(i < 2);
     return (&x)[i];
 }
 
 template<typename T>
-typename Matrix<T, 2, 1>::const_reference Matrix<T, 2, 1>::operator[](
+CUDA_CALLABLE typename Matrix<T, 2, 1>::const_reference Matrix<T, 2, 1>::operator[](
     size_t i) const {
     assert(i < 2);
     return (&x)[i];
 }
 
 template<typename T>
-constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnitX() {
+CUDA_CALLABLE constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnitX() {
     return Matrix<T, 2, 1>(1, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnitY() {
+CUDA_CALLABLE constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnitY() {
     return Matrix<T, 2, 1>(0, 1);
 }
 
 template<typename T>
-constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnit(size_t i) {
+CUDA_CALLABLE constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnit(size_t i) {
     return Matrix<T, 2, 1>(i == 0, i == 1);
 }
 
@@ -497,8 +495,8 @@ constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnit(size_t i) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.rows() == 3 && expression.cols() == 1);
+CUDA_CALLABLE Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+    assert(expression.rows() == 3 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
     y = expression.eval(1, 0);
@@ -506,8 +504,8 @@ Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
 }
 
 template<typename T>
-Matrix<T, 3, 1>::Matrix(const std::initializer_list<T> &lst) {
-    JET_ASSERT(lst.size() > 2);
+CUDA_CALLABLE Matrix<T, 3, 1>::Matrix(const std::initializer_list<T> &lst) {
+    assert(lst.size() > 2);
 
     auto iter = lst.begin();
     x = *(iter++);
@@ -516,104 +514,104 @@ Matrix<T, 3, 1>::Matrix(const std::initializer_list<T> &lst) {
 }
 
 template<typename T>
-void Matrix<T, 3, 1>::fill(const T &val) {
+CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const T &val) {
     x = y = z = val;
 }
 
 template<typename T>
-void Matrix<T, 3, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
 }
 
 template<typename T>
-void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+CUDA_CALLABLE void Matrix<T, 3, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
     z = func(2, 0);
 }
 
 template<typename T>
-void Matrix<T, 3, 1>::swap(Matrix &other) {
+CUDA_CALLABLE void Matrix<T, 3, 1>::swap(Matrix &other) {
     std::swap(x, other.x);
     std::swap(y, other.y);
     std::swap(z, other.z);
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 3, 1>::rows() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 3, 1>::rows() const {
     return 3;
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 3, 1>::cols() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 3, 1>::cols() const {
     return 1;
 }
 
 template<typename T>
-typename Matrix<T, 3, 1>::iterator Matrix<T, 3, 1>::begin() {
+CUDA_CALLABLE typename Matrix<T, 3, 1>::iterator Matrix<T, 3, 1>::begin() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 3, 1>::const_iterator Matrix<T, 3, 1>::begin()
+CUDA_CALLABLE constexpr typename Matrix<T, 3, 1>::const_iterator Matrix<T, 3, 1>::begin()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 3, 1>::iterator Matrix<T, 3, 1>::end() {
+CUDA_CALLABLE typename Matrix<T, 3, 1>::iterator Matrix<T, 3, 1>::end() {
     return begin() + 3;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 3, 1>::const_iterator Matrix<T, 3, 1>::end()
+CUDA_CALLABLE constexpr typename Matrix<T, 3, 1>::const_iterator Matrix<T, 3, 1>::end()
     const {
     return begin() + 3;
 }
 
 template<typename T>
-typename Matrix<T, 3, 1>::pointer Matrix<T, 3, 1>::data() {
+CUDA_CALLABLE typename Matrix<T, 3, 1>::pointer Matrix<T, 3, 1>::data() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 3, 1>::const_pointer Matrix<T, 3, 1>::data()
+CUDA_CALLABLE constexpr typename Matrix<T, 3, 1>::const_pointer Matrix<T, 3, 1>::data()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 3, 1>::reference Matrix<T, 3, 1>::operator[](size_t i) {
+CUDA_CALLABLE typename Matrix<T, 3, 1>::reference Matrix<T, 3, 1>::operator[](size_t i) {
     assert(i < 3);
     return (&x)[i];
 }
 
 template<typename T>
-typename Matrix<T, 3, 1>::const_reference Matrix<T, 3, 1>::operator[](
+CUDA_CALLABLE typename Matrix<T, 3, 1>::const_reference Matrix<T, 3, 1>::operator[](
     size_t i) const {
     assert(i < 3);
     return (&x)[i];
 }
 
 template<typename T>
-constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitX() {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitX() {
     return Matrix<T, 3, 1>(1, 0, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitY() {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitY() {
     return Matrix<T, 3, 1>(0, 1, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitZ() {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnitZ() {
     return Matrix<T, 3, 1>(0, 0, 1);
 }
 
 template<typename T>
-constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnit(size_t i) {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnit(size_t i) {
     return Matrix<T, 3, 1>(i == 0, i == 1, i == 2);
 }
 
@@ -622,8 +620,8 @@ constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnit(size_t i) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.rows() == 4 && expression.cols() == 1);
+CUDA_CALLABLE Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+    assert(expression.rows() == 4 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
     y = expression.eval(1, 0);
@@ -632,8 +630,8 @@ Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
 }
 
 template<typename T>
-Matrix<T, 4, 1>::Matrix(const std::initializer_list<T> &lst) {
-    JET_ASSERT(lst.size() > 3);
+CUDA_CALLABLE Matrix<T, 4, 1>::Matrix(const std::initializer_list<T> &lst) {
+    assert(lst.size() > 3);
 
     auto iter = lst.begin();
     x = *(iter++);
@@ -643,12 +641,12 @@ Matrix<T, 4, 1>::Matrix(const std::initializer_list<T> &lst) {
 }
 
 template<typename T>
-void Matrix<T, 4, 1>::fill(const T &val) {
+CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const T &val) {
     x = y = z = w = val;
 }
 
 template<typename T>
-void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
+CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
     x = func(0);
     y = func(1);
     z = func(2);
@@ -656,7 +654,7 @@ void Matrix<T, 4, 1>::fill(const std::function<T(size_t i)> &func) {
 }
 
 template<typename T>
-void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
+CUDA_CALLABLE void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
     x = func(0, 0);
     y = func(1, 0);
     z = func(2, 0);
@@ -664,7 +662,7 @@ void Matrix<T, 4, 1>::fill(const std::function<T(size_t i, size_t j)> &func) {
 }
 
 template<typename T>
-void Matrix<T, 4, 1>::swap(Matrix &other) {
+CUDA_CALLABLE void Matrix<T, 4, 1>::swap(Matrix &other) {
     std::swap(x, other.x);
     std::swap(y, other.y);
     std::swap(z, other.z);
@@ -672,83 +670,83 @@ void Matrix<T, 4, 1>::swap(Matrix &other) {
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 4, 1>::rows() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 4, 1>::rows() const {
     return 4;
 }
 
 template<typename T>
-constexpr size_t Matrix<T, 4, 1>::cols() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, 4, 1>::cols() const {
     return 1;
 }
 
 template<typename T>
-typename Matrix<T, 4, 1>::iterator Matrix<T, 4, 1>::begin() {
+CUDA_CALLABLE typename Matrix<T, 4, 1>::iterator Matrix<T, 4, 1>::begin() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 4, 1>::const_iterator Matrix<T, 4, 1>::begin()
+CUDA_CALLABLE constexpr typename Matrix<T, 4, 1>::const_iterator Matrix<T, 4, 1>::begin()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 4, 1>::iterator Matrix<T, 4, 1>::end() {
+CUDA_CALLABLE typename Matrix<T, 4, 1>::iterator Matrix<T, 4, 1>::end() {
     return begin() + 4;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 4, 1>::const_iterator Matrix<T, 4, 1>::end()
+CUDA_CALLABLE constexpr typename Matrix<T, 4, 1>::const_iterator Matrix<T, 4, 1>::end()
     const {
     return begin() + 4;
 }
 
 template<typename T>
-typename Matrix<T, 4, 1>::pointer Matrix<T, 4, 1>::data() {
+CUDA_CALLABLE typename Matrix<T, 4, 1>::pointer Matrix<T, 4, 1>::data() {
     return &x;
 }
 
 template<typename T>
-constexpr typename Matrix<T, 4, 1>::const_pointer Matrix<T, 4, 1>::data()
+CUDA_CALLABLE constexpr typename Matrix<T, 4, 1>::const_pointer Matrix<T, 4, 1>::data()
     const {
     return &x;
 }
 
 template<typename T>
-typename Matrix<T, 4, 1>::reference Matrix<T, 4, 1>::operator[](size_t i) {
+CUDA_CALLABLE typename Matrix<T, 4, 1>::reference Matrix<T, 4, 1>::operator[](size_t i) {
     assert(i < 4);
     return (&x)[i];
 }
 
 template<typename T>
-typename Matrix<T, 4, 1>::const_reference Matrix<T, 4, 1>::operator[](
+CUDA_CALLABLE typename Matrix<T, 4, 1>::const_reference Matrix<T, 4, 1>::operator[](
     size_t i) const {
     assert(i < 4);
     return (&x)[i];
 }
 
 template<typename T>
-constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitX() {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitX() {
     return Matrix<T, 4, 1>(1, 0, 0, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitY() {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitY() {
     return Matrix<T, 4, 1>(0, 1, 0, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitZ() {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitZ() {
     return Matrix<T, 4, 1>(0, 0, 1, 0);
 }
 
 template<typename T>
-constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitW() {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnitW() {
     return Matrix<T, 4, 1>(0, 0, 0, 1);
 }
 
 template<typename T>
-constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnit(size_t i) {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1> Matrix<T, 4, 1>::makeUnit(size_t i) {
     return Matrix<T, 4, 1>(i == 0, i == 1, i == 2, i == 3);
 }
 
@@ -1105,14 +1103,14 @@ Matrix<T, kMatrixSizeDynamic, 1>::data() const {
 template<typename T>
 typename Matrix<T, kMatrixSizeDynamic, 1>::reference
 Matrix<T, kMatrixSizeDynamic, 1>::operator[](size_t i) {
-    JET_ASSERT(i < _elements.size());
+    assert(i < _elements.size());
     return _elements[i];
 }
 
 template<typename T>
 typename Matrix<T, kMatrixSizeDynamic, 1>::const_reference
 Matrix<T, kMatrixSizeDynamic, 1>::operator[](size_t i) const {
-    JET_ASSERT(i < _elements.size());
+    assert(i < _elements.size());
     return _elements[i];
 }
 
@@ -1138,7 +1136,7 @@ Matrix<T, kMatrixSizeDynamic, 1> &Matrix<T, kMatrixSizeDynamic, 1>::operator=(
 // *
 
 template<typename T, size_t Rows>
-[[deprecated("Use elemMul instead")]] constexpr auto operator*(
+[[deprecated("Use elemMul instead")]] CUDA_CALLABLE constexpr auto operator*(
     const Vector<T, Rows> &a, const Vector<T, Rows> &b) {
     return MatrixElemWiseMul<T, Rows, 1, const Vector<T, Rows> &,
                              const Vector<T, Rows> &>{a, b};
@@ -1147,7 +1145,7 @@ template<typename T, size_t Rows>
 // /
 
 template<typename T, size_t Rows>
-[[deprecated("Use elemDiv instead")]] constexpr auto operator/(
+[[deprecated("Use elemDiv instead")]] CUDA_CALLABLE constexpr auto operator/(
     const Vector<T, Rows> &a, const Vector<T, Rows> &b) {
     return MatrixElemWiseDiv<T, Rows, 1, const Vector<T, Rows> &,
                              const Vector<T, Rows> &>{a, b.derived()};
@@ -1158,59 +1156,59 @@ template<typename T, size_t Rows>
 // +=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator+=(Matrix<T, R1, C1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b) {
+CUDA_CALLABLE void operator+=(Matrix<T, R1, C1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b) {
     a = a + b;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void operator+=(Matrix<T, Rows, Cols> &a, const T &b) {
+CUDA_CALLABLE void operator+=(Matrix<T, Rows, Cols> &a, const T &b) {
     a = a + b;
 }
 
 // -=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator-=(Matrix<T, R1, C1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b) {
+CUDA_CALLABLE void operator-=(Matrix<T, R1, C1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b) {
     a = a - b;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void operator-=(Matrix<T, Rows, Cols> &a, const T &b) {
+CUDA_CALLABLE void operator-=(Matrix<T, Rows, Cols> &a, const T &b) {
     a = a - b;
 }
 
 // *=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void operator*=(Matrix<T, R1, C1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b) {
-    JET_ASSERT(a.cols() == b.rows());
+CUDA_CALLABLE void operator*=(Matrix<T, R1, C1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b) {
+    assert(a.cols() == b.rows());
 
     Matrix<T, R1, C2> c = a * b;
     a = c;
 }
 
 template<typename T, size_t R1, size_t R2, size_t C2, typename M2>
-[[deprecated("Use elemIMul instead")]] void operator*=(
+[[deprecated("Use elemIMul instead")]] CUDA_CALLABLE void operator*=(
     Matrix<T, R1, 1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
-    JET_ASSERT(a.rows() == b.rows() && a.cols() == b.cols());
+    assert(a.rows() == b.rows() && a.cols() == b.cols());
 
     a = MatrixElemWiseMul<T, R1, 1, const Matrix<T, R1, 1> &, const M2 &>{
         a, b.derived()};
 }
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void elemIMul(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
-    JET_ASSERT(a.rows() == b.rows() && a.cols() == b.cols());
+CUDA_CALLABLE void elemIMul(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
+    assert(a.rows() == b.rows() && a.cols() == b.cols());
 
     a = MatrixElemWiseMul<T, R1, C1, const Matrix<T, R1, C1> &, const M2 &>{
         a, b.derived()};
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void operator*=(Matrix<T, Rows, Cols> &a, const T &b) {
+CUDA_CALLABLE void operator*=(Matrix<T, Rows, Cols> &a, const T &b) {
     a = MatrixScalarElemWiseMul<T, Rows, Cols, const Matrix<T, Rows, Cols> &>{a,
                                                                               b};
 }
@@ -1218,20 +1216,20 @@ void operator*=(Matrix<T, Rows, Cols> &a, const T &b) {
 // /=
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-[[deprecated("Use elemIDiv instead")]] void operator/=(
+[[deprecated("Use elemIDiv instead")]] CUDA_CALLABLE void operator/=(
     Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
     a = MatrixElemWiseDiv<T, R1, C1, const Matrix<T, R1, C1> &, const M2 &>(
         a, b.derived());
 }
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
-void elemIDiv(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
+CUDA_CALLABLE void elemIDiv(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
     a = MatrixElemWiseDiv<T, R1, C1, const Matrix<T, R1, C1> &, const M2 &>(
         a, b.derived());
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void operator/=(Matrix<T, Rows, Cols> &a, const T &b) {
+CUDA_CALLABLE void operator/=(Matrix<T, Rows, Cols> &a, const T &b) {
     a = MatrixScalarElemWiseDiv<T, Rows, Cols, const Matrix<T, Rows, Cols> &>{a,
                                                                               b};
 }
@@ -1239,7 +1237,7 @@ void operator/=(Matrix<T, Rows, Cols> &a, const T &b) {
 // MARK: Comparison Operators
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
+CUDA_CALLABLE constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
     const MatrixExpression<T, Rows, Cols, M1> &a,
     const MatrixExpression<T, Rows, Cols, M2> &b) {
     return internal::FoldWithAnd<T, Rows, Cols, std::equal_to<T>,
@@ -1249,8 +1247,8 @@ constexpr std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), bool> operator==(
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
          typename M2>
-bool operator==(const MatrixExpression<T, R1, C1, M1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b) {
+CUDA_CALLABLE bool operator==(const MatrixExpression<T, R1, C1, M1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b) {
     if (a.rows() != b.rows() || a.cols() != b.cols()) {
         return false;
     }
@@ -1267,8 +1265,8 @@ bool operator==(const MatrixExpression<T, R1, C1, M1> &a,
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
          typename M2>
-bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
-                const MatrixExpression<T, R2, C2, M2> &b) {
+CUDA_CALLABLE bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
+                              const MatrixExpression<T, R2, C2, M2> &b) {
     return !(a == b);
 }
 
@@ -1278,7 +1276,7 @@ bool operator!=(const MatrixExpression<T, R1, C1, M1> &a,
 
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename BinaryOperation>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a, const T &init,
     BinaryOperation op) {
     return internal::Reduce<T, Rows, Cols, BinaryOperation, NoOp<T>,
@@ -1286,7 +1284,7 @@ constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a, const T &init) {
     return internal::Reduce<T, Rows, Cols, std::plus<T>, NoOp<T>,
                             Rows * Cols - 1>::call(a, init, std::plus<T>(),
@@ -1294,7 +1292,7 @@ constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a) {
     return internal::Reduce<T, Rows, Cols, std::plus<T>, NoOp<T>,
                             Rows * Cols - 1>::call(a, std::plus<T>(),
@@ -1305,20 +1303,20 @@ constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
 
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename BinaryOperation>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init,
            BinaryOperation op) {
     return std::accumulate(a.begin(), a.end(), init, op);
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init) {
     return std::accumulate(a.begin(), a.end(), init, std::plus<T>());
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
+CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a) {
     return std::accumulate(a.begin(), a.end(), T{}, std::plus<T>());
 }
@@ -1326,15 +1324,15 @@ accumulate(const MatrixExpression<T, Rows, Cols, M1> &a) {
 // Product
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr T product(const MatrixExpression<T, Rows, Cols, M1> &a,
-                    const T &init) {
+CUDA_CALLABLE constexpr T product(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                  const T &init) {
     return accumulate(a, init, std::multiplies<T>());
 }
 
 // Interpolation
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2,
          typename M3, typename M4>
-std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), Matrix<T, Rows, Cols>>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), Matrix<T, Rows, Cols>>
 monotonicCatmullRom(const MatrixExpression<T, Rows, Cols, M1> &f0,
                     const MatrixExpression<T, Rows, Cols, M2> &f1,
                     const MatrixExpression<T, Rows, Cols, M3> &f2,

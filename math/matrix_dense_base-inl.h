@@ -13,7 +13,7 @@ namespace vox {
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E>
-void MatrixDenseBase<T, Rows, Cols, D>::copyFrom(
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::copyFrom(
     const MatrixExpression<T, R, C, E> &expression) {
     for (size_t i = 0; i < rows(); ++i) {
         for (size_t j = 0; j < cols(); ++j) {
@@ -23,7 +23,7 @@ void MatrixDenseBase<T, Rows, Cols, D>::copyFrom(
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-void MatrixDenseBase<T, Rows, Cols, D>::setDiagonal(const_reference val) {
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::setDiagonal(const_reference val) {
     size_t n = std::min(rows(), cols());
     for (size_t i = 0; i < n; ++i) {
         (*this)(i, i) = val;
@@ -31,7 +31,7 @@ void MatrixDenseBase<T, Rows, Cols, D>::setDiagonal(const_reference val) {
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-void MatrixDenseBase<T, Rows, Cols, D>::setOffDiagonal(const_reference val) {
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::setOffDiagonal(const_reference val) {
     for (size_t i = 0; i < rows(); ++i) {
         for (size_t j = 0; j < cols(); ++j) {
             if (i != j) {
@@ -43,9 +43,9 @@ void MatrixDenseBase<T, Rows, Cols, D>::setOffDiagonal(const_reference val) {
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E>
-void MatrixDenseBase<T, Rows, Cols, D>::setRow(
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::setRow(
     size_t i, const MatrixExpression<T, R, C, E> &row) {
-    JET_ASSERT(row.rows() == cols() && row.cols() == 1);
+    assert(row.rows() == cols() && row.cols() == 1);
     for (size_t j = 0; j < cols(); ++j) {
         (*this)(i, j) = row.eval(j, 0);
     }
@@ -53,27 +53,27 @@ void MatrixDenseBase<T, Rows, Cols, D>::setRow(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E>
-void MatrixDenseBase<T, Rows, Cols, D>::setColumn(
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::setColumn(
     size_t j, const MatrixExpression<T, R, C, E> &col) {
-    JET_ASSERT(col.rows() == rows() && col.cols() == 1);
+    assert(col.rows() == rows() && col.cols() == 1);
     for (size_t i = 0; i < rows(); ++i) {
         (*this)(i, j) = col.eval(i, 0);
     }
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-void MatrixDenseBase<T, Rows, Cols, D>::normalize() {
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::normalize() {
     derived() /= derived().norm();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-void MatrixDenseBase<T, Rows, Cols, D>::transpose() {
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::transpose() {
     D tmp = derived().transposed();
     copyFrom(tmp);
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-void MatrixDenseBase<T, Rows, Cols, D>::invert() {
+CUDA_CALLABLE void MatrixDenseBase<T, Rows, Cols, D>::invert() {
     copyFrom(derived().inverse());
 }
 
@@ -81,22 +81,22 @@ void MatrixDenseBase<T, Rows, Cols, D>::invert() {
 // MARK: Operator Overloadings
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-typename MatrixDenseBase<T, Rows, Cols, D>::reference
+CUDA_CALLABLE typename MatrixDenseBase<T, Rows, Cols, D>::reference
 MatrixDenseBase<T, Rows, Cols, D>::operator()(size_t i, size_t j) {
-    JET_ASSERT(i < rows() && j < cols());
+    assert(i < rows() && j < cols());
     return derived()[j + i * cols()];
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-typename MatrixDenseBase<T, Rows, Cols, D>::const_reference
+CUDA_CALLABLE typename MatrixDenseBase<T, Rows, Cols, D>::const_reference
 MatrixDenseBase<T, Rows, Cols, D>::operator()(size_t i, size_t j) const {
-    JET_ASSERT(i < rows() && j < cols());
+    assert(i < rows() && j < cols());
     return derived()[j + i * cols()];
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E>
-MatrixDenseBase<T, Rows, Cols, D> &MatrixDenseBase<T, Rows, Cols, D>::operator=(
+CUDA_CALLABLE MatrixDenseBase<T, Rows, Cols, D> &MatrixDenseBase<T, Rows, Cols, D>::operator=(
     const MatrixExpression<T, R, C, E> &expression) {
     copyFrom(expression);
     return *this;
@@ -107,28 +107,28 @@ MatrixDenseBase<T, Rows, Cols, D> &MatrixDenseBase<T, Rows, Cols, D>::operator=(
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeZero() {
     return MatrixConstant<T, Rows, Cols>{Rows, Cols, 0};
 }
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeZero(size_t rows, size_t cols) {
     return MatrixConstant<T, Rows, Cols>{rows, cols, 0};
 }
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeStatic<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeConstant(value_type val) {
     return MatrixConstant<T, Rows, Cols>{Rows, Cols, val};
 }
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeConstant(size_t rows, size_t cols,
                                                       value_type val) {
     return MatrixConstant<T, Rows, Cols>{rows, cols, val};
@@ -136,7 +136,7 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeConstant(size_t rows, size_t cols,
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeIdentity() {
     using ConstType = MatrixConstant<T, Rows, Cols>;
     return MatrixDiagonal<T, Rows, Cols, ConstType>{ConstType{Rows, Cols, 1}};
@@ -144,7 +144,7 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeIdentity() {
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixSizeDynamic<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeIdentity(size_t rows) {
     using ConstType = MatrixConstant<T, Rows, Cols>;
     return MatrixDiagonal<T, Rows, Cols, ConstType>{ConstType{rows, rows, 1}};
@@ -152,7 +152,7 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeIdentity(size_t rows) {
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename... Args, typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeScaleMatrix(value_type first,
                                                          Args... rest) {
     static_assert(sizeof...(rest) == Rows - 1,
@@ -167,10 +167,10 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeScaleMatrix(value_type first,
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<size_t R, size_t C, typename E, typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>(), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeScaleMatrix(
     const MatrixExpression<T, R, C, E> &expression) {
-    JET_ASSERT(expression.cols() == 1);
+    assert(expression.cols() == 1);
     D m{};
     for (size_t i = 0; i < Rows; ++i) {
         m(i, i) = expression.eval(i, 0);
@@ -180,18 +180,17 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeScaleMatrix(
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 2), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 2), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeRotationMatrix(T rad) {
     return D{std::cos(rad), -std::sin(rad), std::sin(rad), std::cos(rad)};
 }
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<size_t R, size_t C, typename E, typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 3 || Rows == 4),
-                 D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 3 || Rows == 4), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeRotationMatrix(
     const MatrixExpression<T, R, C, E> &axis, T rad) {
-    JET_ASSERT(axis.rows() == 3 && axis.cols() == 1);
+    assert(axis.rows() == 3 && axis.cols() == 1);
 
     D result = makeIdentity();
 
@@ -221,10 +220,10 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeRotationMatrix(
 
 template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<size_t R, size_t C, typename E, typename D>
-std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 4), D>
+CUDA_CALLABLE std::enable_if_t<isMatrixStaticSquare<Rows, Cols>() && (Rows == 4), D>
 MatrixDenseBase<T, Rows, Cols, Derived>::makeTranslationMatrix(
     const MatrixExpression<T, R, C, E> &t) {
-    JET_ASSERT(t.rows() == 3 && t.cols() == 1);
+    assert(t.rows() == 3 && t.cols() == 1);
 
     D result = makeIdentity();
     result(0, 3) = t.eval(0, 0);
@@ -238,56 +237,56 @@ MatrixDenseBase<T, Rows, Cols, Derived>::makeTranslationMatrix(
 // MARK: Private Helpers
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-constexpr size_t MatrixDenseBase<T, Rows, Cols, D>::rows() const {
+CUDA_CALLABLE constexpr size_t MatrixDenseBase<T, Rows, Cols, D>::rows() const {
     return static_cast<const D &>(*this).rows();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-constexpr size_t MatrixDenseBase<T, Rows, Cols, D>::cols() const {
+CUDA_CALLABLE constexpr size_t MatrixDenseBase<T, Rows, Cols, D>::cols() const {
     return static_cast<const D &>(*this).cols();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-auto MatrixDenseBase<T, Rows, Cols, D>::begin() {
+CUDA_CALLABLE auto MatrixDenseBase<T, Rows, Cols, D>::begin() {
     return derived().begin();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-constexpr auto MatrixDenseBase<T, Rows, Cols, D>::begin() const {
+CUDA_CALLABLE constexpr auto MatrixDenseBase<T, Rows, Cols, D>::begin() const {
     return derived().begin();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-auto MatrixDenseBase<T, Rows, Cols, D>::end() {
+CUDA_CALLABLE auto MatrixDenseBase<T, Rows, Cols, D>::end() {
     return derived().end();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-constexpr auto MatrixDenseBase<T, Rows, Cols, D>::end() const {
+CUDA_CALLABLE constexpr auto MatrixDenseBase<T, Rows, Cols, D>::end() const {
     return derived().end();
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-typename MatrixDenseBase<T, Rows, Cols, D>::reference
+CUDA_CALLABLE typename MatrixDenseBase<T, Rows, Cols, D>::reference
 MatrixDenseBase<T, Rows, Cols, D>::operator[](size_t i) {
-    JET_ASSERT(i < rows() * cols());
+    assert(i < rows() * cols());
     return derived()[i];
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-typename MatrixDenseBase<T, Rows, Cols, D>::const_reference
+CUDA_CALLABLE typename MatrixDenseBase<T, Rows, Cols, D>::const_reference
 MatrixDenseBase<T, Rows, Cols, D>::operator[](size_t i) const {
-    JET_ASSERT(i < rows() * cols());
+    assert(i < rows() * cols());
     return derived()[i];
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-D &MatrixDenseBase<T, Rows, Cols, D>::derived() {
+CUDA_CALLABLE D &MatrixDenseBase<T, Rows, Cols, D>::derived() {
     return static_cast<D &>(*this);
 }
 
 template<typename T, size_t Rows, size_t Cols, typename D>
-const D &MatrixDenseBase<T, Rows, Cols, D>::derived() const {
+CUDA_CALLABLE const D &MatrixDenseBase<T, Rows, Cols, D>::derived() const {
     return static_cast<const D &>(*this);
 }
 

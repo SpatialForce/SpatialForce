@@ -23,7 +23,7 @@ namespace vox {
 //! \return     True if similar.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, bool>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, bool>//
 similar(T x, T y, T eps = std::numeric_limits<T>::epsilon());
 
 //!
@@ -36,7 +36,7 @@ similar(T x, T y, T eps = std::numeric_limits<T>::epsilon());
 //! \return     The sign.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 sign(T x);
 
 //!
@@ -51,7 +51,7 @@ sign(T x);
 //! \return     The minimum value.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 min3(T x, T y, T z);
 
 //!
@@ -66,17 +66,17 @@ min3(T x, T y, T z);
 //! \return     The maximum value.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 max3(T x, T y, T z);
 
 //! Returns minimum among n-elements.
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 minn(const T *x, size_t n);
 
 //! Returns maximum among n-elements.
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 maxn(const T *x, size_t n);
 
 //!
@@ -90,7 +90,7 @@ maxn(const T *x, size_t n);
 //! \return     The absolute minimum.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 absmin(T x, T y);
 
 //!
@@ -104,33 +104,33 @@ absmin(T x, T y);
 //! \return     The absolute maximum.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 absmax(T x, T y);
 
 //! Returns absolute minimum among n-elements.
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 absminn(const T *x, size_t n);
 
 //! Returns absolute maximum among n-elements.
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 absmaxn(const T *x, size_t n);
 
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
 argmin2(T x, T y);
 
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
 argmax2(T x, T y);
 
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
 argmin3(T x, T y, T z);
 
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, size_t>//
 argmax3(T x, T y, T z);
 
 //!
@@ -143,7 +143,7 @@ argmax3(T x, T y, T z);
 //! \return     The squared value.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 square(T x);
 
 //!
@@ -156,7 +156,7 @@ square(T x);
 //! \return     The cubic of \p x.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 cubic(T x);
 
 //!
@@ -171,7 +171,7 @@ cubic(T x);
 //! \return     The clamped value.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 clamp(T val, T low, T high);
 
 //!
@@ -184,7 +184,7 @@ clamp(T val, T low, T high);
 //! \return     Angle in radians.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 degreesToRadians(T angleInDegrees);
 
 //!
@@ -197,7 +197,7 @@ degreesToRadians(T angleInDegrees);
 //! \return     Angle in degrees.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 radiansToDegrees(T angleInRadians);
 
 //!
@@ -227,7 +227,7 @@ radiansToDegrees(T angleInRadians);
 //! \tparam     T       Value type.
 //!
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value>//
 getBarycentric(T x, ssize_t iBegin, ssize_t iEnd, ssize_t &i, T &t);
 
 //!
@@ -243,29 +243,29 @@ getBarycentric(T x, ssize_t iBegin, ssize_t iEnd, ssize_t &i, T &t);
 //! \return     The interpolated value.
 //!
 template<typename S, typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, S>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, S>//
 lerp(const S &f0, const S &f1, T t);
 
 //! \brief      Computes bilinear interpolation.
 template<typename S, typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, S>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, S>//
 bilerp(const S &f00, const S &f10, const S &f01, const S &f11, T tx, T ty);
 
 //! \brief      Computes trilinear interpolation.
 template<typename S, typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, S>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, S>//
 trilerp(const S &f000, const S &f100, const S &f010, const S &f110,
         const S &f001, const S &f101, const S &f011, const S &f111, T tx, T ty,
         T tz);
 
 //! \brief      Computes Catmull-Rom interpolation.
 template<typename S, typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, S>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, S>//
 catmullRom(const S &f0, const S &f1, const S &f2, const S &f3, T t);
 
 //! \brief      Computes monotonic Catmull-Rom interpolation.
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>//
+CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 monotonicCatmullRom(const T &f0, const T &f1, const T &f2, const T &f3, T t);
 
 }// namespace vox

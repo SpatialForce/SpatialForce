@@ -13,6 +13,7 @@ set(COMMON_FILES
         matrix_dense_base.h
         matrix_expression.h
         tmp.cpp
+        tmp.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

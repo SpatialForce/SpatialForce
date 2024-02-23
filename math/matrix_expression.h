@@ -7,6 +7,7 @@
 #pragma once
 
 #include "functors.h"
+#include "core/define.h"
 
 #include <tuple>
 
@@ -59,12 +60,10 @@ class MatrixTri;
 template<typename T, size_t Rows, size_t Cols, typename M1>
 class MatrixTranspose;
 
-template<typename T, size_t Rows, size_t Cols, typename M1,
-         typename UnaryOperation>
+template<typename T, size_t Rows, size_t Cols, typename M1, typename UnaryOperation>
 class MatrixUnaryOp;
 
-template<typename T, size_t Rows, size_t Cols, typename M1,
-         typename BinaryOperation>
+template<typename T, size_t Rows, size_t Cols, typename M1, typename BinaryOperation>
 class MatrixScalarElemWiseBinaryOp;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,122 +83,118 @@ class MatrixExpression {
 public:
     using value_type = T;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // MARK: Core Expression Interface
-
+#pragma region Core Expression Interface
     //! Returns the number of rows.
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
     //! Returns the number of columns.
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
     //! Returns the evaluated value for (i, j).
-    T eval(size_t i, size_t j) const;
+    CUDA_CALLABLE T eval(size_t i, size_t j) const;
+#pragma endregion
 
-    ////////////////////////////////////////////////////////////////////////////
-    // MARK: Simple getters
-
-    Matrix<T, Rows, Cols> eval() const;
+#pragma region Simple getters
+    CUDA_CALLABLE Matrix<T, Rows, Cols> eval() const;
 
     //! Returns true if this matrix is similar to the input matrix within the
     //! given tolerance.
     template<size_t R, size_t C, typename E>
-    bool isSimilar(const MatrixExpression<T, R, C, E> &m,
-                   double tol = std::numeric_limits<double>::epsilon()) const;
+    CUDA_CALLABLE bool isSimilar(const MatrixExpression<T, R, C, E> &m,
+                                 double tol = std::numeric_limits<double>::epsilon()) const;
 
     //! Returns true if this matrix is a square matrix.
-    constexpr bool isSquare() const;
+    CUDA_CALLABLE constexpr bool isSquare() const;
 
-    value_type sum() const;
+    CUDA_CALLABLE value_type sum() const;
 
-    value_type avg() const;
+    CUDA_CALLABLE value_type avg() const;
 
-    value_type min() const;
+    CUDA_CALLABLE value_type min() const;
 
-    value_type max() const;
+    CUDA_CALLABLE value_type max() const;
 
-    value_type absmin() const;
+    CUDA_CALLABLE value_type absmin() const;
 
-    value_type absmax() const;
+    CUDA_CALLABLE value_type absmax() const;
 
-    value_type trace() const;
+    CUDA_CALLABLE value_type trace() const;
 
-    value_type determinant() const;
+    CUDA_CALLABLE value_type determinant() const;
 
-    size_t dominantAxis() const;
+    CUDA_CALLABLE size_t dominantAxis() const;
 
-    size_t subminantAxis() const;
+    CUDA_CALLABLE size_t subminantAxis() const;
 
-    value_type norm() const;
+    CUDA_CALLABLE value_type norm() const;
 
-    value_type normSquared() const;
+    CUDA_CALLABLE value_type normSquared() const;
 
-    value_type frobeniusNorm() const;
+    CUDA_CALLABLE value_type frobeniusNorm() const;
 
-    value_type length() const;
+    CUDA_CALLABLE value_type length() const;
 
-    value_type lengthSquared() const;
+    CUDA_CALLABLE value_type lengthSquared() const;
 
     //! Returns the distance to the other vector.
     template<size_t R, size_t C, typename E>
-    value_type distanceTo(const MatrixExpression<T, R, C, E> &other) const;
+    CUDA_CALLABLE value_type distanceTo(const MatrixExpression<T, R, C, E> &other) const;
 
     //! Returns the squared distance to the other vector.
     template<size_t R, size_t C, typename E>
-    value_type distanceSquaredTo(
+    CUDA_CALLABLE value_type distanceSquaredTo(
         const MatrixExpression<T, R, C, E> &other) const;
 
-    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, const Derived &, std::divides<T>>
+    CUDA_CALLABLE MatrixScalarElemWiseBinaryOp<T, Rows, Cols, const Derived &, std::divides<T>>
     normalized() const;
 
     //! Returns diagonal part of this matrix.
-    MatrixDiagonal<T, Rows, Cols, const Derived &> diagonal() const;
+    CUDA_CALLABLE MatrixDiagonal<T, Rows, Cols, const Derived &> diagonal() const;
 
     //! Returns off-diagonal part of this matrix.
-    MatrixOffDiagonal<T, Rows, Cols, const Derived &> offDiagonal() const;
+    CUDA_CALLABLE MatrixOffDiagonal<T, Rows, Cols, const Derived &> offDiagonal() const;
 
     //! Returns strictly lower triangle part of this matrix.
-    MatrixTri<T, Rows, Cols, const Derived &> strictLowerTri() const;
+    CUDA_CALLABLE MatrixTri<T, Rows, Cols, const Derived &> strictLowerTri() const;
 
     //! Returns strictly upper triangle part of this matrix.
-    MatrixTri<T, Rows, Cols, const Derived &> strictUpperTri() const;
+    CUDA_CALLABLE MatrixTri<T, Rows, Cols, const Derived &> strictUpperTri() const;
 
     //! Returns lower triangle part of this matrix (including the diagonal).
-    MatrixTri<T, Rows, Cols, const Derived &> lowerTri() const;
+    CUDA_CALLABLE MatrixTri<T, Rows, Cols, const Derived &> lowerTri() const;
 
     //! Returns upper triangle part of this matrix (including the diagonal).
-    MatrixTri<T, Rows, Cols, const Derived &> upperTri() const;
+    CUDA_CALLABLE MatrixTri<T, Rows, Cols, const Derived &> upperTri() const;
 
-    MatrixTranspose<T, Rows, Cols, const Derived &> transposed() const;
+    CUDA_CALLABLE MatrixTranspose<T, Rows, Cols, const Derived &> transposed() const;
 
     //! Returns inverse matrix.
-    Matrix<T, Rows, Cols> inverse() const;
+    CUDA_CALLABLE Matrix<T, Rows, Cols> inverse() const;
 
     template<typename U>
-    MatrixUnaryOp<U, Rows, Cols, const Derived &, TypeCast<T, U>> castTo() const;
+    CUDA_CALLABLE MatrixUnaryOp<U, Rows, Cols, const Derived &, TypeCast<T, U>> castTo() const;
+#pragma endregion
 
-    ////////////////////////////////////////////////////////////////////////////
-    // MARK: Binary Operators
-
+#pragma region Binary Operators
     template<size_t R, size_t C, typename E, typename U = value_type>
     std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || Cols == 1) &&
                          (isMatrixSizeDynamic<R, C>() || C == 1),
                      U>
-    dot(const MatrixExpression<T, R, C, E> &expression) const;
+        CUDA_CALLABLE dot(const MatrixExpression<T, R, C, E> &expression) const;
 
     template<size_t R, size_t C, typename E, typename U = value_type>
     std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
                       (Rows == 2 && Cols == 1)) &&
                          (isMatrixSizeDynamic<R, C>() || (R == 2 && C == 1)),
                      U>
-    cross(const MatrixExpression<T, R, C, E> &expression) const;
+        CUDA_CALLABLE cross(const MatrixExpression<T, R, C, E> &expression) const;
 
     template<size_t R, size_t C, typename E, typename U = value_type>
     std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
                       (Rows == 3 && Cols == 1)) &&
                          (isMatrixSizeDynamic<R, C>() || (R == 3 && C == 1)),
                      Matrix<U, 3, 1>>
-    cross(const MatrixExpression<T, R, C, E> &expression) const;
+        CUDA_CALLABLE cross(const MatrixExpression<T, R, C, E> &expression) const;
 
     //! Returns the reflection vector to the surface with given surface normal.
     template<size_t R, size_t C, typename E, typename U = value_type>
@@ -208,7 +203,7 @@ public:
                          (isMatrixSizeDynamic<R, C>() ||
                           ((R == 2 || R == 3) && C == 1)),
                      Matrix<U, Rows, 1>>
-    reflected(const MatrixExpression<T, R, C, E> &normal) const;
+        CUDA_CALLABLE reflected(const MatrixExpression<T, R, C, E> &normal) const;
 
     //! Returns the projected vector to the surface with given surface normal.
     template<size_t R, size_t C, typename E, typename U = value_type>
@@ -217,192 +212,187 @@ public:
                          (isMatrixSizeDynamic<R, C>() ||
                           ((R == 2 || R == 3) && C == 1)),
                      Matrix<U, Rows, 1>>
-    projected(const MatrixExpression<T, R, C, E> &normal) const;
+        CUDA_CALLABLE projected(const MatrixExpression<T, R, C, E> &normal) const;
 
     //! Returns the tangential vector for this vector.
     template<typename U = value_type>
     std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
                       (Rows == 2 && Cols == 1)),
                      Matrix<U, 2, 1>>
-    tangential() const;
+        CUDA_CALLABLE tangential() const;
 
     //! Returns the tangential vectors for this vector.
     template<typename U = value_type>
     std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
                       (Rows == 3 && Cols == 1)),
                      std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
-    tangentials() const;
+        CUDA_CALLABLE tangentials() const;
+#pragma endregion
 
-    ////////////////////////////////////////////////////////////////////////////
-    // MARK: Other Helpers
+#pragma region Other Helpers
+    //! Returns actual implementation (the subclass).
+    CUDA_CALLABLE Derived &derived();
 
     //! Returns actual implementation (the subclass).
-    Derived &derived();
-
-    //! Returns actual implementation (the subclass).
-    const Derived &derived() const;
+    CUDA_CALLABLE const Derived &derived() const;
+#pragma endregion
 
 protected:
     // Prohibits constructing this class instance.
     MatrixExpression() = default;
 
-    constexpr static T determinant(const MatrixExpression<T, 1, 1, Derived> &m);
+    CUDA_CALLABLE constexpr static T determinant(const MatrixExpression<T, 1, 1, Derived> &m);
 
-    constexpr static T determinant(const MatrixExpression<T, 2, 2, Derived> &m);
+    CUDA_CALLABLE constexpr static T determinant(const MatrixExpression<T, 2, 2, Derived> &m);
 
-    constexpr static T determinant(const MatrixExpression<T, 3, 3, Derived> &m);
+    CUDA_CALLABLE constexpr static T determinant(const MatrixExpression<T, 3, 3, Derived> &m);
 
-    constexpr static T determinant(const MatrixExpression<T, 4, 4, Derived> &m);
+    CUDA_CALLABLE constexpr static T determinant(const MatrixExpression<T, 4, 4, Derived> &m);
 
     template<typename U = value_type>
     static std::enable_if_t<
         (Rows > 4 && Cols > 4) || isMatrixSizeDynamic<Rows, Cols>(), U>
-    determinant(const MatrixExpression<T, Rows, Cols, Derived> &m);
+        CUDA_CALLABLE determinant(const MatrixExpression<T, Rows, Cols, Derived> &m);
 
-    static void inverse(const MatrixExpression<T, 1, 1, Derived> &m,
-                        Matrix<T, Rows, Cols> &result);
+    CUDA_CALLABLE static void inverse(const MatrixExpression<T, 1, 1, Derived> &m,
+                                      Matrix<T, Rows, Cols> &result);
 
-    static void inverse(const MatrixExpression<T, 2, 2, Derived> &m,
-                        Matrix<T, Rows, Cols> &result);
+    CUDA_CALLABLE static void inverse(const MatrixExpression<T, 2, 2, Derived> &m,
+                                      Matrix<T, Rows, Cols> &result);
 
-    static void inverse(const MatrixExpression<T, 3, 3, Derived> &m,
-                        Matrix<T, Rows, Cols> &result);
+    CUDA_CALLABLE static void inverse(const MatrixExpression<T, 3, 3, Derived> &m,
+                                      Matrix<T, Rows, Cols> &result);
 
-    static void inverse(const MatrixExpression<T, 4, 4, Derived> &m,
-                        Matrix<T, Rows, Cols> &result);
+    CUDA_CALLABLE static void inverse(const MatrixExpression<T, 4, 4, Derived> &m,
+                                      Matrix<T, Rows, Cols> &result);
 
     template<typename M = Matrix<T, Rows, Cols>>
-    static void inverse(const MatrixExpression &m,
-                        std::enable_if_t<(Rows > 4 && Cols > 4) ||
-                                             isMatrixSizeDynamic<Rows, Cols>(),
-                                         M> &result);
+    CUDA_CALLABLE static void inverse(const MatrixExpression &m,
+                                      std::enable_if_t<(Rows > 4 && Cols > 4) ||
+                                                           isMatrixSizeDynamic<Rows, Cols>(),
+                                                       M> &result);
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixConstant
+//====================================================================================================================
+#pragma region MatrixConstant
 
 template<typename T, size_t Rows, size_t Cols>
 class MatrixConstant
     : public MatrixExpression<T, Rows, Cols, MatrixConstant<T, Rows, Cols>> {
 public:
-    constexpr MatrixConstant(size_t r, size_t c, const T &val)
+    CUDA_CALLABLE constexpr MatrixConstant(size_t r, size_t c, const T &val)
         : _rows(r), _cols(c), _val(val) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t, size_t) const;
+    CUDA_CALLABLE constexpr T operator()(size_t, size_t) const;
 
 private:
     size_t _rows;
     size_t _cols;
     T _val;
 };
+#pragma endregion
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixDiagonal
-
+#pragma region MatrixDiagonal
 template<typename T, size_t Rows, size_t Cols, typename M1>
 class MatrixDiagonal
     : public MatrixExpression<T, Rows, Cols,
                               MatrixDiagonal<T, Rows, Cols, M1>> {
 public:
-    constexpr MatrixDiagonal(const M1 &m1) : _m1(m1) {}
+    CUDA_CALLABLE constexpr MatrixDiagonal(const M1 &m1) : _m1(m1) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
 };
+#pragma endregion
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixOffDiagonal
-
+#pragma region MatrixOffDiagonal
 template<typename T, size_t Rows, size_t Cols, typename M1>
-class MatrixOffDiagonal
-    : public MatrixExpression<T, Rows, Cols,
-                              MatrixOffDiagonal<T, Rows, Cols, M1>> {
+class MatrixOffDiagonal : public MatrixExpression<T, Rows, Cols,
+                                                  MatrixOffDiagonal<T, Rows, Cols, M1>> {
 public:
-    constexpr MatrixOffDiagonal(const M1 &m1) : _m1(m1) {}
+    CUDA_CALLABLE constexpr MatrixOffDiagonal(const M1 &m1) : _m1(m1) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
 };
+#pragma endregion
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixTri
-
+#pragma region MatrixTri
 template<typename T, size_t Rows, size_t Cols, typename M1>
 class MatrixTri
     : public MatrixExpression<T, Rows, Cols, MatrixTri<T, Rows, Cols, M1>> {
 public:
-    constexpr MatrixTri(const M1 &m1, bool isUpper, bool isStrict)
+    CUDA_CALLABLE constexpr MatrixTri(const M1 &m1, bool isUpper, bool isStrict)
         : _m1(m1), _isUpper(isUpper), _isStrict(isStrict) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
     bool _isUpper;
     bool _isStrict;
 };
+#pragma endregion
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixTranspose
-
+#pragma region MatrixTranspose
 template<typename T, size_t Rows, size_t Cols, typename M1>
 class MatrixTranspose
     : public MatrixExpression<T, Rows, Cols,
                               MatrixTranspose<T, Rows, Cols, M1>> {
 public:
-    constexpr MatrixTranspose(const M1 &m1) : _m1(m1) {}
+    CUDA_CALLABLE constexpr MatrixTranspose(const M1 &m1) : _m1(m1) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
 };
+#pragma endregion
 
-////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixUnaryOp
-
+#pragma region MARK: MatrixUnaryOp
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename UnaryOperation>
 class MatrixUnaryOp
     : public MatrixExpression<
           T, Rows, Cols, MatrixUnaryOp<T, Rows, Cols, M1, UnaryOperation>> {
 public:
-    constexpr MatrixUnaryOp(const M1 &m1) : _m1(m1) {}
+    CUDA_CALLABLE constexpr MatrixUnaryOp(const M1 &m1) : _m1(m1) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
     UnaryOperation _op;
 };
+#pragma endregion
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixNegate = MatrixUnaryOp<T, Rows, Cols, M1, std::negate<T>>;
@@ -417,19 +407,18 @@ template<typename T, size_t Rows, size_t Cols, typename U, typename M1>
 using MatrixTypeCast = MatrixUnaryOp<U, Rows, Cols, M1, TypeCast<T, U>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto ceil(const MatrixExpression<T, Rows, Cols, M1> &a);
+CUDA_CALLABLE constexpr auto ceil(const MatrixExpression<T, Rows, Cols, M1> &a);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto floor(const MatrixExpression<T, Rows, Cols, M1> &a);
+CUDA_CALLABLE constexpr auto floor(const MatrixExpression<T, Rows, Cols, M1> &a);
 
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &m);
+CUDA_CALLABLE constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &m);
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixElemWiseBinaryOp
-
+#pragma region MatrixElemWiseBinaryOp
 //!
 //! \brief Matrix expression for element-wise binary operation.
 //!
@@ -448,14 +437,14 @@ class MatrixElemWiseBinaryOp
           T, Rows, Cols,
           MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, BinaryOperation>> {
 public:
-    constexpr MatrixElemWiseBinaryOp(const E1 &m1, const E2 &m2)
+    CUDA_CALLABLE constexpr MatrixElemWiseBinaryOp(const E1 &m1, const E2 &m2)
         : _m1(m1), _m2(m2) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     E1 _m1;
@@ -494,32 +483,32 @@ using MatrixElemWiseMax = MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, Max<T>>;
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto operator+(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator+(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto elemMul(const MatrixExpression<T, Rows, Cols, M1> &a,
-                       const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto elemMul(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                     const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto elemDiv(const MatrixExpression<T, Rows, Cols, M1> &a,
-                       const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto elemDiv(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                     const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto min(const MatrixExpression<T, Rows, Cols, M1> &a,
-                   const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto min(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                 const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
-constexpr auto max(const MatrixExpression<T, Rows, Cols, M1> &a,
-                   const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto max(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                 const MatrixExpression<T, Rows, Cols, M2> &b);
+#pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixScalarElemWiseBinaryOp
-
+#pragma region MatrixScalarElemWiseBinaryOp
 template<typename T, size_t Rows, size_t Cols, typename M1,
          typename BinaryOperation>
 class MatrixScalarElemWiseBinaryOp
@@ -527,14 +516,14 @@ class MatrixScalarElemWiseBinaryOp
           T, Rows, Cols,
           MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, BinaryOperation>> {
 public:
-    constexpr MatrixScalarElemWiseBinaryOp(const M1 &m1, const T &s2)
+    CUDA_CALLABLE constexpr MatrixScalarElemWiseBinaryOp(const M1 &m1, const T &s2)
         : _m1(m1), _s2(s2) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
@@ -561,24 +550,24 @@ using MatrixScalarElemWiseDiv =
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto operator+(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const T &b);
+CUDA_CALLABLE constexpr auto operator+(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const T &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const T &b);
+CUDA_CALLABLE constexpr auto operator-(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const T &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto operator*(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const T &b);
+CUDA_CALLABLE constexpr auto operator*(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const T &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
-constexpr auto operator/(const MatrixExpression<T, Rows, Cols, M1> &a,
-                         const T &b);
+CUDA_CALLABLE constexpr auto operator/(const MatrixExpression<T, Rows, Cols, M1> &a,
+                                       const T &b);
+#pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: ScalarMatrixElemWiseBinaryOp
-
+#pragma region ScalarMatrixElemWiseBinaryOp
 template<typename T, size_t Rows, size_t Cols, typename M2,
          typename BinaryOperation>
 class ScalarMatrixElemWiseBinaryOp
@@ -586,14 +575,14 @@ class ScalarMatrixElemWiseBinaryOp
           T, Rows, Cols,
           ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, BinaryOperation>> {
 public:
-    constexpr ScalarMatrixElemWiseBinaryOp(const T &s1, const M2 &m2)
+    CUDA_CALLABLE constexpr ScalarMatrixElemWiseBinaryOp(const T &s1, const M2 &m2)
         : _s1(s1), _m2(m2) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     T _s1;
@@ -620,24 +609,24 @@ using ScalarMatrixElemWiseDiv =
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
-constexpr auto operator+(const T &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator+(const T &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
-constexpr auto operator-(const T &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator-(const T &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
-constexpr auto operator*(const T &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator*(const T &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
-constexpr auto operator/(const T &a,
-                         const MatrixExpression<T, Rows, Cols, M2> &b);
+CUDA_CALLABLE constexpr auto operator/(const T &a,
+                                       const MatrixExpression<T, Rows, Cols, M2> &b);
+#pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixTernaryOp
-
+#pragma region MatrixTernaryOp
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2,
          typename M3, typename TernaryOperation>
 class MatrixTernaryOp
@@ -645,14 +634,14 @@ class MatrixTernaryOp
           T, Rows, Cols,
           MatrixTernaryOp<T, Rows, Cols, M1, M2, M3, TernaryOperation>> {
 public:
-    constexpr MatrixTernaryOp(const M1 &m1, const M2 &m2, const M3 &m3)
+    CUDA_CALLABLE constexpr MatrixTernaryOp(const M1 &m1, const M2 &m2, const M3 &m3)
         : _m1(m1), _m2(m2), _m3(m3) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    constexpr T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE constexpr T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
@@ -667,24 +656,24 @@ using MatrixClamp = MatrixTernaryOp<T, Rows, Cols, M1, M2, M3, Clamp<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2,
          typename M3>
-auto clamp(const MatrixExpression<T, Rows, Cols, M1> &a,
-           const MatrixExpression<T, Rows, Cols, M2> &low,
-           const MatrixExpression<T, Rows, Cols, M3> &high);
+CUDA_CALLABLE auto clamp(const MatrixExpression<T, Rows, Cols, M1> &a,
+                         const MatrixExpression<T, Rows, Cols, M2> &low,
+                         const MatrixExpression<T, Rows, Cols, M3> &high);
+#pragma endregion
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: MatrixMul
-
+#pragma region MatrixMul
 template<typename T, size_t Rows, size_t Cols, typename M1, typename M2>
 class MatrixMul
     : public MatrixExpression<T, Rows, Cols, MatrixMul<T, Rows, Cols, M1, M2>> {
 public:
-    constexpr MatrixMul(const M1 &m1, const M2 &m2) : _m1(m1), _m2(m2) {}
+    CUDA_CALLABLE constexpr MatrixMul(const M1 &m1, const M2 &m2) : _m1(m1), _m2(m2) {}
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    T operator()(size_t i, size_t j) const;
+    CUDA_CALLABLE T operator()(size_t i, size_t j) const;
 
 private:
     M1 _m1;
@@ -693,9 +682,10 @@ private:
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M1,
          typename M2>
-auto operator*(const MatrixExpression<T, R1, C1, M1> &a,
-               const MatrixExpression<T, R2, C2, M2> &b);
+CUDA_CALLABLE auto operator*(const MatrixExpression<T, R1, C1, M1> &a,
+                             const MatrixExpression<T, R2, C2, M2> &b);
 
+#pragma endregion
 }// namespace vox
 
 #include "matrix_expression-inl.h"
