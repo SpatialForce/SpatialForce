@@ -12,7 +12,6 @@ set(COMMON_FILES
         matrix.h
         matrix_dense_base.h
         matrix_expression.h
-        tmp.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})
@@ -21,9 +20,9 @@ set(PROJECT_FILES
         ${COMMON_FILES}
 )
 
-add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})
+add_library(${PROJECT_NAME} INTERFACE ${PROJECT_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${PROJECT_NAME} INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR} .
         ../)
