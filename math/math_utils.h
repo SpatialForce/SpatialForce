@@ -7,7 +7,7 @@
 #pragma once
 
 #include <cstddef>
-#include <limits>
+#include <thrust/limits.h>
 
 namespace vox {
 
@@ -24,7 +24,7 @@ namespace vox {
 //!
 template<typename T>
 CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, bool>//
-similar(T x, T y, T eps = std::numeric_limits<T>::epsilon());
+similar(T x, T y, T eps = thrust::numeric_limits<T>::epsilon());
 
 //!
 //! \brief      Returns the sign of the value.

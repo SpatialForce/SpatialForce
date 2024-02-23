@@ -101,7 +101,7 @@ public:
     //! given tolerance.
     template<size_t R, size_t C, typename E>
     CUDA_CALLABLE bool isSimilar(const MatrixExpression<T, R, C, E> &m,
-                                 double tol = std::numeric_limits<double>::epsilon()) const;
+                                 double tol = thrust::numeric_limits<double>::epsilon()) const;
 
     //! Returns true if this matrix is a square matrix.
     CUDA_CALLABLE constexpr bool isSquare() const;
@@ -145,7 +145,7 @@ public:
     CUDA_CALLABLE value_type distanceSquaredTo(
         const MatrixExpression<T, R, C, E> &other) const;
 
-    CUDA_CALLABLE MatrixScalarElemWiseBinaryOp<T, Rows, Cols, const Derived &, std::divides<T>>
+    CUDA_CALLABLE MatrixScalarElemWiseBinaryOp<T, Rows, Cols, const Derived &, thrust::divides<T>>
     normalized() const;
 
     //! Returns diagonal part of this matrix.
@@ -455,22 +455,22 @@ private:
 //! Matrix expression for element-wise matrix-matrix addition.
 template<typename T, size_t Rows, size_t Cols, typename E1, typename E2>
 using MatrixElemWiseAdd =
-    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, std::plus<T>>;
+    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, thrust::plus<T>>;
 
 //! Matrix expression for element-wise matrix-matrix subtraction.
 template<typename T, size_t Rows, size_t Cols, typename E1, typename E2>
 using MatrixElemWiseSub =
-    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, std::minus<T>>;
+    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, thrust::minus<T>>;
 
 //! Matrix expression for element-wise matrix-matrix multiplication.
 template<typename T, size_t Rows, size_t Cols, typename E1, typename E2>
 using MatrixElemWiseMul =
-    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, std::multiplies<T>>;
+    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, thrust::multiplies<T>>;
 
 //! Matrix expression for element-wise matrix-matrix division.
 template<typename T, size_t Rows, size_t Cols, typename E1, typename E2>
 using MatrixElemWiseDiv =
-    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, std::divides<T>>;
+    MatrixElemWiseBinaryOp<T, Rows, Cols, E1, E2, thrust::divides<T>>;
 
 //! Matrix expression for element-wise matrix-matrix min operation.
 template<typename T, size_t Rows, size_t Cols, typename E1, typename E2>
@@ -533,19 +533,19 @@ private:
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixScalarElemWiseAdd =
-    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, std::plus<T>>;
+    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, thrust::plus<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixScalarElemWiseSub =
-    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, std::minus<T>>;
+    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, thrust::minus<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixScalarElemWiseMul =
-    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, std::multiplies<T>>;
+    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, thrust::multiplies<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 using MatrixScalarElemWiseDiv =
-    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, std::divides<T>>;
+    MatrixScalarElemWiseBinaryOp<T, Rows, Cols, M1, thrust::divides<T>>;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -592,19 +592,19 @@ private:
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
 using ScalarMatrixElemWiseAdd =
-    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, std::plus<T>>;
+    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, thrust::plus<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
 using ScalarMatrixElemWiseSub =
-    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, std::minus<T>>;
+    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, thrust::minus<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
 using ScalarMatrixElemWiseMul =
-    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, std::multiplies<T>>;
+    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, thrust::multiplies<T>>;
 
 template<typename T, size_t Rows, size_t Cols, typename M2>
 using ScalarMatrixElemWiseDiv =
-    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, std::divides<T>>;
+    ScalarMatrixElemWiseBinaryOp<T, Rows, Cols, M2, thrust::divides<T>>;
 
 ////////////////////////////////////////////////////////////////////////////////
 

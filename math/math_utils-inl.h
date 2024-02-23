@@ -9,8 +9,8 @@
 #include "constants.h"
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #include <cassert>
+#include <thrust/limits.h>
 
 namespace vox {
 

@@ -7,7 +7,7 @@
 #pragma once
 
 #include <cmath>
-#include <limits>
+#include <thrust/limits.h>
 #include "core/define.h"
 
 namespace vox {
@@ -165,24 +165,24 @@ CUDA_CALLABLE constexpr double two<double>() {
 // MARK: Epsilon
 
 //! Float-type epsilon.
-constexpr float kEpsilonF = std::numeric_limits<float>::epsilon();
+constexpr float kEpsilonF = thrust::numeric_limits<float>::epsilon();
 
 //! Double-type epsilon.
-constexpr double kEpsilonD = std::numeric_limits<double>::epsilon();
+constexpr double kEpsilonD = thrust::numeric_limits<double>::epsilon();
 
 // MARK: Max
 
 //! Max size_t.
-constexpr size_t kMaxSize = std::numeric_limits<size_t>::max();
+constexpr size_t kMaxSize = thrust::numeric_limits<size_t>::max();
 
 //! Max ssize_t.
-constexpr ssize_t kMaxSSize = std::numeric_limits<ssize_t>::max();
+constexpr ssize_t kMaxSSize = thrust::numeric_limits<ssize_t>::max();
 
 //! Max float.
-constexpr float kMaxF = std::numeric_limits<float>::max();
+constexpr float kMaxF = thrust::numeric_limits<float>::max();
 
 //! Max double.
-constexpr double kMaxD = std::numeric_limits<double>::max();
+constexpr double kMaxD = thrust::numeric_limits<double>::max();
 
 // MARK: Pi
 

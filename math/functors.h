@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include <functional>
-#include <limits>
+#include <thrust/functional.h>
+#include <thrust/limits.h>
 #include "core/define.h"
 
 namespace vox {
@@ -106,7 +106,7 @@ struct AbsMax {
 template<typename T>
 struct SimilarTo {
     double tol;
-    CUDA_CALLABLE constexpr SimilarTo(double tol_ = std::numeric_limits<double>::epsilon()) : tol(tol_) {}
+    CUDA_CALLABLE constexpr SimilarTo(double tol_ = thrust::numeric_limits<double>::epsilon()) : tol(tol_) {}
     CUDA_CALLABLE constexpr bool operator()(const T &a, const T &b) const;
 };
 

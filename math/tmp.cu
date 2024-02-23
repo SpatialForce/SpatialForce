@@ -9,6 +9,8 @@
 namespace vox {
 __global__ void kernel_test() {
     Vector2D vec;
+    Vector2D vec2;
+    vec2 += vec;
 }
 
 void test() {

@@ -12,7 +12,6 @@ set(COMMON_FILES
         matrix.h
         matrix_dense_base.h
         matrix_expression.h
-        tmp.cpp
         tmp.cu
 )
 

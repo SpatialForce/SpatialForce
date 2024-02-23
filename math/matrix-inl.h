@@ -1286,16 +1286,16 @@ CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a, const T &init) {
-    return internal::Reduce<T, Rows, Cols, std::plus<T>, NoOp<T>,
-                            Rows * Cols - 1>::call(a, init, std::plus<T>(),
+    return internal::Reduce<T, Rows, Cols, thrust::plus<T>, NoOp<T>,
+                            Rows * Cols - 1>::call(a, init, thrust::plus<T>(),
                                                    NoOp<T>());
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeStatic<Rows, Cols>::value, T> accumulate(
     const MatrixExpression<T, Rows, Cols, M1> &a) {
-    return internal::Reduce<T, Rows, Cols, std::plus<T>, NoOp<T>,
-                            Rows * Cols - 1>::call(a, std::plus<T>(),
+    return internal::Reduce<T, Rows, Cols, thrust::plus<T>, NoOp<T>,
+                            Rows * Cols - 1>::call(a, thrust::plus<T>(),
                                                    NoOp<T>());
 }
 
@@ -1312,13 +1312,13 @@ accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init,
 template<typename T, size_t Rows, size_t Cols, typename M1>
 CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a, const T &init) {
-    return std::accumulate(a.begin(), a.end(), init, std::plus<T>());
+    return std::accumulate(a.begin(), a.end(), init, thrust::plus<T>());
 }
 
 template<typename T, size_t Rows, size_t Cols, typename M1>
 CUDA_CALLABLE constexpr std::enable_if_t<IsMatrixSizeDynamic<Rows, Cols>::value, T>
 accumulate(const MatrixExpression<T, Rows, Cols, M1> &a) {
-    return std::accumulate(a.begin(), a.end(), T{}, std::plus<T>());
+    return std::accumulate(a.begin(), a.end(), T{}, thrust::plus<T>());
 }
 
 // Product
@@ -1326,7 +1326,7 @@ accumulate(const MatrixExpression<T, Rows, Cols, M1> &a) {
 template<typename T, size_t Rows, size_t Cols, typename M1>
 CUDA_CALLABLE constexpr T product(const MatrixExpression<T, Rows, Cols, M1> &a,
                                   const T &init) {
-    return accumulate(a, init, std::multiplies<T>());
+    return accumulate(a, init, thrust::multiplies<T>());
 }
 
 // Interpolation

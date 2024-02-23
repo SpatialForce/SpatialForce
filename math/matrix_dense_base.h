@@ -10,8 +10,6 @@
 #include "matrix_expression.h"
 #include "nested_initializer_list.h"
 
-#include <functional>
-
 namespace vox {
 
 // Derived type should be constructible.
