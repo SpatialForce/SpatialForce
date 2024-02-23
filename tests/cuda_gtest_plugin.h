@@ -69,6 +69,9 @@ __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, b
 
 #undef EXPECT_EQ
 #define EXPECT_EQ(val1, val2) setTestTransporterValue(testTransporter, val1 == val2);
+
+#undef EXPECT_NEAR
+#define EXPECT_NEAR(val1, val2, abs_error) setTestTransporterValue(testTransporter, abs(val1 - val2) < abs_error);
 #endif
 
 #define CUDA_TEST_FUNCTION_NAME_(test_case_name, test_name) \
@@ -105,7 +108,7 @@ __host__ __device__ void setTestTransporterValue(TestTransporter *transporter, b
         cudaMemcpy(testTransporter, dTestTransporter, sizeof(TestTransporter), cudaMemcpyDeviceToHost);                                                             \
         CUDA_LAST_ERROR("memcopydevicetohost");                                                                                                                     \
         for (int i = 0; i < testTransporter->evaluatedCount; i++)                                                                                                   \
-            GTEST_ASSERT_EQ(testTransporter->result[i], true) << "assert statement(" << i + 1 << ") failed.\n";                                                    \
+            GTEST_ASSERT_EQ(testTransporter->result[i], true) << "assert statement(i = " << i << ") failed.\n";                                                     \
     };                                                                                                                                                              \
     __global__ void CUDA_TEST_CLASS_NAME_(test_case_name, test_name)(CUDA_TEST_FUNCTION_NAME_(test_case_name, test_name) test, TestTransporter * testTransporter) { \
         test(testTransporter);                                                                                                                                      \

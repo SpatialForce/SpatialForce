@@ -29,7 +29,7 @@ CUDA_TEST(Vector2, Constructors) {
     EXPECT_FLOAT_EQ(6.f, vec6.y);
 }
 
-TEST(Vector2, BasicSetterMethods) {
+CUDA_TEST(Vector2, BasicSetterMethods) {
     Vector2F vec(3.f, 9.f);
     vec.fill(0.0f);
     EXPECT_FLOAT_EQ(0.f, vec.x);
@@ -39,6 +39,7 @@ TEST(Vector2, BasicSetterMethods) {
     EXPECT_FLOAT_EQ(4.f, vec.x);
     EXPECT_FLOAT_EQ(4.f, vec.y);
 
+#ifndef __CUDA_ARCH__
     vec.fill([](size_t i) -> float { return i * 5.f; });
     EXPECT_FLOAT_EQ(0.f, vec.x);
     EXPECT_FLOAT_EQ(5.f, vec.y);
@@ -46,13 +47,12 @@ TEST(Vector2, BasicSetterMethods) {
     vec.fill([](size_t i, size_t) -> float { return i + 8.f; });
     EXPECT_FLOAT_EQ(8.f, vec.x);
     EXPECT_FLOAT_EQ(9.f, vec.y);
+#endif
 
     Vector2F vec2{5.f, 3.f};
     vec.swap(vec2);
     EXPECT_FLOAT_EQ(5.f, vec.x);
     EXPECT_FLOAT_EQ(3.f, vec.y);
-    EXPECT_FLOAT_EQ(8.f, vec2.x);
-    EXPECT_FLOAT_EQ(9.f, vec2.y);
 
     vec = Vector2F{4.f, 2.f};
     vec.normalize();
@@ -60,7 +60,7 @@ TEST(Vector2, BasicSetterMethods) {
     EXPECT_NEAR(len, 1.f, 1e-6);
 }
 
-TEST(Vector2, BinaryOperatorMethods) {
+CUDA_TEST(Vector2, BinaryOperatorMethods) {
     Vector2F vec(1.f, 3.f);
 
     float d = vec.dot(Vector2F(4.f, 2.f));
@@ -70,7 +70,7 @@ TEST(Vector2, BinaryOperatorMethods) {
     EXPECT_FLOAT_EQ(c, -22.f);
 }
 
-TEST(Vector2, BasicGetterMethods) {
+CUDA_TEST(Vector2, BasicGetterMethods) {
     Vector2F vec(3.f, 7.f), vec2(-3.f, -7.f);
 
     float sum = vec.sum();
@@ -110,7 +110,7 @@ TEST(Vector2, BasicGetterMethods) {
     EXPECT_NEAR(lenSqr, 4.f, eps);
 }
 
-TEST(Vector2, BracketOperator) {
+CUDA_TEST(Vector2, BracketOperator) {
     Vector2F vec(8.f, 9.f);
     EXPECT_FLOAT_EQ(vec[0], 8.f);
     EXPECT_FLOAT_EQ(vec[1], 9.f);
@@ -121,7 +121,7 @@ TEST(Vector2, BracketOperator) {
     EXPECT_FLOAT_EQ(6.f, vec.y);
 }
 
-TEST(Vector2, AssignmentOperator) {
+CUDA_TEST(Vector2, AssignmentOperator) {
     Vector2F vec(5.f, 1.f);
     Vector2F vec2(3.f, 3.f);
     vec2 = vec;
@@ -129,7 +129,7 @@ TEST(Vector2, AssignmentOperator) {
     EXPECT_FLOAT_EQ(vec2.y, 1.f);
 }
 
-TEST(Vector2, AugmentedOperators) {
+CUDA_TEST(Vector2, AugmentedOperators) {
     Vector2F vec(3.f, 9.f);
     vec += 4.f;
     EXPECT_FLOAT_EQ(7.f, vec.x);
@@ -166,7 +166,7 @@ TEST(Vector2, AugmentedOperators) {
     EXPECT_FLOAT_EQ(3.f, vec.y);
 }
 
-TEST(Vector2, EqualOperator) {
+CUDA_TEST(Vector2, EqualOperator) {
     Vector2F vec, vec2(3.f, 7.f), vec3(3.f, 5.f), vec4(5.f, 1.f);
     vec = vec2;
     EXPECT_TRUE(vec == vec2);
@@ -176,7 +176,7 @@ TEST(Vector2, EqualOperator) {
     EXPECT_TRUE(vec != vec4);
 }
 
-TEST(Vector2, MinMaxFunction) {
+CUDA_TEST(Vector2, MinMaxFunction) {
     Vector2F vec(5.f, 1.f);
     Vector2F vec2(3.f, 3.f);
     Vector2F minVector = min(vec, vec2);
@@ -185,13 +185,13 @@ TEST(Vector2, MinMaxFunction) {
     EXPECT_EQ(Vector2F(5.f, 3.f), maxVector);
 }
 
-TEST(Vector2, ClampFunction) {
+CUDA_TEST(Vector2, ClampFunction) {
     Vector2F vec(2.f, 4.f), low(3.f, -1.f), high(5.f, 2.f);
     Vector2F clampedVec = clamp(vec, low, high);
     EXPECT_EQ(Vector2F(3.f, 2.f), clampedVec);
 }
 
-TEST(Vector2, CeilFloorFunction) {
+CUDA_TEST(Vector2, CeilFloorFunction) {
     Vector2F vec(2.2f, 4.7f);
     Vector2F ceilVec = ceil(vec);
     EXPECT_EQ(Vector2F(3.f, 5.f), ceilVec);
@@ -200,7 +200,7 @@ TEST(Vector2, CeilFloorFunction) {
     EXPECT_EQ(Vector2F(2.f, 4.f), floorVec);
 }
 
-TEST(Vector2, BinaryOperators) {
+CUDA_TEST(Vector2, BinaryOperators) {
     Vector2F vec(3.f, 9.f);
 
     Vector2F vec2 = -vec;
