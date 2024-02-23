@@ -128,7 +128,7 @@ CUDA_TEST(Matrix, ComplexGetters) {
                                        {4.0, 2.0, 3.0, 3.0, -9.0}};
     EXPECT_EQ(3.0, matC.trace());
 
-    EXPECT_DOUBLE_EQ(-6380.0, matC.determinant());
+    EXPECT_NEAR(-6380.0, matC.determinant(), 1.0e-10);
 
     Matrix<double, 2, 3> mat = matA.diagonal();
     Matrix<double, 2, 3> ans = {{1.0, 0.0, 0.0}, {0.0, 5.0, 0.0}};

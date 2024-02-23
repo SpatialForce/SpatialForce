@@ -64,6 +64,9 @@ __host__ __device__ inline void setTestTransporterValue(TestTransporter *transpo
 #define CUDA_ASSERT_EQ(expected, actual)
 
 #ifdef __CUDA_ARCH__
+#undef EXPECT_DOUBLE_EQ
+#define EXPECT_DOUBLE_EQ(val1, val2) setTestTransporterValue(testTransporter, (val1) == (val2));
+
 #undef EXPECT_FLOAT_EQ
 #define EXPECT_FLOAT_EQ(val1, val2) setTestTransporterValue(testTransporter, (val1) == (val2));
 
