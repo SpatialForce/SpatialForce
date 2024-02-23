@@ -150,20 +150,20 @@ struct FoldWithAnd<T, Rows, Cols, BinaryOperation, 0> {
 // MARK: Matrix Class (Static)
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(const_reference value) {
+CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const_reference value) {
     fill(value);
 }
 
 template<typename T, size_t Rows, size_t Cols>
 template<size_t R, size_t C, typename E>
-Matrix<T, Rows, Cols>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == Rows && expression.cols() == Cols);
 
     copyFrom(expression);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> &lst) {
+CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> &lst) {
     size_t i = 0;
     for (auto rows : lst) {
         assert(i < Rows);
@@ -178,7 +178,7 @@ Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> &lst) {
 }
 
 template<typename T, size_t Rows, size_t Cols>
-Matrix<T, Rows, Cols>::Matrix(const_pointer ptr) {
+CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const_pointer ptr) {
     size_t cnt = 0;
     for (size_t i = 0; i < Rows; ++i) {
         for (size_t j = 0; j < Cols; ++j) {
@@ -188,8 +188,10 @@ Matrix<T, Rows, Cols>::Matrix(const_pointer ptr) {
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::fill(const T &val) {
-    _elements.fill(val);
+CUDA_CALLABLE void Matrix<T, Rows, Cols>::fill(const T &val) {
+    for (size_t i = 0; i < Rows * Cols; ++i) {
+        _elements[i] = val;
+    }
 }
 
 template<typename T, size_t Rows, size_t Cols>
@@ -210,62 +212,62 @@ void Matrix<T, Rows, Cols>::fill(
 }
 
 template<typename T, size_t Rows, size_t Cols>
-void Matrix<T, Rows, Cols>::swap(Matrix &other) {
-    _elements.swap(other._elements);
+CUDA_CALLABLE void Matrix<T, Rows, Cols>::swap(Matrix &other) {
+    thrust::swap(_elements, other._elements);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-constexpr size_t Matrix<T, Rows, Cols>::rows() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, Rows, Cols>::rows() const {
     return Rows;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-constexpr size_t Matrix<T, Rows, Cols>::cols() const {
+CUDA_CALLABLE constexpr size_t Matrix<T, Rows, Cols>::cols() const {
     return Cols;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-typename Matrix<T, Rows, Cols>::iterator Matrix<T, Rows, Cols>::begin() {
+CUDA_CALLABLE typename Matrix<T, Rows, Cols>::iterator Matrix<T, Rows, Cols>::begin() {
     return &_elements[0];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-constexpr typename Matrix<T, Rows, Cols>::const_iterator
+CUDA_CALLABLE constexpr typename Matrix<T, Rows, Cols>::const_iterator
 Matrix<T, Rows, Cols>::begin() const {
     return &_elements[0];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-typename Matrix<T, Rows, Cols>::iterator Matrix<T, Rows, Cols>::end() {
+CUDA_CALLABLE typename Matrix<T, Rows, Cols>::iterator Matrix<T, Rows, Cols>::end() {
     return begin() + Rows * Cols;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-constexpr typename Matrix<T, Rows, Cols>::const_iterator
+CUDA_CALLABLE constexpr typename Matrix<T, Rows, Cols>::const_iterator
 Matrix<T, Rows, Cols>::end() const {
     return begin() + Rows * Cols;
 }
 
 template<typename T, size_t Rows, size_t Cols>
-typename Matrix<T, Rows, Cols>::pointer Matrix<T, Rows, Cols>::data() {
+CUDA_CALLABLE typename Matrix<T, Rows, Cols>::pointer Matrix<T, Rows, Cols>::data() {
     return &_elements[0];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-constexpr typename Matrix<T, Rows, Cols>::const_pointer
+CUDA_CALLABLE constexpr typename Matrix<T, Rows, Cols>::const_pointer
 Matrix<T, Rows, Cols>::data() const {
     return &_elements[0];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-typename Matrix<T, Rows, Cols>::reference Matrix<T, Rows, Cols>::operator[](
+CUDA_CALLABLE typename Matrix<T, Rows, Cols>::reference Matrix<T, Rows, Cols>::operator[](
     size_t i) {
     assert(i < Rows * Cols);
     return _elements[i];
 }
 
 template<typename T, size_t Rows, size_t Cols>
-typename Matrix<T, Rows, Cols>::const_reference Matrix<T, Rows, Cols>::
+CUDA_CALLABLE typename Matrix<T, Rows, Cols>::const_reference Matrix<T, Rows, Cols>::
 operator[](size_t i) const {
     assert(i < Rows * Cols);
     return _elements[i];

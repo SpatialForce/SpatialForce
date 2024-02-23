@@ -297,9 +297,7 @@ MatrixExpression<T, Rows, Cols, D>::castTo() const {
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E, typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || Cols == 1) &&
-                                   (isMatrixSizeDynamic<R, C>() || C == 1),
-                               U>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || Cols == 1) && (isMatrixSizeDynamic<R, C>() || C == 1), U>
 MatrixExpression<T, Rows, Cols, D>::dot(
     const MatrixExpression<T, R, C, E> &expression) const {
     assert(expression.rows() == rows() && expression.cols() == 1);
@@ -313,10 +311,7 @@ MatrixExpression<T, Rows, Cols, D>::dot(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E, typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                                (Rows == 2 && Cols == 1)) &&
-                                   (isMatrixSizeDynamic<R, C>() || (R == 2 && C == 1)),
-                               U>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 2 && Cols == 1)) && (isMatrixSizeDynamic<R, C>() || (R == 2 && C == 1)), U>
 MatrixExpression<T, Rows, Cols, D>::cross(
     const MatrixExpression<T, R, C, E> &expression) const {
     assert(rows() == 2 && cols() == 1 && expression.rows() == 2 &&
@@ -328,10 +323,7 @@ MatrixExpression<T, Rows, Cols, D>::cross(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E, typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                                (Rows == 3 && Cols == 1)) &&
-                                   (isMatrixSizeDynamic<R, C>() || (R == 3 && C == 1)),
-                               Matrix<U, 3, 1>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 3 && Cols == 1)) && (isMatrixSizeDynamic<R, C>() || (R == 3 && C == 1)), Matrix<U, 3, 1>>
 MatrixExpression<T, Rows, Cols, D>::cross(
     const MatrixExpression<T, R, C, E> &exp) const {
     assert(rows() == 3 && cols() == 1 && exp.rows() == 3 &&
@@ -345,11 +337,7 @@ MatrixExpression<T, Rows, Cols, D>::cross(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E, typename U>
-std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                  ((Rows == 2 || Rows == 3) && Cols == 1)) &&
-                     (isMatrixSizeDynamic<R, C>() ||
-                      ((R == 2 || R == 3) && C == 1)),
-                 Matrix<U, Rows, 1>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || ((Rows == 2 || Rows == 3) && Cols == 1)) && (isMatrixSizeDynamic<R, C>() || ((R == 2 || R == 3) && C == 1)), Matrix<U, Rows, 1>>
 MatrixExpression<T, Rows, Cols, D>::reflected(
     const MatrixExpression<T, R, C, E> &normal) const {
     assert((rows() == 2 || rows() == 3) && cols() == 1 &&
@@ -361,11 +349,7 @@ MatrixExpression<T, Rows, Cols, D>::reflected(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<size_t R, size_t C, typename E, typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                                ((Rows == 2 || Rows == 3) && Cols == 1)) &&
-                                   (isMatrixSizeDynamic<R, C>() ||
-                                    ((R == 2 || R == 3) && C == 1)),
-                               Matrix<U, Rows, 1>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || ((Rows == 2 || Rows == 3) && Cols == 1)) && (isMatrixSizeDynamic<R, C>() || ((R == 2 || R == 3) && C == 1)), Matrix<U, Rows, 1>>
 MatrixExpression<T, Rows, Cols, D>::projected(
     const MatrixExpression<T, R, C, E> &normal) const {
     assert((rows() == 2 || rows() == 3) && cols() == 1 &&
@@ -377,9 +361,7 @@ MatrixExpression<T, Rows, Cols, D>::projected(
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                                (Rows == 2 && Cols == 1)),
-                               Matrix<U, 2, 1>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 2 && Cols == 1)), Matrix<U, 2, 1>>
 MatrixExpression<T, Rows, Cols, D>::tangential() const {
     assert(rows() == 2 && cols() == 1);
 
@@ -388,9 +370,7 @@ MatrixExpression<T, Rows, Cols, D>::tangential() const {
 
 template<typename T, size_t Rows, size_t Cols, typename D>
 template<typename U>
-CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                                (Rows == 3 && Cols == 1)),
-                               std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
+CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || (Rows == 3 && Cols == 1)), std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
 MatrixExpression<T, Rows, Cols, D>::tangentials() const {
     assert(rows() == 3 && cols() == 1);
 
@@ -679,9 +659,7 @@ template<typename T, size_t Rows, size_t Cols, typename Derived>
 template<typename M>
 CUDA_CALLABLE void MatrixExpression<T, Rows, Cols, Derived>::inverse(
     const MatrixExpression<T, Rows, Cols, Derived> &m,
-    std::enable_if_t<(Rows > 4 && Cols > 4) ||
-                         isMatrixSizeDynamic<Rows, Cols>(),
-                     M> &result) {
+    std::enable_if_t<(Rows > 4 && Cols > 4) || isMatrixSizeDynamic<Rows, Cols>(), M> &result) {
     // Computes inverse matrix using Gaussian elimination method.
     // https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
     Matrix<T, Rows, Cols> a{m.derived()};

@@ -177,56 +177,56 @@ public:
 
 #pragma region Binary Operators
     template<size_t R, size_t C, typename E, typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || Cols == 1) &&
-                         (isMatrixSizeDynamic<R, C>() || C == 1),
-                     U>
-        CUDA_CALLABLE dot(const MatrixExpression<T, R, C, E> &expression) const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() || Cols == 1) &&
+                                       (isMatrixSizeDynamic<R, C>() || C == 1),
+                                   U>
+    dot(const MatrixExpression<T, R, C, E> &expression) const;
 
     template<size_t R, size_t C, typename E, typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      (Rows == 2 && Cols == 1)) &&
-                         (isMatrixSizeDynamic<R, C>() || (R == 2 && C == 1)),
-                     U>
-        CUDA_CALLABLE cross(const MatrixExpression<T, R, C, E> &expression) const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    (Rows == 2 && Cols == 1)) &&
+                                       (isMatrixSizeDynamic<R, C>() || (R == 2 && C == 1)),
+                                   U>
+    cross(const MatrixExpression<T, R, C, E> &expression) const;
 
     template<size_t R, size_t C, typename E, typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      (Rows == 3 && Cols == 1)) &&
-                         (isMatrixSizeDynamic<R, C>() || (R == 3 && C == 1)),
-                     Matrix<U, 3, 1>>
-        CUDA_CALLABLE cross(const MatrixExpression<T, R, C, E> &expression) const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    (Rows == 3 && Cols == 1)) &&
+                                       (isMatrixSizeDynamic<R, C>() || (R == 3 && C == 1)),
+                                   Matrix<U, 3, 1>>
+    cross(const MatrixExpression<T, R, C, E> &expression) const;
 
     //! Returns the reflection vector to the surface with given surface normal.
     template<size_t R, size_t C, typename E, typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      ((Rows == 2 || Rows == 3) && Cols == 1)) &&
-                         (isMatrixSizeDynamic<R, C>() ||
-                          ((R == 2 || R == 3) && C == 1)),
-                     Matrix<U, Rows, 1>>
-        CUDA_CALLABLE reflected(const MatrixExpression<T, R, C, E> &normal) const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    ((Rows == 2 || Rows == 3) && Cols == 1)) &&
+                                       (isMatrixSizeDynamic<R, C>() ||
+                                        ((R == 2 || R == 3) && C == 1)),
+                                   Matrix<U, Rows, 1>>
+    reflected(const MatrixExpression<T, R, C, E> &normal) const;
 
     //! Returns the projected vector to the surface with given surface normal.
     template<size_t R, size_t C, typename E, typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      ((Rows == 2 || Rows == 3) && Cols == 1)) &&
-                         (isMatrixSizeDynamic<R, C>() ||
-                          ((R == 2 || R == 3) && C == 1)),
-                     Matrix<U, Rows, 1>>
-        CUDA_CALLABLE projected(const MatrixExpression<T, R, C, E> &normal) const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    ((Rows == 2 || Rows == 3) && Cols == 1)) &&
+                                       (isMatrixSizeDynamic<R, C>() ||
+                                        ((R == 2 || R == 3) && C == 1)),
+                                   Matrix<U, Rows, 1>>
+    projected(const MatrixExpression<T, R, C, E> &normal) const;
 
     //! Returns the tangential vector for this vector.
     template<typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      (Rows == 2 && Cols == 1)),
-                     Matrix<U, 2, 1>>
-        CUDA_CALLABLE tangential() const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    (Rows == 2 && Cols == 1)),
+                                   Matrix<U, 2, 1>>
+    tangential() const;
 
     //! Returns the tangential vectors for this vector.
     template<typename U = value_type>
-    std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
-                      (Rows == 3 && Cols == 1)),
-                     std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
-        CUDA_CALLABLE tangentials() const;
+    CUDA_CALLABLE std::enable_if_t<(isMatrixSizeDynamic<Rows, Cols>() ||
+                                    (Rows == 3 && Cols == 1)),
+                                   std::tuple<Matrix<U, 3, 1>, Matrix<U, 3, 1>>>
+    tangentials() const;
 #pragma endregion
 
 #pragma region Other Helpers
@@ -250,9 +250,9 @@ protected:
     CUDA_CALLABLE constexpr static T determinant(const MatrixExpression<T, 4, 4, Derived> &m);
 
     template<typename U = value_type>
-    static std::enable_if_t<
+    CUDA_CALLABLE static std::enable_if_t<
         (Rows > 4 && Cols > 4) || isMatrixSizeDynamic<Rows, Cols>(), U>
-        CUDA_CALLABLE determinant(const MatrixExpression<T, Rows, Cols, Derived> &m);
+    determinant(const MatrixExpression<T, Rows, Cols, Derived> &m);
 
     CUDA_CALLABLE static void inverse(const MatrixExpression<T, 1, 1, Derived> &m,
                                       Matrix<T, Rows, Cols> &result);
@@ -268,9 +268,7 @@ protected:
 
     template<typename M = Matrix<T, Rows, Cols>>
     CUDA_CALLABLE static void inverse(const MatrixExpression &m,
-                                      std::enable_if_t<(Rows > 4 && Cols > 4) ||
-                                                           isMatrixSizeDynamic<Rows, Cols>(),
-                                                       M> &result);
+                                      std::enable_if_t<(Rows > 4 && Cols > 4) || isMatrixSizeDynamic<Rows, Cols>(), M> &result);
 };
 
 //====================================================================================================================

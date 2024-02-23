@@ -11,6 +11,10 @@ __global__ void kernel_test() {
     Vector2D vec;
     Vector2D vec2;
     vec2 += vec;
+
+    clamp(1, 1, 1);
+    Floor<float>()(1.0);
+    Matrix<float, 10, 10> mat = {{1, 2, 3, 4}, {1, 2, 3, 4}};
 }
 
 void test() {

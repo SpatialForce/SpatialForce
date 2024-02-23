@@ -40,53 +40,53 @@ public:
     using iterator = pointer;
     using const_iterator = const_pointer;
 
-    constexpr Matrix() : _elements{} {}
+    CUDA_CALLABLE constexpr Matrix() : _elements{} {}
 
-    Matrix(const_reference value);
+    CUDA_CALLABLE Matrix(const_reference value);
 
     template<typename... Args>
-    constexpr Matrix(const_reference first, Args... rest)
+    CUDA_CALLABLE constexpr Matrix(const_reference first, Args... rest)
         : _elements{{first, static_cast<value_type>(rest)...}} {}
 
     template<size_t R, size_t C, typename E>
-    Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    Matrix(const NestedInitializerListsT<T, 2> &lst);
+    CUDA_CALLABLE Matrix(const NestedInitializerListsT<T, 2> &lst);
 
-    Matrix(const_pointer ptr);
+    CUDA_CALLABLE Matrix(const_pointer ptr);
 
-    constexpr Matrix(const Matrix &other) : _elements(other._elements) {}
+    CUDA_CALLABLE constexpr Matrix(const Matrix &other) : _elements(other._elements) {}
 
-    void fill(const T &val);
+    CUDA_CALLABLE void fill(const T &val);
 
     void fill(const std::function<T(size_t i)> &func);
 
     void fill(const std::function<T(size_t i, size_t j)> &func);
 
-    void swap(Matrix &other);
+    CUDA_CALLABLE void swap(Matrix &other);
 
-    constexpr size_t rows() const;
+    CUDA_CALLABLE constexpr size_t rows() const;
 
-    constexpr size_t cols() const;
+    CUDA_CALLABLE constexpr size_t cols() const;
 
-    iterator begin();
+    CUDA_CALLABLE iterator begin();
 
-    constexpr const_iterator begin() const;
+    CUDA_CALLABLE constexpr const_iterator begin() const;
 
-    iterator end();
+    CUDA_CALLABLE iterator end();
 
-    constexpr const_iterator end() const;
+    CUDA_CALLABLE constexpr const_iterator end() const;
 
-    pointer data();
+    CUDA_CALLABLE pointer data();
 
-    constexpr const_pointer data() const;
+    CUDA_CALLABLE constexpr const_pointer data() const;
 
-    reference operator[](size_t i);
+    CUDA_CALLABLE reference operator[](size_t i);
 
-    const_reference operator[](size_t i) const;
+    CUDA_CALLABLE const_reference operator[](size_t i) const;
 
 private:
-    std::array<T, Rows * Cols> _elements;
+    T _elements[Rows * Cols];
 };
 
 // MARK: Specialized Matrix for 1, 2, 3, and 4-D Vector Types
