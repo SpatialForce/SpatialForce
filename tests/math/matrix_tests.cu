@@ -11,24 +11,7 @@
 
 using namespace vox;
 
-namespace jet {
-
-template<typename T, size_t M, size_t N>
-std::ostream &operator<<(std::ostream &os, const Matrix<T, M, N> &mat) {
-    for (size_t i = 0; i < mat.rows(); ++i) {
-        for (size_t j = 0; j < mat.cols(); ++j) {
-            os << mat(i, j);
-            if (j + 1 < mat.cols()) {
-                os << std::string(", ");
-            }
-        }
-        os << std::endl;
-    }
-    return os;
-}
-}// namespace jet
-
-TEST(Matrix, Constructors) {
+CUDA_TEST(Matrix, Constructors) {
     Matrix<double, 2, 3> mat;
 
     EXPECT_EQ(2u, mat.rows());
@@ -57,7 +40,7 @@ TEST(Matrix, Constructors) {
     }
 }
 
-TEST(Matrix, BasicSetters) {
+CUDA_TEST(Matrix, BasicSetters) {
     Matrix<double, 4, 2> mat;
     mat.fill(5.0);
     EXPECT_EQ(4u, mat.rows());
@@ -126,7 +109,7 @@ TEST(Matrix, BasicSetters) {
     EXPECT_FALSE(mat.isSquare());
 }
 
-TEST(Matrix, ComplexGetters) {
+CUDA_TEST(Matrix, ComplexGetters) {
     const Matrix<double, 2, 3> matA = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
 
     EXPECT_EQ(21.0, matA.sum());
@@ -210,7 +193,7 @@ TEST(Matrix, ComplexGetters) {
     EXPECT_TRUE(mat2I.isSimilar(ansI, 1e-6));
 }
 
-TEST(Matrix, Modifiers) {
+CUDA_TEST(Matrix, Modifiers) {
     Matrix<double, 5, 5> mat = {{3.0, -1.0, 2.0, 4.0, 5.0},
                                 {-9.0, 2.0, 8.0, -1.0, 2.0},
                                 {4.0, 3.0, 6.0, 7.0, -5.0},
@@ -240,7 +223,7 @@ TEST(Matrix, Modifiers) {
     EXPECT_TRUE(mat.isSimilar(ans, 1e-9));
 }
 
-TEST(Matrix, SetterOperators) {
+CUDA_TEST(Matrix, SetterOperators) {
     const Matrix<double, 2, 3> matA = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
     const Matrix<double, 2, 3> matB = {{3.0, -1.0, 2.0}, {9.0, 2.0, 8.0}};
 
@@ -295,7 +278,7 @@ TEST(Matrix, SetterOperators) {
     }
 }
 
-TEST(Matrix, GetterOperator) {
+CUDA_TEST(Matrix, GetterOperator) {
     Matrix<double, 2, 4> mat, mat2;
     mat = {{1.0, 2.0, 3.0, 4.0}, {5.0, 6.0, 7.0, 8.0}};
     double cnt = 1.0;
@@ -311,7 +294,7 @@ TEST(Matrix, GetterOperator) {
     }
 }
 /*
-TEST(Matrix, Builders) {
+CUDA_TEST(Matrix, Builders) {
     const Matrix<double, 3, 4> mat =
         Matrix<double, 3, 4>::makeZero();
     for (size_t i = 0; i < 12; ++i) {

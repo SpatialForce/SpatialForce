@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(MathUtils, GetBaryCentric2) {
+CUDA_TEST(MathUtils, GetBaryCentric2) {
     double x = 3.2;
     ssize_t i;
     double t;
@@ -76,15 +76,15 @@ TEST(MathUtils, GetBaryCentric2) {
     EXPECT_NEAR(0.0, t, 1e-9);
 }
 
-TEST(MathUtils, Lerp) {
+CUDA_TEST(MathUtils, Lerp) {
     float a = 0.f;
     float b = 1.f;
 
-    float result = lerp(a, b, 0.3f);
+    float result = vox::lerp(a, b, 0.3f);
     EXPECT_FLOAT_EQ(0.3f, result);
 }
 
-TEST(MathUtils, CatmullRom) {
+CUDA_TEST(MathUtils, CatmullRom) {
     float a = 0.f;
     float b = 0.f;
     float c = 1.f;
@@ -94,7 +94,7 @@ TEST(MathUtils, CatmullRom) {
     EXPECT_FLOAT_EQ(0.5f, result);
 }
 
-TEST(MathUtils, MonotonicCatmullRom) {
+CUDA_TEST(MathUtils, MonotonicCatmullRom) {
     float a = 0.f;
     float b = 0.f;
     float c = 1.f;

@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(Vector4, BasicGetterMethods) {
+CUDA_TEST(Vector4, BasicGetterMethods) {
     Vector4F vec(3.f, 7.f, -1.f, 11.f), vec2(-3.f, -7.f, 1.f, 4.f);
     Vector4F vec3(3.f, 1.f, -5.f, 4.f), vec4(-3.f, 2.f, 1.f, -4.f);
 

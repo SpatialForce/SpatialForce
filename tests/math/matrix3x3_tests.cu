@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(Matrix3x3, Constructors) {
+CUDA_TEST(Matrix3x3, Constructors) {
     Matrix3x3D mat;
 
     // Deprecated behavior: default ctor will make zero matrix, not an identity.
@@ -47,7 +47,7 @@ TEST(Matrix3x3, Constructors) {
     }
 }
 
-TEST(Matrix3x3, SetMethods) {
+CUDA_TEST(Matrix3x3, SetMethods) {
     Matrix3x3D mat;
 
     mat.fill(3.1);
@@ -97,7 +97,7 @@ TEST(Matrix3x3, SetMethods) {
     }
 }
 
-TEST(Matrix3x3, BasicGetters) {
+CUDA_TEST(Matrix3x3, BasicGetters) {
     Matrix3x3D mat(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0),
         mat2(1.01, 2.01, 2.99, 4.0, 4.99, 6.001, 7.0003, 8.0, 8.99), mat3;
 
@@ -110,7 +110,7 @@ TEST(Matrix3x3, BasicGetters) {
     EXPECT_EQ(3u, mat.cols());
 }
 
-TEST(Matrix3x3, Modifiers) {
+CUDA_TEST(Matrix3x3, Modifiers) {
     Matrix3x3D mat(9.0, -8.0, 7.0, -6.0, 5.0, -4.0, 3.0, -2.0, 1.0);
 
     mat.transpose();
@@ -123,7 +123,7 @@ TEST(Matrix3x3, Modifiers) {
         Matrix3x3D(-2.0 / 3.0, -2.0 / 3.0, 1.0, 0.0, 1.0, 2.0, 1.0, 2.0, 1.0)));
 }
 
-TEST(Matrix3x3, ComplexGetters) {
+CUDA_TEST(Matrix3x3, ComplexGetters) {
     Matrix3x3D mat(9.0, -8.0, 7.0, -6.0, 5.0, -4.0, 3.0, -2.0, 1.0), mat2;
 
     EXPECT_DOUBLE_EQ(5.0, mat.sum());
@@ -181,7 +181,7 @@ TEST(Matrix3x3, ComplexGetters) {
         Matrix3x3F(9.f, -8.f, 7.f, -6.f, 5.f, -4.f, 3.f, -2.f, 1.f)));
 }
 
-TEST(Matrix3x3, SetterOperatorOverloadings) {
+CUDA_TEST(Matrix3x3, SetterOperatorOverloadings) {
     Matrix3x3D mat(9.0, -8.0, 7.0, -6.0, 5.0, -4.0, 3.0, -2.0, 1.0), mat2;
 
     mat2 = mat;
@@ -223,7 +223,7 @@ TEST(Matrix3x3, SetterOperatorOverloadings) {
         Matrix3x3D(4.5, -4.0, 3.5, -3.0, 2.5, -2.0, 1.5, -1.0, 0.5)));
 }
 
-TEST(Matrix3x3, GetterOperatorOverloadings) {
+CUDA_TEST(Matrix3x3, GetterOperatorOverloadings) {
     Matrix3x3D mat(9.0, -8.0, 7.0, -6.0, 5.0, -4.0, 3.0, -2.0, 1.0);
 
     EXPECT_DOUBLE_EQ(9.0, mat[0]);
@@ -303,7 +303,7 @@ TEST(Matrix3x3, GetterOperatorOverloadings) {
                 Matrix3x3D(9.0, -8.0, 7.0, -6.0, 5.0, -4.0, 3.0, -2.0, 1.0));
 }
 
-TEST(Matrix3x3, Helpers) {
+CUDA_TEST(Matrix3x3, Helpers) {
     Matrix3x3D mat = Matrix3x3D::makeZero();
     EXPECT_TRUE(mat.isSimilar(
         Matrix3x3D(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)));

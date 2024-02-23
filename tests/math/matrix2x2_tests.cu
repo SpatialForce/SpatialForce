@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(Matrix2x2, Constructors) {
+CUDA_TEST(Matrix2x2, Constructors) {
     Matrix2x2D mat;
     // Deprecated behavior: default ctor will make zero matrix, not an identity.
     // EXPECT_TRUE(mat == Matrix2x2D(1.0, 0.0, 0.0, 1.0));
@@ -44,7 +44,7 @@ TEST(Matrix2x2, Constructors) {
     }
 }
 
-TEST(Matrix2x2, SetMethods) {
+CUDA_TEST(Matrix2x2, SetMethods) {
     Matrix2x2D mat;
 
     mat.fill(3.1);
@@ -98,7 +98,7 @@ TEST(Matrix2x2, SetMethods) {
     }
 }
 
-TEST(Matrix2x2, BasicGetters) {
+CUDA_TEST(Matrix2x2, BasicGetters) {
     Matrix2x2D mat(1.0, 2.0, 3.0, 4.0), mat2(1.01, 2.01, 2.99, 4.0), mat3;
 
     EXPECT_TRUE(mat.isSimilar(mat2, 0.02));
@@ -110,7 +110,7 @@ TEST(Matrix2x2, BasicGetters) {
     EXPECT_EQ(2u, mat.cols());
 }
 
-TEST(Matrix2x2, BinaryOperators) {
+CUDA_TEST(Matrix2x2, BinaryOperators) {
     Matrix2x2D mat(-4.0, 3.0, -2.0, 1.0), mat2;
     Vector2D vec;
 
@@ -145,7 +145,7 @@ TEST(Matrix2x2, BinaryOperators) {
     EXPECT_TRUE(vec.isSimilar(Vector2D(16.0, 4.0)));
 }
 
-TEST(Matrix2x2, Modifiers) {
+CUDA_TEST(Matrix2x2, Modifiers) {
     Matrix2x2D mat(-4.0, 3.0, -2.0, 1.0);
 
     mat.transpose();
@@ -156,7 +156,7 @@ TEST(Matrix2x2, Modifiers) {
     EXPECT_TRUE(mat.isSimilar(Matrix2x2D(0.5, -1.5, 1.0, -2.0)));
 }
 
-TEST(Matrix2x2, ComplexGetters) {
+CUDA_TEST(Matrix2x2, ComplexGetters) {
     Matrix2x2D mat(-4.0, 3.0, -2.0, 1.0), mat2;
 
     EXPECT_DOUBLE_EQ(-2.0, mat.sum());
@@ -203,7 +203,7 @@ TEST(Matrix2x2, ComplexGetters) {
     EXPECT_TRUE(mat3.isSimilar(Matrix<float, 2, 2>(-4.f, 3.f, -2.f, 1.f)));
 }
 
-TEST(Matrix2x2, SetterOperatorOverloadings) {
+CUDA_TEST(Matrix2x2, SetterOperatorOverloadings) {
     Matrix2x2D mat(-4.0, 3.0, -2.0, 1.0), mat2;
 
     mat2 = mat;
@@ -237,7 +237,7 @@ TEST(Matrix2x2, SetterOperatorOverloadings) {
     EXPECT_TRUE(mat.isSimilar(Matrix2x2D(-2.0, 1.5, -1.0, 0.5)));
 }
 
-TEST(Matrix2x2, GetterOperatorOverloadings) {
+CUDA_TEST(Matrix2x2, GetterOperatorOverloadings) {
     Matrix2x2D mat(-4.0, 3.0, -2.0, 1.0);
 
     EXPECT_DOUBLE_EQ(-4.0, mat[0]);
@@ -276,7 +276,7 @@ TEST(Matrix2x2, GetterOperatorOverloadings) {
     EXPECT_TRUE(mat != Matrix2x2D(-4.0, 3.0, -2.0, 1.0));
 }
 
-TEST(Matrix2x2, Helpers) {
+CUDA_TEST(Matrix2x2, Helpers) {
     Matrix2x2D mat = Matrix2x2D::makeZero();
     EXPECT_TRUE(mat.isSimilar(Matrix2x2D(0.0, 0.0, 0.0, 0.0)));
 

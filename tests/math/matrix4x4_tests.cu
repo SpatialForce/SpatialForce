@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(Matrix4x4, Constructors) {
+CUDA_TEST(Matrix4x4, Constructors) {
     Matrix4x4D mat;
 
     // Deprecated behavior: default ctor will make zero matrix, not an identity.
@@ -58,7 +58,7 @@ TEST(Matrix4x4, Constructors) {
     }
 }
 
-TEST(Matrix4x4, SetMethods) {
+CUDA_TEST(Matrix4x4, SetMethods) {
     Matrix4x4D mat;
 
     mat.fill(3.1);
@@ -113,7 +113,7 @@ TEST(Matrix4x4, SetMethods) {
     }
 }
 
-TEST(Matrix4x4, BasicGetters) {
+CUDA_TEST(Matrix4x4, BasicGetters) {
     Matrix4x4D mat(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16),
         mat2(1.01, 2.01, 2.99, 4.0, 4.99, 6.001, 7.0003, 8.0, 8.99, 10.01, 11,
              11.99, 13.01, 14.001, 14.999, 16),
@@ -128,7 +128,7 @@ TEST(Matrix4x4, BasicGetters) {
     EXPECT_EQ(4u, mat.cols());
 }
 
-TEST(Matrix4x4, Modifiers) {
+CUDA_TEST(Matrix4x4, Modifiers) {
     Matrix4x4D mat(-16, 15, -14, 13, -12, 11, -10, 9, -8, 7, -6, 5, -6, 3, -2,
                    1);
 
@@ -147,7 +147,7 @@ TEST(Matrix4x4, Modifiers) {
                     {1.0, -2.0, 1.0, 0.0}})));
 }
 
-TEST(Matrix4x4, ComplexGetters) {
+CUDA_TEST(Matrix4x4, ComplexGetters) {
     Matrix4x4D mat(-16, 15, -14, 13, -12, 11, -10, 9, -8, 7, -6, 5, -4, 3, -2,
                    1),
         mat2;
@@ -212,7 +212,7 @@ TEST(Matrix4x4, ComplexGetters) {
                                           7, -6, 5, -6, 3, -2, 1)));
 }
 
-TEST(Matrix4x4, SetterOperatorOverloadings) {
+CUDA_TEST(Matrix4x4, SetterOperatorOverloadings) {
     Matrix4x4D mat(-16, 15, -14, 13, -12, 11, -10, 9, -8, 7, -6, 5, -6, 3, -2,
                    1),
         mat2;
@@ -271,7 +271,7 @@ TEST(Matrix4x4, SetterOperatorOverloadings) {
                                   {-3.0, 3.0 / 2.0, -1.0, 1.0 / 2.0}})));
 }
 
-TEST(Matrix4x4, GetterOperatorOverloadings) {
+CUDA_TEST(Matrix4x4, GetterOperatorOverloadings) {
     Matrix4x4D mat(-16, 15, -14, 13, -12, 11, -10, 9, -8, 7, -6, 5, -4, 3, -2,
                    1);
 
@@ -307,7 +307,7 @@ TEST(Matrix4x4, GetterOperatorOverloadings) {
                                   5, -4, 3, -2, 1));
 }
 
-TEST(Matrix4x4, Helpers) {
+CUDA_TEST(Matrix4x4, Helpers) {
     Matrix4x4D mat = Matrix4x4D::makeZero();
     for (int i = 0; i < 16; ++i) {
         EXPECT_EQ(0.0, mat[i]);

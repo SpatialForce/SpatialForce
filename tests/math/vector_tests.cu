@@ -11,7 +11,7 @@
 
 using namespace vox;
 
-TEST(Vector, Constructors) {
+CUDA_TEST(Vector, Constructors) {
     Vector<double, 5> vec1;
 
     EXPECT_DOUBLE_EQ(0.0, vec1[0]);
@@ -37,7 +37,7 @@ TEST(Vector, Constructors) {
     EXPECT_DOUBLE_EQ(5.0, vec3[4]);
 }
 
-TEST(Vector, BasicSetters) {
+CUDA_TEST(Vector, BasicSetters) {
     Vector<double, 5> vec{1.0, 2.0, 3.0, 4.0, 5.0};
     vec.fill(0.0);
     for (int i = 0; i < 5; ++i) {
@@ -69,7 +69,7 @@ TEST(Vector, BasicSetters) {
     EXPECT_NEAR(1.0, len, 1e-10);
 }
 
-TEST(Vector, BasicGetters) {
+CUDA_TEST(Vector, BasicGetters) {
     Vector<double, 4> vecA = {+3.0, -1.0, +2.0, 5.0};
 
     EXPECT_EQ(4u, vecA.rows());
@@ -163,7 +163,7 @@ TEST(Vector, BasicGetters) {
     */
 }
 
-TEST(Vector, BinaryOperators) {
+CUDA_TEST(Vector, BinaryOperators) {
     Vector<double, 4> vecA = {+3.0, -1.0, +2.0, 5.0};
     Vector<double, 4> vecB = {+6.0, +2.5, -9.0, 8.0};
     Vector<double, 4> vecC = vecA + vecB;
