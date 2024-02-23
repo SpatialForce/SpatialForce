@@ -7,25 +7,26 @@
 #include "math/matrix.h"
 
 #include <gtest/gtest.h>
+#include "cuda_gtest_plugin.h"
 
 using namespace vox;
 
-TEST(Vector2, Constructors) {
+CUDA_TEST(Vector2, Constructors) {
     Vector2F vec;
-    EXPECT_FLOAT_EQ(0.f, vec.x);
-    EXPECT_FLOAT_EQ(0.f, vec.y);
+    ASSERT_FLOAT_EQ(0.f, vec.x);
+    ASSERT_FLOAT_EQ(0.f, vec.y);
 
     Vector2F vec2(5.f, 3.f);
-    EXPECT_FLOAT_EQ(5.f, vec2.x);
-    EXPECT_FLOAT_EQ(3.f, vec2.y);
+    ASSERT_FLOAT_EQ(5.f, vec2.x);
+    ASSERT_FLOAT_EQ(3.f, vec2.y);
 
     Vector2F vec5 = {7.f, 6.f};
-    EXPECT_FLOAT_EQ(7.f, vec5.x);
-    EXPECT_FLOAT_EQ(6.f, vec5.y);
+    ASSERT_FLOAT_EQ(7.f, vec5.x);
+    ASSERT_FLOAT_EQ(6.f, vec5.y);
 
     Vector2F vec6(vec5);
-    EXPECT_FLOAT_EQ(7.f, vec6.x);
-    EXPECT_FLOAT_EQ(6.f, vec6.y);
+    ASSERT_FLOAT_EQ(7.f, vec6.x);
+    ASSERT_FLOAT_EQ(6.f, vec6.y);
 }
 
 TEST(Vector2, BasicSetterMethods) {

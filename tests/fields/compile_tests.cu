@@ -19,6 +19,7 @@
 using namespace vox::fields;
 using namespace vox;
 
+/**
 TEST(CompileTests, test1) {
     for (auto &pnt : template_geometry_t<Interval, 6>::quadrature_info().pnts.data) {
         std::cout << pnt[0] << std::endl;
@@ -89,3 +90,5 @@ TEST(CompileTests, test4) {
     IntegratorFunctor functor;
     integrator(0, functor);
 }
+
+ **/

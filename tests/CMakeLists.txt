@@ -22,6 +22,7 @@ set(FIELDS_TESTS
 )
 
 set(SRC
+        cuda_gtest_plugin.h
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
         ${FIELDS_TESTS}
