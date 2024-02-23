@@ -116,6 +116,19 @@ struct HostDeviceVector {
         return *this;
     }
 
+    T &operator[](size_t i) {
+        return host_buffer[i];
+    }
+
+    const T &operator[](size_t i) const {
+        return host_buffer[i];
+    }
+
+    void resize(size_t n) {
+        host_buffer.resize(n);
+        device_buffer.alloc(n);
+    }
+
     void sync_d2h() {
         if (device_buffer.size() != host_buffer.size()) {
             host_buffer.resize(device_buffer.size());

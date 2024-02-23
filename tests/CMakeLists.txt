@@ -12,16 +12,24 @@ set(RUNTIME_TESTS
         runtime/buffer_tests.cu
 )
 
+set(FIELDS_TESTS
+        fields/volume_integrator_tests.cu
+)
+
 set(SRC
-        main.cpp
         ${RUNTIME_TESTS}
+        ${FIELDS_TESTS}
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
 
 find_package(GTest CONFIG REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE runtime GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main CUDA::cuda_driver)
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        runtime fields
+        GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
+        CUDA::cuda_driver
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR} .

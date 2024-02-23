@@ -8,7 +8,7 @@
 
 #include <vector>
 #include "core/vec.h"
-#include "host/mesh_host.h"
+#include "fields/host/mesh_host.h"
 
 namespace vox::fields {
 struct GeometryBM {
