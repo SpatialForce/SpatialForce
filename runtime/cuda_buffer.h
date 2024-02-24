@@ -12,84 +12,100 @@
 #include <array>
 
 namespace vox {
+#ifdef __CUDACC__
+template<typename T>
+__global__ void cudaFillKernel(T *dst, size_t n, T val) {
+    size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n) {
+        dst[i] = val;
+    }
+}
+
+template<typename T>
+void cudaFill(T *dst, size_t n, const T &val) {
+    if (n == 0) {
+        return;
+    }
+
+    unsigned int numBlocks, numThreads;
+    cudaComputeGridSize((unsigned int)n, 256, numBlocks, numThreads);
+    cudaFillKernel<<<numBlocks, numThreads>>>(dst, n, val);
+    CUDA_CHECK_LAST_ERROR("Failed executing cudaFillKernel");
+}
+#endif// __CUDACC__
+
 template<typename T>
 class CudaBuffer {
 public:
-    explicit CudaBuffer(uint32_t index = 0) : _device{vox::device(index)} {}
+    using value_type = T;
+    using reference = T &;
+    using const_reference = const T &;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
 
-    ~CudaBuffer() {
-        _free();
-    }
+    explicit CudaBuffer(const Device &device = vox::device(0));
 
-    void alloc(size_t n) {
-        if (_handle) {
-            _free();
-        }
-        _alloc(n);
-    }
+    explicit CudaBuffer(size_t n, const value_type &initVal = value_type{},
+                        const Device &device = vox::device(0));
 
-    inline T *handle() {
-        return _handle;
-    }
+    template<typename A>
+    explicit CudaBuffer(const std::vector<T, A> &other,
+                        const Device &device = vox::device(0));
 
-    [[nodiscard]] inline size_t byte_size() const {
-        return _byte_size;
-    }
+    CudaBuffer(const CudaBuffer &other);
 
-    [[nodiscard]] inline size_t size() const {
-        return _n;
-    }
+    CudaBuffer(CudaBuffer &&other) noexcept;
 
-    [[nodiscard]] inline const Device &device() const {
-        return _device;
-    }
+    ~CudaBuffer();
+
+    pointer data();
+
+    const_pointer data() const;
+
+    [[nodiscard]] size_t size() const;
+
+    void clear();
+
+    void fill(const value_type &val);
+
+    void resize(size_t n, const value_type &initVal = value_type{});
+
+    void resizeUninitialized(size_t n);
+
+    void swap(CudaBuffer &other);
+
+    template<typename A>
+    void copyFrom(const std::vector<T, A> &other);
+
+    void copyFrom(const CudaBuffer &other);
+
+    template<typename A>
+    void copyTo(std::vector<T, A> &other);
+
+    template<typename A>
+    CudaBuffer &operator=(const std::vector<T, A> &other);
+
+    CudaBuffer &operator=(const CudaBuffer &other);
+
+    CudaBuffer &operator=(CudaBuffer &&other) noexcept;
+
+    [[nodiscard]] inline size_t byte_size() const;
+
+    [[nodiscard]] inline const Device &device() const;
 
 private:
-    void _alloc(size_t n) {
-        _n = n;
+    void _alloc(size_t size) {
+        _size = size;
         ContextGuard guard(_device.primary_context());
-        _byte_size = sizeof(T) * n;
+        _byte_size = sizeof(T) * size;
         check_cuda(cudaMalloc(&_handle, _byte_size));
     }
 
-    void _free() {
-        ContextGuard guard(_device.primary_context());
-        check_cuda(cudaFree(_handle));
-    }
-
-    size_t _n{};
+    size_t _size{};
     size_t _byte_size{};
     const Device &_device;
-    T *_handle{nullptr};
+    pointer _handle{nullptr};
 };
-
-template<typename T>
-void sync_h2d(void *src, CudaBuffer<T> &dst) {
-    auto &device = dst.device();
-    ContextGuard guard(device.primary_context());
-    check_cuda(cudaMemcpyAsync(dst.handle(), src, dst.byte_size(), cudaMemcpyHostToDevice, device.stream.handle()));
-}
-
-template<typename T>
-void sync_d2h(CudaBuffer<T> &src, void *dst) {
-    auto &device = src.device();
-    ContextGuard guard(device.primary_context());
-    check_cuda(cudaMemcpyAsync(dst, src.handle(), src.byte_size(), cudaMemcpyDeviceToHost, device.stream.handle()));
-}
-
-template<typename T>
-void sync_d2d(const CudaBuffer<T> &src, CudaBuffer<T> &dst) {
-    auto &device = src.device();
-    ContextGuard guard(device.primary_context());
-    check_cuda(cudaMemcpyAsync(dst.handle(), src.handle(), src.byte_size(), cudaMemcpyDeviceToDevice, device.stream.handle()));
-}
-
-template<typename T>
-void memset(CudaBuffer<T> &dst, int value) {
-    auto &device = dst.device();
-    ContextGuard guard(device.primary_context());
-    check_cuda(cudaMemsetAsync(dst, value, dst.size(), device.stream.handle()));
-}
 
 //-----------------------------------------------------------------------------------------------------------------------------------
 template<typename T>
@@ -120,21 +136,15 @@ struct HostDeviceVector {
 
     void resize(size_t n) {
         host_buffer.resize(n);
-        device_buffer.alloc(n);
+        device_buffer.resize(n);
     }
 
     void sync_d2h() {
-        if (device_buffer.size() != host_buffer.size()) {
-            host_buffer.resize(device_buffer.size());
-        }
-        vox::sync_d2h(device_buffer, host_buffer.data());
+        device_buffer.copyTo(host_buffer);
     }
 
     void sync_h2d() {
-        if (device_buffer.size() != host_buffer.size()) {
-            device_buffer.alloc(host_buffer.size());
-        }
-        vox::sync_h2d(host_buffer.data(), device_buffer);
+        device_buffer = host_buffer;
     }
 
     auto begin() {
@@ -146,50 +156,10 @@ struct HostDeviceVector {
     }
 
     array_t<T> view() {
-        return {device_buffer.handle(), (int)device_buffer.size()};
-    }
-};
-
-//-----------------------------------------------------------------------------------------------------------------------------------
-template<typename T, size_t N>
-struct HostDeviceArray {
-    CudaBuffer<T> device_buffer;
-    std::array<T, N> host_buffer;
-
-    explicit HostDeviceArray(uint32_t index = 0)
-        : device_buffer{index} {
-        device_buffer.alloc(N);
-    }
-
-    HostDeviceArray<T, N> &operator=(const std::array<T, N> &host) {
-        host_buffer = host;
-        return *this;
-    }
-
-    HostDeviceArray<T, N> &operator=(std::array<T, N> &&host) {
-        host_buffer = std::move(host);
-        return *this;
-    }
-
-    void sync_d2h() {
-        vox::sync_d2h(device_buffer, host_buffer.data());
-    }
-
-    void sync_h2d() {
-        vox::sync_h2d(host_buffer.data(), device_buffer);
-    }
-
-    auto begin() {
-        return host_buffer.begin();
-    }
-
-    auto end() {
-        return host_buffer.end();
-    }
-
-    array_t<T> view() {
-        return {device_buffer.handle(), (int)device_buffer.size()};
+        return {device_buffer.data(), (int)device_buffer.size()};
     }
 };
 
 }// namespace vox
+
+#include "cuda_buffer-inl.h"

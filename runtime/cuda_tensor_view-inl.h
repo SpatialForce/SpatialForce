@@ -27,6 +27,11 @@ CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView(
     : CudaTensorView(ptr, CudaStdArray<size_t, N>{size_}) {}
 
 template<typename T, size_t N>
+CudaTensorView<T, N>::CudaTensorView(CudaTensor<T, N> &other) : CudaTensorView() {
+    set(other);
+}
+
+template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView(const CudaTensorView &other) {
     set(other);
 }
@@ -35,6 +40,11 @@ template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView(CudaTensorView &&other) noexcept
     : CudaTensorView() {
     *this = std::move(other);
+}
+
+template<typename T, size_t N>
+void CudaTensorView<T, N>::set(CudaTensor<T, N> &other) {
+    Base::setPtrAndShape(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
@@ -77,6 +87,12 @@ CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(
     : CudaTensorView(ptr, CudaStdArray<size_t, N>{size_}) {}
 
 template<typename T, size_t N>
+CudaTensorView<const T, N>::CudaTensorView(const CudaTensor<T, N> &other)
+    : CudaTensorView() {
+    set(other);
+}
+
+template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(const CudaTensorView<T, N> &other) {
     set(other);
 }
@@ -90,6 +106,11 @@ template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(CudaTensorView &&other) noexcept
     : CudaTensorView() {
     *this = std::move(other);
+}
+
+template<typename T, size_t N>
+void CudaTensorView<const T, N>::set(const CudaTensor<T, N> &other) {
+    Base::setPtrAndShape(other.data(), other.shape());
 }
 
 template<typename T, size_t N>

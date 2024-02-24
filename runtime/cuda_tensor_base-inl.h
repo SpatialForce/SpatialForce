@@ -7,6 +7,14 @@
 #pragma once
 
 namespace vox {
+namespace {
+template<typename T>
+CUDA_CALLABLE inline void cudaSwap(T &a, T &b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+}// namespace
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: CudaTensorBase
 

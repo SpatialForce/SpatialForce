@@ -9,6 +9,8 @@
 #include "cuda_tensor_base.h"
 
 namespace vox {
+template<typename T, size_t N>
+class CudaTensor;
 
 ////////////////////////////////////////////////////////////////////////////////
 // MARK: CudaTensorView
@@ -33,11 +35,14 @@ public:
     CUDA_CALLABLE CudaTensorView(
         typename std::enable_if<(M == 1), T>::type *ptr, size_t size_);
 
+    CudaTensorView(CudaTensor<T, N> &other);
+
     CUDA_CALLABLE CudaTensorView(const CudaTensorView &other);
 
     CUDA_CALLABLE CudaTensorView(CudaTensorView &&other) noexcept;
 
     // set
+    void set(CudaTensor<T, N> &other);
 
     CUDA_CALLABLE void set(const CudaTensorView &other);
 
@@ -68,6 +73,8 @@ public:
     template<size_t M = N>
     CUDA_CALLABLE CudaTensorView(const typename std::enable_if<(M == 1), T>::type *ptr, size_t size_);
 
+    CudaTensorView(const CudaTensor<T, N> &other);
+
     CUDA_CALLABLE CudaTensorView(const CudaTensorView<T, N> &other);
 
     CUDA_CALLABLE CudaTensorView(const CudaTensorView &other);
@@ -75,6 +82,7 @@ public:
     CUDA_CALLABLE CudaTensorView(CudaTensorView &&) noexcept;
 
     // set
+    void set(const CudaTensor<T, N> &other);
 
     CUDA_CALLABLE void set(const CudaTensorView<T, N> &other);
 
