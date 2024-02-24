@@ -93,7 +93,7 @@ TEST(Tensor3, Constructors) {
                             {{13.f, 14.f, 15.f, 16.f},
                              {17.f, 18.f, 19.f, 20.f},
                              {21.f, 22.f, 23.f, 24.f}}});
-        TensorView3<float> arrVew(arr.data(), arr.size());
+        TensorView3<float> arrVew(arr.data(), arr.shape());
         EXPECT_EQ(4u, arrVew.width());
         EXPECT_EQ(3u, arrVew.height());
         EXPECT_EQ(2u, arrVew.depth());
@@ -212,7 +212,7 @@ TEST(Tensor3, ForEachIndex) {
           {17.f, 18.f, 19.f, 20.f},
           {21.f, 22.f, 23.f, 24.f}}});
 
-    forEachIndex(arr1.size(), [&](size_t i, size_t j, size_t k) {
+    forEachIndex(arr1.shape(), [&](size_t i, size_t j, size_t k) {
         size_t idx = i + (4 * (j + 3 * k)) + 1;
         EXPECT_FLOAT_EQ(static_cast<float>(idx), arr1(i, j, k));
     });

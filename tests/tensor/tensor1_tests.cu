@@ -41,7 +41,7 @@ TEST(Tensor1, Constructors) {
     }
     {
         Tensor1<float> arr({1.f, 2.f, 3.f, 4.f});
-        TensorView1<float> arrView(arr.data(), arr.size());
+        TensorView1<float> arrView(arr.data(), arr.shape());
         EXPECT_EQ(4u, arrView.length());
         for (size_t i = 0; i < 4; ++i) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arrView[i]);
@@ -76,7 +76,7 @@ TEST(Tensor1, SetMethods) {
     EXPECT_EQ(9.f, arr2[2]);
     EXPECT_EQ(-1.f, arr2[3]);
 
-    TensorView1<float> arrView(arr2.data(), arr2.size());
+    TensorView1<float> arrView(arr2.data(), arr2.shape());
     EXPECT_EQ(4u, arrView.length());
     EXPECT_EQ(2.f, arrView[0]);
     EXPECT_EQ(5.f, arrView[1]);

@@ -19,9 +19,9 @@ TEST(TensorView3, Constructors) {
 
     TensorView3<double> acc(data, Vector3UZ(5, 4, 3));
 
-    EXPECT_EQ(5u, acc.size().x);
-    EXPECT_EQ(4u, acc.size().y);
-    EXPECT_EQ(3u, acc.size().z);
+    EXPECT_EQ(5u, acc.shape().x);
+    EXPECT_EQ(4u, acc.shape().y);
+    EXPECT_EQ(3u, acc.shape().z);
     EXPECT_EQ(data, acc.data());
 }
 
@@ -58,7 +58,7 @@ TEST(TensorView3, ForEachIndex) {
           {21.f, 22.f, 23.f, 24.f}}});
     auto acc = arr1.view();
 
-    forEachIndex(acc.size(), [&](size_t i, size_t j, size_t k) {
+    forEachIndex(acc.shape(), [&](size_t i, size_t j, size_t k) {
         size_t idx = i + (4 * (j + 3 * k)) + 1;
         EXPECT_FLOAT_EQ(static_cast<float>(idx), acc(i, j, k));
     });
@@ -74,9 +74,9 @@ TEST(ConstTensorView3, Constructors) {
     TensorView3<double> acc(data, Vector3UZ(5, 4, 3));
     ConstTensorView3<double> cacc(acc);
 
-    EXPECT_EQ(5u, cacc.size().x);
-    EXPECT_EQ(4u, cacc.size().y);
-    EXPECT_EQ(3u, cacc.size().z);
+    EXPECT_EQ(5u, cacc.shape().x);
+    EXPECT_EQ(4u, cacc.shape().y);
+    EXPECT_EQ(3u, cacc.shape().z);
     EXPECT_EQ(data, cacc.data());
 }
 
@@ -107,7 +107,7 @@ TEST(ConstTensorView3, ForEachIndex) {
           {21.f, 22.f, 23.f, 24.f}}});
     auto acc = arr1.view();
 
-    forEachIndex(acc.size(), [&](size_t i, size_t j, size_t k) {
+    forEachIndex(acc.shape(), [&](size_t i, size_t j, size_t k) {
         size_t idx = i + (4 * (j + 3 * k)) + 1;
         EXPECT_FLOAT_EQ(static_cast<float>(idx), acc(i, j, k));
     });

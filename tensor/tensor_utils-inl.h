@@ -20,7 +20,7 @@ void fill(TensorView<T, N> a, const Vector<size_t, N> &begin,
 
 template<typename T, size_t N>
 void fill(TensorView<T, N> a, const T &val) {
-    fill(a, Vector<size_t, N>{}, Vector<size_t, N>{a.size()}, val);
+    fill(a, Vector<size_t, N>{}, Vector<size_t, N>{a.shape()}, val);
 }
 
 template<typename T>
@@ -36,7 +36,7 @@ void copy(TensorView<T, N> src, const Vector<size_t, N> &begin,
 
 template<typename T, typename U, size_t N>
 void copy(TensorView<T, N> src, TensorView<U, N> dst) {
-    copy(src, Vector<size_t, N>{}, Vector<size_t, N>{src.size()}, dst);
+    copy(src, Vector<size_t, N>{}, Vector<size_t, N>{src.shape()}, dst);
 }
 
 template<typename T, typename U>
@@ -48,26 +48,26 @@ template<typename T, typename U>
 void extrapolateToRegion(TensorView2<T> input, TensorView2<char> valid,
                          unsigned int numberOfIterations,
                          TensorView2<U> output) {
-    const Vector2UZ size = input.size();
+    const Vector2UZ shape = input.shape();
 
-    ASSERT(size == valid.size());
-    ASSERT(size == output.size());
+    ASSERT(shape == valid.shape());
+    ASSERT(shape == output.shape());
 
-    Tensor2<char> valid0(size);
-    Tensor2<char> valid1(size);
+    Tensor2<char> valid0(shape);
+    Tensor2<char> valid1(shape);
 
-    forEachIndex(valid0.size(), [&](size_t i, size_t j) {
+    forEachIndex(valid0.shape(), [&](size_t i, size_t j) {
         valid0(i, j) = valid(i, j);
         output(i, j) = input(i, j);
     });
 
     for (unsigned int iter = 0; iter < numberOfIterations; ++iter) {
-        forEachIndex(valid0.size(), [&](size_t i, size_t j) {
+        forEachIndex(valid0.shape(), [&](size_t i, size_t j) {
             T sum = T{};
             unsigned int count = 0;
 
             if (!valid0(i, j)) {
-                if (i + 1 < size.x && valid0(i + 1, j)) {
+                if (i + 1 < shape.x && valid0(i + 1, j)) {
                     sum += output(i + 1, j);
                     ++count;
                 }
@@ -77,7 +77,7 @@ void extrapolateToRegion(TensorView2<T> input, TensorView2<char> valid,
                     ++count;
                 }
 
-                if (j + 1 < size.y && valid0(i, j + 1)) {
+                if (j + 1 < shape.y && valid0(i, j + 1)) {
                     sum += output(i, j + 1);
                     ++count;
                 }
@@ -106,26 +106,26 @@ template<typename T, typename U>
 void extrapolateToRegion(TensorView3<T> input, TensorView3<char> valid,
                          unsigned int numberOfIterations,
                          TensorView3<U> output) {
-    const Vector3UZ size = input.size();
+    const Vector3UZ shape = input.shape();
 
-    ASSERT(size == valid.size());
-    ASSERT(size == output.size());
+    ASSERT(shape == valid.shape());
+    ASSERT(shape == output.shape());
 
-    Tensor3<char> valid0(size);
-    Tensor3<char> valid1(size);
+    Tensor3<char> valid0(shape);
+    Tensor3<char> valid1(shape);
 
-    forEachIndex(valid0.size(), [&](size_t i, size_t j, size_t k) {
+    forEachIndex(valid0.shape(), [&](size_t i, size_t j, size_t k) {
         valid0(i, j, k) = valid(i, j, k);
         output(i, j, k) = input(i, j, k);
     });
 
     for (unsigned int iter = 0; iter < numberOfIterations; ++iter) {
-        forEachIndex(valid0.size(), [&](size_t i, size_t j, size_t k) {
+        forEachIndex(valid0.shape(), [&](size_t i, size_t j, size_t k) {
             T sum = T{};
             unsigned int count = 0;
 
             if (!valid0(i, j, k)) {
-                if (i + 1 < size.x && valid0(i + 1, j, k)) {
+                if (i + 1 < shape.x && valid0(i + 1, j, k)) {
                     sum += output(i + 1, j, k);
                     ++count;
                 }
@@ -135,7 +135,7 @@ void extrapolateToRegion(TensorView3<T> input, TensorView3<char> valid,
                     ++count;
                 }
 
-                if (j + 1 < size.y && valid0(i, j + 1, k)) {
+                if (j + 1 < shape.y && valid0(i, j + 1, k)) {
                     sum += output(i, j + 1, k);
                     ++count;
                 }
@@ -145,7 +145,7 @@ void extrapolateToRegion(TensorView3<T> input, TensorView3<char> valid,
                     ++count;
                 }
 
-                if (k + 1 < size.z && valid0(i, j, k + 1)) {
+                if (k + 1 < shape.z && valid0(i, j, k + 1)) {
                     sum += output(i, j, k + 1);
                     ++count;
                 }

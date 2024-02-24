@@ -42,17 +42,17 @@ TensorView<T, N>::TensorView(TensorView &&other) noexcept : TensorView() {
 
 template<typename T, size_t N>
 void TensorView<T, N>::set(Tensor<T, N> &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
 void TensorView<T, N>::set(const TensorView &other) {
-    Base::setPtrAndSize(const_cast<T *>(other.data()), other.size());
+    Base::setPtrAndSize(const_cast<T *>(other.data()), other.shape());
 }
 
 template<typename T, size_t N>
 void TensorView<T, N>::fill(const T &val) {
-    forEachIndex(Vector<size_t, N>{}, _size,
+    forEachIndex(Vector<size_t, N>{}, _shape,
                  [&](auto... idx) { this->at(idx...) = val; });
 }
 
@@ -64,7 +64,7 @@ TensorView<T, N> &TensorView<T, N>::operator=(const TensorView &other) {
 
 template<typename T, size_t N>
 TensorView<T, N> &TensorView<T, N>::operator=(TensorView &&other) noexcept {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;
 }
@@ -108,17 +108,17 @@ TensorView<const T, N>::TensorView(TensorView &&other) noexcept : TensorView() {
 
 template<typename T, size_t N>
 void TensorView<const T, N>::set(const Tensor<T, N> &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
 void TensorView<const T, N>::set(const TensorView<T, N> &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
 void TensorView<const T, N>::set(const TensorView<const T, N> &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
@@ -138,7 +138,7 @@ TensorView<const T, N> &TensorView<const T, N>::operator=(
 template<typename T, size_t N>
 TensorView<const T, N> &TensorView<const T, N>::operator=(
     TensorView<const T, N> &&other) noexcept {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;
 }

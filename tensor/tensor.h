@@ -43,7 +43,7 @@ public:
 
     const_pointer data() const;
 
-    const Vector<size_t, N> &size() const;
+    const Vector<size_t, N> &shape() const;
 
     template<size_t M = N>
     std::enable_if_t<(M > 0), size_t> width() const;
@@ -104,7 +104,7 @@ public:
 
 protected:
     pointer _ptr = nullptr;
-    Vector<size_t, N> _size;
+    Vector<size_t, N> _shape;
 
     TensorBase();
 
@@ -144,7 +144,7 @@ class TensorView;
 template<typename T, size_t N>
 class Tensor final : public TensorBase<T, N, Tensor<T, N>> {
     using Base = TensorBase<T, N, Tensor<T, N>>;
-    using Base::_size;
+    using Base::_shape;
     using Base::at;
     using Base::clearPtrAndSize;
     using Base::setPtrAndSize;

@@ -75,7 +75,7 @@ struct SetTensorFromInitList {
     static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, I> lst) {
         size_t i = 0;
         for (auto subLst : lst) {
-            ASSERT(i < arr.size()[I - 1]);
+            ASSERT(i < arr.shape()[I - 1]);
             SetTensorFromInitList<T, N, I - 1>::call(arr, subLst, i);
             ++i;
         }
@@ -86,7 +86,7 @@ struct SetTensorFromInitList {
                      RemainingIndices... indices) {
         size_t i = 0;
         for (auto subLst : lst) {
-            ASSERT(i < arr.size()[I - 1]);
+            ASSERT(i < arr.shape()[I - 1]);
             SetTensorFromInitList<T, N, I - 1>::call(arr, subLst, i, indices...);
             ++i;
         }
@@ -98,7 +98,7 @@ struct SetTensorFromInitList<T, N, 1> {
     static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, 1> lst) {
         size_t i = 0;
         for (auto val : lst) {
-            ASSERT(i < arr.size()[0]);
+            ASSERT(i < arr.shape()[0]);
             arr(i) = val;
             ++i;
         }
@@ -109,7 +109,7 @@ struct SetTensorFromInitList<T, N, 1> {
                      RemainingIndices... indices) {
         size_t i = 0;
         for (auto val : lst) {
-            ASSERT(i < arr.size()[0]);
+            ASSERT(i < arr.shape()[0]);
             arr(i, indices...) = val;
             ++i;
         }
@@ -128,7 +128,7 @@ template<typename T, size_t N, typename D>
 template<typename... Args>
 size_t TensorBase<T, N, D>::index(size_t i, Args... args) const {
     static_assert(sizeof...(args) == N - 1, "Invalid number of indices.");
-    return i + _size[0] * _index(1, args...);
+    return i + _shape[0] * _index(1, args...);
 }
 
 template<typename T, size_t N, typename D>
@@ -148,26 +148,26 @@ const T *TensorBase<T, N, D>::data() const {
 }
 
 template<typename T, size_t N, typename D>
-const Vector<size_t, N> &TensorBase<T, N, D>::size() const {
-    return _size;
+const Vector<size_t, N> &TensorBase<T, N, D>::shape() const {
+    return _shape;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
 std::enable_if_t<(M > 0), size_t> TensorBase<T, N, D>::width() const {
-    return _size.x;
+    return _shape.x;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
 std::enable_if_t<(M > 1), size_t> TensorBase<T, N, D>::height() const {
-    return _size.y;
+    return _shape.y;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
 std::enable_if_t<(M > 2), size_t> TensorBase<T, N, D>::depth() const {
-    return _size.z;
+    return _shape.z;
 }
 
 template<typename T, size_t N, typename D>
@@ -177,7 +177,7 @@ bool TensorBase<T, N, D>::isEmpty() const {
 
 template<typename T, size_t N, typename D>
 size_t TensorBase<T, N, D>::length() const {
-    return product<size_t, N>(_size, 1);
+    return product<size_t, N>(_shape, 1);
 }
 
 template<typename T, size_t N, typename D>
@@ -285,11 +285,11 @@ const T &TensorBase<T, N, D>::operator()(const Vector<size_t, N> &idx) const {
 }
 
 template<typename T, size_t N, typename D>
-TensorBase<T, N, D>::TensorBase() : _size{} {}
+TensorBase<T, N, D>::TensorBase() : _shape{} {}
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D>::TensorBase(const TensorBase &other) {
-    setPtrAndSize(other._ptr, other._size);
+    setPtrAndSize(other._ptr, other._shape);
 }
 
 template<typename T, size_t N, typename D>
@@ -306,7 +306,7 @@ void TensorBase<T, N, D>::setPtrAndSize(T *ptr, size_t ni, Args... args) {
 template<typename T, size_t N, typename D>
 void TensorBase<T, N, D>::setPtrAndSize(T *data, Vector<size_t, N> size) {
     _ptr = data;
-    _size = size;
+    _shape = size;
 }
 
 template<typename T, size_t N, typename D>
@@ -317,18 +317,18 @@ void TensorBase<T, N, D>::clearPtrAndSize() {
 template<typename T, size_t N, typename D>
 void TensorBase<T, N, D>::swapPtrAndSize(TensorBase &other) {
     std::swap(_ptr, other._ptr);
-    std::swap(_size, other._size);
+    std::swap(_shape, other._shape);
 }
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(const TensorBase &other) {
-    setPtrAndSize(other.data(), other.size());
+    setPtrAndSize(other.data(), other.shape());
     return *this;
 }
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(TensorBase &&other) {
-    setPtrAndSize(other.data(), other.size());
+    setPtrAndSize(other.data(), other.shape());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;
 }
@@ -336,7 +336,7 @@ TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(TensorBase &&other) {
 template<typename T, size_t N, typename D>
 template<typename... Args>
 size_t TensorBase<T, N, D>::_index(size_t d, size_t i, Args... args) const {
-    return i + _size[d] * _index(d + 1, args...);
+    return i + _shape[d] * _index(d + 1, args...);
 }
 
 template<typename T, size_t N, typename D>
@@ -407,16 +407,16 @@ Tensor<T, N>::Tensor(Tensor &&other) : Tensor() {
 template<typename T, size_t N>
 template<typename D>
 void Tensor<T, N>::copyFrom(const TensorBase<T, N, D> &other) {
-    resize(other.size());
-    forEachIndex(Vector<size_t, N>{}, other.size(),
+    resize(other.shape());
+    forEachIndex(Vector<size_t, N>{}, other.shape(),
                  [&](auto... idx) { this->at(idx...) = other(idx...); });
 }
 
 template<typename T, size_t N>
 template<typename D>
 void Tensor<T, N>::copyFrom(const TensorBase<const T, N, D> &other) {
-    resize(other.size());
-    forEachIndex(Vector<size_t, N>{}, other.size(),
+    resize(other.shape());
+    forEachIndex(Vector<size_t, N>{}, other.shape(),
                  [&](auto... idx) { this->at(idx...) = other(idx...); });
 }
 
@@ -428,7 +428,7 @@ void Tensor<T, N>::fill(const T &val) {
 template<typename T, size_t N>
 void Tensor<T, N>::resize(Vector<size_t, N> size_, const T &initVal) {
     Tensor newTensor(size_, initVal);
-    Vector<size_t, N> minSize = min(_size, newTensor._size);
+    Vector<size_t, N> minSize = min(_shape, newTensor._shape);
     forEachIndex(minSize,
                  [&](auto... idx) { newTensor(idx...) = (*this)(idx...); });
     *this = std::move(newTensor);
@@ -514,7 +514,7 @@ Tensor<T, N> &Tensor<T, N>::operator=(const Tensor &other) {
 template<typename T, size_t N>
 Tensor<T, N> &Tensor<T, N>::operator=(Tensor &&other) {
     _data = std::move(other._data);
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndSize(other.data(), other.shape());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
 
     return *this;

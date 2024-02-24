@@ -45,7 +45,7 @@ TEST(TensorView1, ForEachIndex) {
     auto acc = arr1.view();
 
     size_t cnt = 0;
-    forEachIndex(acc.size(), [&](size_t i) {
+    forEachIndex(acc.shape(), [&](size_t i) {
         EXPECT_EQ(cnt, i);
         ++cnt;
     });
@@ -81,7 +81,7 @@ TEST(ConstTensorView1, ForEachIndex) {
     auto acc = arr1.view();
 
     size_t cnt = 0;
-    forEachIndex(acc.size(), [&](size_t i) {
+    forEachIndex(acc.shape(), [&](size_t i) {
         EXPECT_EQ(cnt, i);
         ++cnt;
     });

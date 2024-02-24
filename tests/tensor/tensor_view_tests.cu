@@ -17,7 +17,7 @@ TEST(ConstTensorView, Constructors) {
 
     // Copy from mutable Tensor
     ConstTensorView2<double> view2(arr);
-    EXPECT_EQ(Vector2UZ(2, 3), view2.size());
+    EXPECT_EQ(Vector2UZ(2, 3), view2.shape());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {
             EXPECT_DOUBLE_EQ(arr(i, j), view2(i, j));
@@ -26,7 +26,7 @@ TEST(ConstTensorView, Constructors) {
 
     // Copy from mutable TensorView
     ConstTensorView2<double> view3(arr.view());
-    EXPECT_EQ(Vector2UZ(2, 3), view3.size());
+    EXPECT_EQ(Vector2UZ(2, 3), view3.shape());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {
             EXPECT_DOUBLE_EQ(arr(i, j), view3(i, j));
@@ -35,7 +35,7 @@ TEST(ConstTensorView, Constructors) {
 
     // Copy from immutable TensorView
     ConstTensorView2<double> view4(view3);
-    EXPECT_EQ(Vector2UZ(2, 3), view4.size());
+    EXPECT_EQ(Vector2UZ(2, 3), view4.shape());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {
             EXPECT_DOUBLE_EQ(arr(i, j), view4(i, j));

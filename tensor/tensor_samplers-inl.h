@@ -46,12 +46,12 @@ struct Cubic {
         using Next = Cubic<T, N, I - 1>;
         return op(
             Next::call(view, i, t, op,
-                       std::max(i[I - 1] - 1, (ssize_t)view.size()[I - 1] - 1),
+                       std::max(i[I - 1] - 1, (ssize_t)view.shape()[I - 1] - 1),
                        indices...),
             Next::call(view, i, t, op, i[I - 1], indices...),
             Next::call(view, i, t, op, i[I - 1] + 1, indices...),
             Next::call(view, i, t, op,
-                       std::min(i[I - 1] + 2, (ssize_t)view.size()[I - 1] - 1),
+                       std::min(i[I - 1] + 2, (ssize_t)view.shape()[I - 1] - 1),
                        indices...),
             t[I - 1]);
     }
@@ -67,9 +67,9 @@ struct Cubic<T, N, 1> {
                      Vector<ScalarType, N> t, CubicInterpolationOp op,
                      RemainingIndices... indices) {
         return op(
-            view(std::max(i[0] - 1, (ssize_t)view.size()[0] - 1), indices...),
+            view(std::max(i[0] - 1, (ssize_t)view.shape()[0] - 1), indices...),
             view(i[0], indices...), view(i[0] + 1, indices...),
-            view(std::min(i[0] + 2, (ssize_t)view.size()[0] - 1), indices...),
+            view(std::min(i[0] + 2, (ssize_t)view.shape()[0] - 1), indices...),
             t[0]);
     }
 };
@@ -168,12 +168,12 @@ NearestTensorSampler<T, N>::getCoordinate(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
-    Vector<ssize_t, N> size = _view.size().template castTo<ssize_t>();
+    Vector<ssize_t, N> shape = _view.shape().template castTo<ssize_t>();
 
     for (size_t i = 0; i < N; ++i) {
-        getBarycentric(npt[i], 0, size[i], is[i], ts[i]);
+        getBarycentric(npt[i], 0, shape[i], is[i], ts[i]);
         is[i] =
-            std::min(static_cast<ssize_t>(is[i] + ts[i] + 0.5), size[i] - 1);
+            std::min(static_cast<ssize_t>(is[i] + ts[i] + 0.5), shape[i] - 1);
     }
 
     return is.template castTo<size_t>();
@@ -210,10 +210,10 @@ T LinearTensorSampler<T, N>::operator()(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
-    Vector<ssize_t, N> size = _view.size().template castTo<ssize_t>();
+    Vector<ssize_t, N> shape = _view.shape().template castTo<ssize_t>();
 
     for (size_t i = 0; i < N; ++i) {
-        getBarycentric(npt[i], 0, size[i], is[i], ts[i]);
+        getBarycentric(npt[i], 0, shape[i], is[i], ts[i]);
     }
 
     return internal::Lerp<T, N, N>::call(_view, is, ts);
@@ -226,10 +226,10 @@ void LinearTensorSampler<T, N>::getCoordinatesAndWeights(
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
-    Vector<ssize_t, N> size = _view.size().template castTo<ssize_t>();
+    Vector<ssize_t, N> shape = _view.shape().template castTo<ssize_t>();
 
     for (size_t i = 0; i < N; ++i) {
-        getBarycentric(npt[i], 0, size[i], is[i], ts[i]);
+        getBarycentric(npt[i], 0, shape[i], is[i], ts[i]);
     }
 
     Vector<size_t, N> viewSize = Vector<size_t, N>::makeConstant(2);
@@ -247,10 +247,10 @@ void LinearTensorSampler<T, N>::getCoordinatesAndGradientWeights(
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
-    Vector<ssize_t, N> size = _view.size().template castTo<ssize_t>();
+    Vector<ssize_t, N> shape = _view.shape().template castTo<ssize_t>();
 
     for (size_t i = 0; i < N; ++i) {
-        getBarycentric(npt[i], 0, size[i], is[i], ts[i]);
+        getBarycentric(npt[i], 0, shape[i], is[i], ts[i]);
     }
 
     Vector<size_t, N> viewSize = Vector<size_t, N>::makeConstant(2);
@@ -293,10 +293,10 @@ T CubicTensorSampler<T, N, CIOp>::operator()(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
-    Vector<ssize_t, N> size = _view.size().template castTo<ssize_t>();
+    Vector<ssize_t, N> shape = _view.shape().template castTo<ssize_t>();
 
     for (size_t i = 0; i < N; ++i) {
-        getBarycentric(npt[i], 0, size[i], is[i], ts[i]);
+        getBarycentric(npt[i], 0, shape[i], is[i], ts[i]);
     }
 
     return internal::Cubic<T, N, N>::call(_view, is, ts, CIOp());

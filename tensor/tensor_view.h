@@ -21,7 +21,7 @@ class Tensor;
 template<typename T, size_t N>
 class TensorView final : public TensorBase<T, N, TensorView<T, N>> {
     using Base = TensorBase<T, N, TensorView<T, N>>;
-    using Base::_size;
+    using Base::_shape;
     using Base::setPtrAndSize;
     using Base::at;
 
@@ -58,7 +58,7 @@ template<typename T, size_t N>
 class TensorView<const T, N> final
     : public TensorBase<const T, N, TensorView<const T, N>> {
     using Base = TensorBase<const T, N, TensorView<const T, N>>;
-    using Base::_size;
+    using Base::_shape;
     using Base::setPtrAndSize;
 
 public:

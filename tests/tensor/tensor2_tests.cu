@@ -75,7 +75,7 @@ TEST(Tensor2, Constructors) {
         Tensor2<float> arr({{1.f, 2.f, 3.f, 4.f},
                             {5.f, 6.f, 7.f, 8.f},
                             {9.f, 10.f, 11.f, 12.f}});
-        TensorView2<float> arrVew(arr.data(), arr.size());
+        TensorView2<float> arrVew(arr.data(), arr.shape());
         EXPECT_EQ(4u, arrVew.width());
         EXPECT_EQ(3u, arrVew.height());
         for (size_t i = 0; i < 12; ++i) {
@@ -197,7 +197,7 @@ TEST(Tensor2, ForEachIndex) {
     Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
 
-    forEachIndex(arr1.size(), [&](size_t i, size_t j) {
+    forEachIndex(arr1.shape(), [&](size_t i, size_t j) {
         size_t idx = i + (4 * j) + 1;
         EXPECT_FLOAT_EQ(static_cast<float>(idx), arr1(i, j));
     });
