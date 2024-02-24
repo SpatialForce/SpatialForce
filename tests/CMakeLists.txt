@@ -22,6 +22,7 @@ set(MATH_TESTS
         math/matrix3x3_tests.cu
         math/matrix4x4_tests.cu
         math/matrix_tests.cu
+        math/quaternion_tests.cu
 )
 
 set(TENSOR_FILES

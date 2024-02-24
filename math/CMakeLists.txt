@@ -12,6 +12,7 @@ set(COMMON_FILES
         matrix.h
         matrix_dense_base.h
         matrix_expression.h
+        quaternion.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

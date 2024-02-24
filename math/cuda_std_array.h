@@ -9,6 +9,8 @@
 #include "core/define.h"
 
 namespace vox {
+template<typename T, size_t Rows>
+using Vector = Matrix<T, Rows, 1>;
 
 template<typename T, size_t N>
 class CudaStdArray {
@@ -24,9 +26,11 @@ public:
     CUDA_CALLABLE CudaStdArray();
 
     template<typename... Args>
-    CUDA_CALLABLE CudaStdArray(const_reference first, Args... rest);
+    CUDA_CALLABLE explicit CudaStdArray(const_reference first, Args... rest);
 
     CUDA_CALLABLE CudaStdArray(const std::initializer_list<T> &lst);
+
+    CUDA_CALLABLE explicit CudaStdArray(const Vector<T, N>& other);
 
     CUDA_CALLABLE CudaStdArray(const CudaStdArray &other);
 
