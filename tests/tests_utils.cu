@@ -989,4 +989,4 @@ const char* getSphereTriMesh5x5Obj() {
     return kSphereTriMesh5x5Obj;
 }
 
-}  // namespace jet
+}  // namespace vox
