@@ -13,8 +13,6 @@ set(COMMON_FILES
         tensor_samplers.h
         tensor_utils.h
         tensor_view.h
-        cuda_tensor.h
-        cuda_tensor_view.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

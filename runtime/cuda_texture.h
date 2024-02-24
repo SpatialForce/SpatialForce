@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "tensor/cuda_tensor_view.h"
+#include "cuda_tensor_view.h"
 #include "tensor/tensor_view.h"
 #include <cuda_runtime.h>
 

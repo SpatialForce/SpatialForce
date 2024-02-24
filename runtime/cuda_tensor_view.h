@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "cuda_tensor.h"
+#include "cuda_tensor_base.h"
 
 namespace vox {
 
@@ -18,7 +18,7 @@ class CudaTensorView final : public CudaTensorBase<T, N, CudaTensorView<T, N>> {
     using Base = CudaTensorBase<T, N, CudaTensorView<T, N>>;
     using Base::_shape;
     using Base::at;
-    using Base::setPtrAndSize;
+    using Base::setPtrAndShape;
 
 public:
     using Base::data;
@@ -55,7 +55,7 @@ class CudaTensorView<const T, N> final
     : public CudaTensorBase<const T, N, CudaTensorView<const T, N>> {
     using Base = CudaTensorBase<const T, N, CudaTensorView<const T, N>>;
     using Base::_shape;
-    using Base::setPtrAndSize;
+    using Base::setPtrAndShape;
 
 public:
     using Base::data;

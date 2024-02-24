@@ -7,14 +7,14 @@
 #pragma once
 
 #include "tensor/tensor.h"
-#include "tensor/cuda_tensor.h"
+#include "cuda_tensor_view.h"
 #include "cuda_buffer.h"
 
 namespace vox {
 template<typename T, size_t N>
 class CudaTensor final : public CudaTensorBase<T, N, CudaTensor<T, N>> {
     using Base = CudaTensorBase<T, N, CudaTensor<T, N>>;
-    using Base::_size;
+    using Base::_shape;
     using Base::setPtrAndShape;
     using Base::swapPtrAndShape;
 

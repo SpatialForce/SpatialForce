@@ -6,9 +6,7 @@
 
 #pragma once
 
-//#include <jet/array.h>
 #include "math/cuda_std_array.h"
-//#include <math/cuda_std_vector.h>
 
 namespace vox {
 
@@ -114,4 +112,4 @@ private:
 
 }// namespace vox
 
-#include "cuda_tensor-inl.h"
+#include "cuda_tensor_base-inl.h"

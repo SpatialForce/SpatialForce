@@ -15,7 +15,7 @@ using namespace vox;
 TEST(Buffer, raw) {
     vox::init();
 
-    auto buffer = create_buffer<float>();
+    CudaBuffer<float> buffer;
     buffer.alloc(10);
     std::vector<float> a{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     sync_h2d(a.data(), buffer);

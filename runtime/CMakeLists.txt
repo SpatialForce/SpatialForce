@@ -24,6 +24,8 @@ set(COMMON_FILES
 set(RESOURCE_FILES
         cuda_buffer.h
         cuda_texture.h
+        cuda_tensor.h
+        cuda_tensor_view.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

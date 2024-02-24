@@ -15,7 +15,7 @@ namespace vox {
 template<typename T>
 class CudaBuffer {
 public:
-    explicit CudaBuffer(const Device &device) : _device{device} {}
+    explicit CudaBuffer(uint32_t index = 0) : _device{vox::device(index)} {}
 
     ~CudaBuffer() {
         _free();
@@ -64,12 +64,6 @@ private:
 };
 
 template<typename T>
-CudaBuffer<T> create_buffer(uint32_t index = 0) {
-    const auto &d = device(index);
-    return CudaBuffer<T>{d};
-}
-
-template<typename T>
 void sync_h2d(void *src, CudaBuffer<T> &dst) {
     auto &device = dst.device();
     ContextGuard guard(device.primary_context());
@@ -104,7 +98,7 @@ struct HostDeviceVector {
     std::vector<T> host_buffer;
 
     explicit HostDeviceVector(uint32_t index = 0)
-        : device_buffer{create_buffer<T>(index)} {}
+        : device_buffer{index} {}
 
     HostDeviceVector<T> &operator=(const std::vector<T> &host) {
         host_buffer = host;
@@ -163,7 +157,7 @@ struct HostDeviceArray {
     std::array<T, N> host_buffer;
 
     explicit HostDeviceArray(uint32_t index = 0)
-        : device_buffer{create_buffer<T>(index)} {
+        : device_buffer{index} {
         device_buffer.alloc(N);
     }
 
