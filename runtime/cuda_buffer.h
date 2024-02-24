@@ -13,11 +13,11 @@
 
 namespace vox {
 template<typename T>
-class Buffer {
+class CudaBuffer {
 public:
-    explicit Buffer(const Device &device) : _device{device} {}
+    explicit CudaBuffer(const Device &device) : _device{device} {}
 
-    ~Buffer() {
+    ~CudaBuffer() {
         _free();
     }
 
@@ -64,34 +64,34 @@ private:
 };
 
 template<typename T>
-Buffer<T> create_buffer(uint32_t index = 0) {
+CudaBuffer<T> create_buffer(uint32_t index = 0) {
     const auto &d = device(index);
-    return Buffer<T>{d};
+    return CudaBuffer<T>{d};
 }
 
 template<typename T>
-void sync_h2d(void *src, Buffer<T> &dst) {
+void sync_h2d(void *src, CudaBuffer<T> &dst) {
     auto &device = dst.device();
     ContextGuard guard(device.primary_context());
     check_cuda(cudaMemcpyAsync(dst.handle(), src, dst.byte_size(), cudaMemcpyHostToDevice, device.stream.handle()));
 }
 
 template<typename T>
-void sync_d2h(Buffer<T> &src, void *dst) {
+void sync_d2h(CudaBuffer<T> &src, void *dst) {
     auto &device = src.device();
     ContextGuard guard(device.primary_context());
     check_cuda(cudaMemcpyAsync(dst, src.handle(), src.byte_size(), cudaMemcpyDeviceToHost, device.stream.handle()));
 }
 
 template<typename T>
-void sync_d2d(const Buffer<T> &src, Buffer<T> &dst) {
+void sync_d2d(const CudaBuffer<T> &src, CudaBuffer<T> &dst) {
     auto &device = src.device();
     ContextGuard guard(device.primary_context());
     check_cuda(cudaMemcpyAsync(dst.handle(), src.handle(), src.byte_size(), cudaMemcpyDeviceToDevice, device.stream.handle()));
 }
 
 template<typename T>
-void memset(Buffer<T> &dst, int value) {
+void memset(CudaBuffer<T> &dst, int value) {
     auto &device = dst.device();
     ContextGuard guard(device.primary_context());
     check_cuda(cudaMemsetAsync(dst, value, dst.size(), device.stream.handle()));
@@ -100,7 +100,7 @@ void memset(Buffer<T> &dst, int value) {
 //-----------------------------------------------------------------------------------------------------------------------------------
 template<typename T>
 struct HostDeviceVector {
-    Buffer<T> device_buffer;
+    CudaBuffer<T> device_buffer;
     std::vector<T> host_buffer;
 
     explicit HostDeviceVector(uint32_t index = 0)
@@ -159,7 +159,7 @@ struct HostDeviceVector {
 //-----------------------------------------------------------------------------------------------------------------------------------
 template<typename T, size_t N>
 struct HostDeviceArray {
-    Buffer<T> device_buffer;
+    CudaBuffer<T> device_buffer;
     std::array<T, N> host_buffer;
 
     explicit HostDeviceArray(uint32_t index = 0)

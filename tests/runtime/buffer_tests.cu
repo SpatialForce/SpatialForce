@@ -5,7 +5,9 @@
 //  property of any third parties.
 
 #include <gtest/gtest.h>
-#include "runtime/buffer.h"
+#include "math/matrix.h"
+#include "runtime/cuda_buffer.h"
+#include "runtime/cuda_texture.h"
 
 using namespace vox;
 

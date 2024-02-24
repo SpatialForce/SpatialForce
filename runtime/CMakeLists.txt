@@ -19,28 +19,18 @@ set(COMMON_FILES
         stream.cu
         graph.h
         graph.cu
-        buffer.h
 )
 
-set(TYPE_FILES
-        array.h
-        radix_sort.h
-        radix_sort.cu
-        scan.h
-        scan.cu
-        hash_grid.h
-        hash_grid.cu
-        bvh.h
-        bvh.cu
-        mesh.h
-        mesh.cu
+set(RESOURCE_FILES
+        cuda_buffer.h
+        cuda_texture.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})
 
 set(PROJECT_FILES
         ${COMMON_FILES}
-        #        ${TYPE_FILES}
+        ${RESOURCE_FILES}
 )
 
 add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})

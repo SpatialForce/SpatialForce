@@ -7,7 +7,7 @@
 #pragma once
 
 #include <vector>
-#include "runtime/buffer.h"
+#include "runtime/cuda_buffer.h"
 #include "../geometry.h"
 
 namespace vox::fields {

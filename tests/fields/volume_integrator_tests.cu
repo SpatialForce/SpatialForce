@@ -9,7 +9,7 @@
 #include "fields/io/io_mesh_1d.h"
 #include "fields/io/gmsh2d_io.h"
 #include "fields/volume_integrator.h"
-#include "buffer.h"
+#include "cuda_buffer.h"
 #include <thrust/for_each.h>
 #include <thrust/iterator/counting_iterator.h>
 

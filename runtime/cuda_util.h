@@ -19,6 +19,21 @@ bool check_cuda_result(cudaError_t code, const char *file, int line);
 
 bool check_cu_result(CUresult result, const char *file, int line);
 
+#define _CUDA_CHECK(result, msg, file, line)                                \
+    if (result != cudaSuccess) {                                            \
+        fprintf(stderr, "CUDA error at %s:%d code=%d (%s) \"%s\" \n", file, \
+                line, static_cast<unsigned int>(result),                    \
+                cudaGetErrorString(result), msg);                           \
+        cudaDeviceReset();                                                  \
+        exit(EXIT_FAILURE);                                                 \
+    }
+
+#define CUDA_CHECK(expression) \
+    _CUDA_CHECK((expression), #expression, __FILE__, __LINE__)
+
+#define CUDA_CHECK_LAST_ERROR(msg) \
+    _CUDA_CHECK(cudaGetLastError(), msg, __FILE__, __LINE__)
+
 //
 // Scoped CUDA context guard
 //
