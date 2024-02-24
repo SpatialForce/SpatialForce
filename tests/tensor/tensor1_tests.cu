@@ -4,7 +4,7 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array.h"
+#include "tensor/tensor.h"
 
 #include <gtest/gtest.h>
 
@@ -12,42 +12,42 @@
 
 using namespace vox;
 
-TEST(Array1, Constructors) {
+TEST(Tensor1, Constructors) {
     {
-        Array1<float> arr;
+        Tensor1<float> arr;
         EXPECT_EQ(0u, arr.length());
     }
     {
-        Array1<float> arr(9, 1.5f);
+        Tensor1<float> arr(9, 1.5f);
         EXPECT_EQ(9u, arr.length());
         for (size_t i = 0; i < 9; ++i) {
             EXPECT_FLOAT_EQ(1.5f, arr[i]);
         }
     }
     {
-        Array1<float> arr({1.f, 2.f, 3.f, 4.f});
+        Tensor1<float> arr({1.f, 2.f, 3.f, 4.f});
         EXPECT_EQ(4u, arr.length());
         for (size_t i = 0; i < 4; ++i) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arr[i]);
         }
     }
     {
-        Array1<float> arr({1.f, 2.f, 3.f, 4.f});
-        Array1<float> arr1(arr);
+        Tensor1<float> arr({1.f, 2.f, 3.f, 4.f});
+        Tensor1<float> arr1(arr);
         EXPECT_EQ(4u, arr1.length());
         for (size_t i = 0; i < 4; ++i) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arr1[i]);
         }
     }
     {
-        Array1<float> arr({1.f, 2.f, 3.f, 4.f});
-        ArrayView1<float> arrView(arr.data(), arr.size());
+        Tensor1<float> arr({1.f, 2.f, 3.f, 4.f});
+        TensorView1<float> arrView(arr.data(), arr.size());
         EXPECT_EQ(4u, arrView.length());
         for (size_t i = 0; i < 4; ++i) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arrView[i]);
         }
 
-        Array1<float> arr2(arrView);
+        Tensor1<float> arr2(arrView);
         EXPECT_EQ(4u, arr2.length());
         for (size_t i = 0; i < 4; ++i) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arr2[i]);
@@ -55,14 +55,14 @@ TEST(Array1, Constructors) {
     }
 }
 
-TEST(Array1, SetMethods) {
-    Array1<float> arr1(12, -1.f);
+TEST(Tensor1, SetMethods) {
+    Tensor1<float> arr1(12, -1.f);
     arr1.fill(3.5f);
     for (float a : arr1) {
         EXPECT_EQ(3.5f, a);
     }
 
-    Array1<float> arr2;
+    Tensor1<float> arr2;
     arr1.copyFrom(arr2);
     EXPECT_EQ(arr1.length(), arr2.length());
     for (size_t i = 0; i < arr2.length(); ++i) {
@@ -76,7 +76,7 @@ TEST(Array1, SetMethods) {
     EXPECT_EQ(9.f, arr2[2]);
     EXPECT_EQ(-1.f, arr2[3]);
 
-    ArrayView1<float> arrView(arr2.data(), arr2.size());
+    TensorView1<float> arrView(arr2.data(), arr2.size());
     EXPECT_EQ(4u, arrView.length());
     EXPECT_EQ(2.f, arrView[0]);
     EXPECT_EQ(5.f, arrView[1]);
@@ -84,15 +84,15 @@ TEST(Array1, SetMethods) {
     EXPECT_EQ(-1.f, arrView[3]);
 }
 
-TEST(Array1, Clear) {
-    Array1<float> arr1 = {2.f, 5.f, 9.f, -1.f};
+TEST(Tensor1, Clear) {
+    Tensor1<float> arr1 = {2.f, 5.f, 9.f, -1.f};
     arr1.clear();
     EXPECT_EQ(0u, arr1.length());
 }
 
-TEST(Array1, ResizeMethod) {
+TEST(Tensor1, ResizeMethod) {
     {
-        Array1<float> arr;
+        Tensor1<float> arr;
         arr.resize(9);
         EXPECT_EQ(9u, arr.length());
         for (size_t i = 0; i < 9; ++i) {
@@ -111,8 +111,8 @@ TEST(Array1, ResizeMethod) {
     }
 }
 
-TEST(Array1, Iterators) {
-    Array1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
+TEST(Tensor1, Iterators) {
+    Tensor1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
 
     size_t i = 0;
     for (float &elem : arr1) {
@@ -127,8 +127,8 @@ TEST(Array1, Iterators) {
     }
 }
 
-TEST(Array1, ForEach) {
-    Array1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
+TEST(Tensor1, ForEach) {
+    Tensor1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
     size_t i = 0;
     std::for_each(arr1.begin(), arr1.end(), [&](float val) {
         EXPECT_FLOAT_EQ(arr1[i], val);
@@ -136,8 +136,8 @@ TEST(Array1, ForEach) {
     });
 }
 
-TEST(Array1, ForEachIndex) {
-    Array1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
+TEST(Tensor1, ForEachIndex) {
+    Tensor1<float> arr1 = {6.f, 4.f, 1.f, -5.f};
     size_t cnt = 0;
     forEachIndex(arr1.length(), [&](size_t i) {
         EXPECT_EQ(cnt, i);

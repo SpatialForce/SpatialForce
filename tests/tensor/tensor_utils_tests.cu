@@ -4,8 +4,8 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array_utils.h"
-#include "tensor/array.h"
+#include "tensor/tensor_utils.h"
+#include "tensor/tensor.h"
 
 #include <gtest/gtest.h>
 
@@ -14,8 +14,8 @@
 
 using namespace vox;
 
-TEST(ArrayUtils, Fill) {
-    Array1<double> array0(5);
+TEST(TensorUtils, Fill) {
+    Tensor1<double> array0(5);
 
     fill(array0.view(), 3.4);
 
@@ -30,9 +30,9 @@ TEST(ArrayUtils, Fill) {
     }
 }
 
-TEST(ArrayUtils, Copy1) {
-    Array1<double> array0({1.0, 2.0, 3.0, 4.0, 5.0});
-    Array1<double> array1(5);
+TEST(TensorUtils, Copy1) {
+    Tensor1<double> array0({1.0, 2.0, 3.0, 4.0, 5.0});
+    Tensor1<double> array1(5);
 
     copy(array0.view(), 1, 3, array1.view());
 
@@ -47,9 +47,9 @@ TEST(ArrayUtils, Copy1) {
     }
 }
 
-TEST(ArrayUtils, Copy2) {
-    Array2<double> array0({{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}});
-    Array2<double> array1(2, 3);
+TEST(TensorUtils, Copy2) {
+    Tensor2<double> array0({{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}});
+    Tensor2<double> array1(2, 3);
 
     copy(array0.view(), {0, 1}, {2, 3}, array1.view());
 
@@ -68,10 +68,10 @@ TEST(ArrayUtils, Copy2) {
     }
 }
 
-TEST(ArrayUtils, Copy3) {
-    Array3<double> array0({{{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}},
-                           {{7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}}});
-    Array3<double> array1(2, 3, 2);
+TEST(TensorUtils, Copy3) {
+    Tensor3<double> array0({{{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}},
+                            {{7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}}});
+    Tensor3<double> array1(2, 3, 2);
 
     copy(array0.view(), {0, 2, 1}, {1, 3, 2}, array1.view());
 
@@ -94,9 +94,9 @@ TEST(ArrayUtils, Copy3) {
     }
 }
 
-TEST(ArrayUtils, ExtrapolateToRegion2) {
-    Array2<double> data(10, 12, 0.0);
-    Array2<char> valid(10, 12, (char)0);
+TEST(TensorUtils, ExtrapolateToRegion2) {
+    Tensor2<double> data(10, 12, 0.0);
+    Tensor2<char> valid(10, 12, (char)0);
 
     for (size_t j = 3; j < 10; ++j) {
         for (size_t i = 2; i < 6; ++i) {
@@ -107,7 +107,7 @@ TEST(ArrayUtils, ExtrapolateToRegion2) {
 
     extrapolateToRegion(data.view(), valid.view(), 6, data.view());
 
-    Array2<double> dataAnswer(
+    Tensor2<double> dataAnswer(
         {{32.0, 32.0, 32.0, 33.0, 34.0, 35.0, 35.0, 35.0, 35.0, 0.0},
          {32.0, 32.0, 32.0, 33.0, 34.0, 35.0, 35.0, 35.0, 35.0, 35.0},
          {32.0, 32.0, 32.0, 33.0, 34.0, 35.0, 35.0, 35.0, 35.0, 35.0},
@@ -128,11 +128,11 @@ TEST(ArrayUtils, ExtrapolateToRegion2) {
     }
 }
 
-TEST(ArrayUtils, ExtrapolateToRegion3) {
+TEST(TensorUtils, ExtrapolateToRegion3) {
     // TODO: Need better testing
 
-    Array3<double> data(3, 4, 5, 0.0);
-    Array3<char> valid(3, 4, 5, (char)0);
+    Tensor3<double> data(3, 4, 5, 0.0);
+    Tensor3<char> valid(3, 4, 5, (char)0);
 
     for (size_t k = 1; k < 4; ++k) {
         for (size_t j = 2; j < 3; ++j) {

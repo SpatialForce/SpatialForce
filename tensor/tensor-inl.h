@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include "array_view.h"
+#include "tensor_view.h"
 #include "iteration_utils.h"
 
 namespace vox {
 
 template<typename T, size_t N>
-class Array;
+class Tensor;
 
 namespace internal {
 
@@ -71,31 +71,31 @@ struct GetSizeFromInitList<T, N, 1> {
 };
 
 template<typename T, size_t N, size_t I>
-struct SetArrayFromInitList {
-    static void call(Array<T, N> &arr, NestedInitializerListsT<T, I> lst) {
+struct SetTensorFromInitList {
+    static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, I> lst) {
         size_t i = 0;
         for (auto subLst : lst) {
             ASSERT(i < arr.size()[I - 1]);
-            SetArrayFromInitList<T, N, I - 1>::call(arr, subLst, i);
+            SetTensorFromInitList<T, N, I - 1>::call(arr, subLst, i);
             ++i;
         }
     }
 
     template<typename... RemainingIndices>
-    static void call(Array<T, N> &arr, NestedInitializerListsT<T, I> lst,
+    static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, I> lst,
                      RemainingIndices... indices) {
         size_t i = 0;
         for (auto subLst : lst) {
             ASSERT(i < arr.size()[I - 1]);
-            SetArrayFromInitList<T, N, I - 1>::call(arr, subLst, i, indices...);
+            SetTensorFromInitList<T, N, I - 1>::call(arr, subLst, i, indices...);
             ++i;
         }
     }
 };
 
 template<typename T, size_t N>
-struct SetArrayFromInitList<T, N, 1> {
-    static void call(Array<T, N> &arr, NestedInitializerListsT<T, 1> lst) {
+struct SetTensorFromInitList<T, N, 1> {
+    static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, 1> lst) {
         size_t i = 0;
         for (auto val : lst) {
             ASSERT(i < arr.size()[0]);
@@ -105,7 +105,7 @@ struct SetArrayFromInitList<T, N, 1> {
     }
 
     template<typename... RemainingIndices>
-    static void call(Array<T, N> &arr, NestedInitializerListsT<T, 1> lst,
+    static void call(Tensor<T, N> &arr, NestedInitializerListsT<T, 1> lst,
                      RemainingIndices... indices) {
         size_t i = 0;
         for (auto val : lst) {
@@ -118,216 +118,216 @@ struct SetArrayFromInitList<T, N, 1> {
 
 }// namespace internal
 
-// MARK: ArrayBase
+// MARK: TensorBase
 template<typename T, size_t N, typename D>
-size_t ArrayBase<T, N, D>::index(size_t i) const {
+size_t TensorBase<T, N, D>::index(size_t i) const {
     return i;
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-size_t ArrayBase<T, N, D>::index(size_t i, Args... args) const {
+size_t TensorBase<T, N, D>::index(size_t i, Args... args) const {
     static_assert(sizeof...(args) == N - 1, "Invalid number of indices.");
     return i + _size[0] * _index(1, args...);
 }
 
 template<typename T, size_t N, typename D>
 template<size_t... I>
-size_t ArrayBase<T, N, D>::index(const Vector<size_t, N> &idx) const {
+size_t TensorBase<T, N, D>::index(const Vector<size_t, N> &idx) const {
     return _index(idx, std::make_index_sequence<N>{});
 }
 
 template<typename T, size_t N, typename D>
-T *ArrayBase<T, N, D>::data() {
+T *TensorBase<T, N, D>::data() {
     return _ptr;
 }
 
 template<typename T, size_t N, typename D>
-const T *ArrayBase<T, N, D>::data() const {
+const T *TensorBase<T, N, D>::data() const {
     return _ptr;
 }
 
 template<typename T, size_t N, typename D>
-const Vector<size_t, N> &ArrayBase<T, N, D>::size() const {
+const Vector<size_t, N> &TensorBase<T, N, D>::size() const {
     return _size;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
-std::enable_if_t<(M > 0), size_t> ArrayBase<T, N, D>::width() const {
+std::enable_if_t<(M > 0), size_t> TensorBase<T, N, D>::width() const {
     return _size.x;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
-std::enable_if_t<(M > 1), size_t> ArrayBase<T, N, D>::height() const {
+std::enable_if_t<(M > 1), size_t> TensorBase<T, N, D>::height() const {
     return _size.y;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t M>
-std::enable_if_t<(M > 2), size_t> ArrayBase<T, N, D>::depth() const {
+std::enable_if_t<(M > 2), size_t> TensorBase<T, N, D>::depth() const {
     return _size.z;
 }
 
 template<typename T, size_t N, typename D>
-bool ArrayBase<T, N, D>::isEmpty() const {
+bool TensorBase<T, N, D>::isEmpty() const {
     return length() == 0;
 }
 
 template<typename T, size_t N, typename D>
-size_t ArrayBase<T, N, D>::length() const {
+size_t TensorBase<T, N, D>::length() const {
     return product<size_t, N>(_size, 1);
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::iterator ArrayBase<T, N, D>::begin() {
+typename TensorBase<T, N, D>::iterator TensorBase<T, N, D>::begin() {
     return _ptr;
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::const_iterator ArrayBase<T, N, D>::begin() const {
+typename TensorBase<T, N, D>::const_iterator TensorBase<T, N, D>::begin() const {
     return _ptr;
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::iterator ArrayBase<T, N, D>::end() {
+typename TensorBase<T, N, D>::iterator TensorBase<T, N, D>::end() {
     return _ptr + length();
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::const_iterator ArrayBase<T, N, D>::end() const {
+typename TensorBase<T, N, D>::const_iterator TensorBase<T, N, D>::end() const {
     return _ptr + length();
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::iterator ArrayBase<T, N, D>::rbegin() {
+typename TensorBase<T, N, D>::iterator TensorBase<T, N, D>::rbegin() {
     return end() - 1;
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::const_iterator ArrayBase<T, N, D>::rbegin() const {
+typename TensorBase<T, N, D>::const_iterator TensorBase<T, N, D>::rbegin() const {
     return end() - 1;
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::iterator ArrayBase<T, N, D>::rend() {
+typename TensorBase<T, N, D>::iterator TensorBase<T, N, D>::rend() {
     return begin() - 1;
 }
 
 template<typename T, size_t N, typename D>
-typename ArrayBase<T, N, D>::const_iterator ArrayBase<T, N, D>::rend() const {
+typename TensorBase<T, N, D>::const_iterator TensorBase<T, N, D>::rend() const {
     return begin() - 1;
 }
 
 template<typename T, size_t N, typename D>
-T &ArrayBase<T, N, D>::at(size_t i) {
+T &TensorBase<T, N, D>::at(size_t i) {
     return _ptr[i];
 }
 
 template<typename T, size_t N, typename D>
-const T &ArrayBase<T, N, D>::at(size_t i) const {
+const T &TensorBase<T, N, D>::at(size_t i) const {
     return _ptr[i];
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-T &ArrayBase<T, N, D>::at(size_t i, Args... args) {
+T &TensorBase<T, N, D>::at(size_t i, Args... args) {
     return data()[index(i, args...)];
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-const T &ArrayBase<T, N, D>::at(size_t i, Args... args) const {
+const T &TensorBase<T, N, D>::at(size_t i, Args... args) const {
     return _ptr[index(i, args...)];
 }
 
 template<typename T, size_t N, typename D>
-T &ArrayBase<T, N, D>::at(const Vector<size_t, N> &idx) {
+T &TensorBase<T, N, D>::at(const Vector<size_t, N> &idx) {
     return data()[index(idx)];
 }
 
 template<typename T, size_t N, typename D>
-const T &ArrayBase<T, N, D>::at(const Vector<size_t, N> &idx) const {
+const T &TensorBase<T, N, D>::at(const Vector<size_t, N> &idx) const {
     return data()[index(idx)];
 }
 
 template<typename T, size_t N, typename D>
-T &ArrayBase<T, N, D>::operator[](size_t i) {
+T &TensorBase<T, N, D>::operator[](size_t i) {
     return at(i);
 }
 
 template<typename T, size_t N, typename D>
-const T &ArrayBase<T, N, D>::operator[](size_t i) const {
+const T &TensorBase<T, N, D>::operator[](size_t i) const {
     return at(i);
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-T &ArrayBase<T, N, D>::operator()(size_t i, Args... args) {
+T &TensorBase<T, N, D>::operator()(size_t i, Args... args) {
     return at(i, args...);
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-const T &ArrayBase<T, N, D>::operator()(size_t i, Args... args) const {
+const T &TensorBase<T, N, D>::operator()(size_t i, Args... args) const {
     return at(i, args...);
 }
 
 template<typename T, size_t N, typename D>
-T &ArrayBase<T, N, D>::operator()(const Vector<size_t, N> &idx) {
+T &TensorBase<T, N, D>::operator()(const Vector<size_t, N> &idx) {
     return at(idx);
 }
 
 template<typename T, size_t N, typename D>
-const T &ArrayBase<T, N, D>::operator()(const Vector<size_t, N> &idx) const {
+const T &TensorBase<T, N, D>::operator()(const Vector<size_t, N> &idx) const {
     return at(idx);
 }
 
 template<typename T, size_t N, typename D>
-ArrayBase<T, N, D>::ArrayBase() : _size{} {}
+TensorBase<T, N, D>::TensorBase() : _size{} {}
 
 template<typename T, size_t N, typename D>
-ArrayBase<T, N, D>::ArrayBase(const ArrayBase &other) {
+TensorBase<T, N, D>::TensorBase(const TensorBase &other) {
     setPtrAndSize(other._ptr, other._size);
 }
 
 template<typename T, size_t N, typename D>
-ArrayBase<T, N, D>::ArrayBase(ArrayBase &&other) {
+TensorBase<T, N, D>::TensorBase(TensorBase &&other) {
     *this = std::move(other);
 }
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-void ArrayBase<T, N, D>::setPtrAndSize(T *ptr, size_t ni, Args... args) {
+void TensorBase<T, N, D>::setPtrAndSize(T *ptr, size_t ni, Args... args) {
     setPtrAndSize(ptr, Vector<size_t, N>{ni, args...});
 }
 
 template<typename T, size_t N, typename D>
-void ArrayBase<T, N, D>::setPtrAndSize(T *data, Vector<size_t, N> size) {
+void TensorBase<T, N, D>::setPtrAndSize(T *data, Vector<size_t, N> size) {
     _ptr = data;
     _size = size;
 }
 
 template<typename T, size_t N, typename D>
-void ArrayBase<T, N, D>::clearPtrAndSize() {
+void TensorBase<T, N, D>::clearPtrAndSize() {
     setPtrAndSize(nullptr, Vector<size_t, N>{});
 }
 
 template<typename T, size_t N, typename D>
-void ArrayBase<T, N, D>::swapPtrAndSize(ArrayBase &other) {
+void TensorBase<T, N, D>::swapPtrAndSize(TensorBase &other) {
     std::swap(_ptr, other._ptr);
     std::swap(_size, other._size);
 }
 
 template<typename T, size_t N, typename D>
-ArrayBase<T, N, D> &ArrayBase<T, N, D>::operator=(const ArrayBase &other) {
+TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(const TensorBase &other) {
     setPtrAndSize(other.data(), other.size());
     return *this;
 }
 
 template<typename T, size_t N, typename D>
-ArrayBase<T, N, D> &ArrayBase<T, N, D>::operator=(ArrayBase &&other) {
+TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(TensorBase &&other) {
     setPtrAndSize(other.data(), other.size());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;
@@ -335,37 +335,37 @@ ArrayBase<T, N, D> &ArrayBase<T, N, D>::operator=(ArrayBase &&other) {
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-size_t ArrayBase<T, N, D>::_index(size_t d, size_t i, Args... args) const {
+size_t TensorBase<T, N, D>::_index(size_t d, size_t i, Args... args) const {
     return i + _size[d] * _index(d + 1, args...);
 }
 
 template<typename T, size_t N, typename D>
-size_t ArrayBase<T, N, D>::_index(size_t, size_t i) const {
+size_t TensorBase<T, N, D>::_index(size_t, size_t i) const {
     return i;
 }
 
 template<typename T, size_t N, typename D>
 template<size_t... I>
-size_t ArrayBase<T, N, D>::_index(const Vector<size_t, N> &idx,
-                                  std::index_sequence<I...>) const {
+size_t TensorBase<T, N, D>::_index(const Vector<size_t, N> &idx,
+                                   std::index_sequence<I...>) const {
     return index(idx[I]...);
 }
 
-// MARK: Array
+// MARK: Tensor
 
 // CTOR
 template<typename T, size_t N>
-Array<T, N>::Array() : Base() {}
+Tensor<T, N>::Tensor() : Base() {}
 
 template<typename T, size_t N>
-Array<T, N>::Array(const Vector<size_t, N> &size_, const T &initVal) : Array() {
+Tensor<T, N>::Tensor(const Vector<size_t, N> &size_, const T &initVal) : Tensor() {
     _data.resize(product<size_t, N>(size_, 1), initVal);
     Base::setPtrAndSize(_data.data(), size_);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-Array<T, N>::Array(size_t nx, Args... args) {
+Tensor<T, N>::Tensor(size_t nx, Args... args) {
     Vector<size_t, N> size_;
     T initVal;
     internal::GetSizeAndInitVal<T, N, N - 1>::call(size_, initVal, nx, args...);
@@ -374,39 +374,39 @@ Array<T, N>::Array(size_t nx, Args... args) {
 }
 
 template<typename T, size_t N>
-Array<T, N>::Array(NestedInitializerListsT<T, N> lst) {
+Tensor<T, N>::Tensor(NestedInitializerListsT<T, N> lst) {
     Vector<size_t, N> newSize{};
     internal::GetSizeFromInitList<T, N, N>::call(newSize, lst);
     _data.resize(product<size_t, N>(newSize, 1));
     Base::setPtrAndSize(_data.data(), newSize);
-    internal::SetArrayFromInitList<T, N, N>::call(*this, lst);
+    internal::SetTensorFromInitList<T, N, N>::call(*this, lst);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
-Array<T, N>::Array(const ArrayBase<T, N, OtherDerived> &other) : Array() {
+Tensor<T, N>::Tensor(const TensorBase<T, N, OtherDerived> &other) : Tensor() {
     copyFrom(other);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
-Array<T, N>::Array(const ArrayBase<const T, N, OtherDerived> &other) : Array() {
+Tensor<T, N>::Tensor(const TensorBase<const T, N, OtherDerived> &other) : Tensor() {
     copyFrom(other);
 }
 
 template<typename T, size_t N>
-Array<T, N>::Array(const Array &other) : Array() {
+Tensor<T, N>::Tensor(const Tensor &other) : Tensor() {
     copyFrom(other);
 }
 
 template<typename T, size_t N>
-Array<T, N>::Array(Array &&other) : Array() {
+Tensor<T, N>::Tensor(Tensor &&other) : Tensor() {
     *this = std::move(other);
 }
 
 template<typename T, size_t N>
 template<typename D>
-void Array<T, N>::copyFrom(const ArrayBase<T, N, D> &other) {
+void Tensor<T, N>::copyFrom(const TensorBase<T, N, D> &other) {
     resize(other.size());
     forEachIndex(Vector<size_t, N>{}, other.size(),
                  [&](auto... idx) { this->at(idx...) = other(idx...); });
@@ -414,29 +414,29 @@ void Array<T, N>::copyFrom(const ArrayBase<T, N, D> &other) {
 
 template<typename T, size_t N>
 template<typename D>
-void Array<T, N>::copyFrom(const ArrayBase<const T, N, D> &other) {
+void Tensor<T, N>::copyFrom(const TensorBase<const T, N, D> &other) {
     resize(other.size());
     forEachIndex(Vector<size_t, N>{}, other.size(),
                  [&](auto... idx) { this->at(idx...) = other(idx...); });
 }
 
 template<typename T, size_t N>
-void Array<T, N>::fill(const T &val) {
+void Tensor<T, N>::fill(const T &val) {
     std::fill(_data.begin(), _data.end(), val);
 }
 
 template<typename T, size_t N>
-void Array<T, N>::resize(Vector<size_t, N> size_, const T &initVal) {
-    Array newArray(size_, initVal);
-    Vector<size_t, N> minSize = min(_size, newArray._size);
+void Tensor<T, N>::resize(Vector<size_t, N> size_, const T &initVal) {
+    Tensor newTensor(size_, initVal);
+    Vector<size_t, N> minSize = min(_size, newTensor._size);
     forEachIndex(minSize,
-                 [&](auto... idx) { newArray(idx...) = (*this)(idx...); });
-    *this = std::move(newArray);
+                 [&](auto... idx) { newTensor(idx...) = (*this)(idx...); });
+    *this = std::move(newTensor);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-void Array<T, N>::resize(size_t nx, Args... args) {
+void Tensor<T, N>::resize(size_t nx, Args... args) {
     Vector<size_t, N> size_;
     T initVal;
     internal::GetSizeAndInitVal<T, N, N - 1>::call(size_, initVal, nx, args...);
@@ -446,73 +446,73 @@ void Array<T, N>::resize(size_t nx, Args... args) {
 
 template<typename T, size_t N>
 template<size_t M>
-std::enable_if_t<(M == 1), void> Array<T, N>::append(const T &val) {
+std::enable_if_t<(M == 1), void> Tensor<T, N>::append(const T &val) {
     _data.push_back(val);
     Base::setPtrAndSize(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived, size_t M>
-std::enable_if_t<(M == 1), void> Array<T, N>::append(
-    const ArrayBase<T, N, OtherDerived> &extra) {
+std::enable_if_t<(M == 1), void> Tensor<T, N>::append(
+    const TensorBase<T, N, OtherDerived> &extra) {
     _data.insert(_data.end(), extra.begin(), extra.end());
     Base::setPtrAndSize(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived, size_t M>
-std::enable_if_t<(M == 1), void> Array<T, N>::append(
-    const ArrayBase<const T, N, OtherDerived> &extra) {
+std::enable_if_t<(M == 1), void> Tensor<T, N>::append(
+    const TensorBase<const T, N, OtherDerived> &extra) {
     _data.insert(_data.end(), extra.begin(), extra.end());
     Base::setPtrAndSize(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
-void Array<T, N>::clear() {
+void Tensor<T, N>::clear() {
     Base::clearPtrAndSize();
     _data.clear();
 }
 
 template<typename T, size_t N>
-void Array<T, N>::swap(Array &other) {
+void Tensor<T, N>::swap(Tensor &other) {
     Base::swapPtrAndSize(other);
     std::swap(_data, other._data);
 }
 
 template<typename T, size_t N>
-ArrayView<T, N> Array<T, N>::view() {
-    return ArrayView<T, N>(*this);
+TensorView<T, N> Tensor<T, N>::view() {
+    return TensorView<T, N>(*this);
 };
 
 template<typename T, size_t N>
-ArrayView<const T, N> Array<T, N>::view() const {
-    return ArrayView<const T, N>(*this);
+TensorView<const T, N> Tensor<T, N>::view() const {
+    return TensorView<const T, N>(*this);
 };
 
 template<typename T, size_t N>
 template<typename OtherDerived>
-Array<T, N> &Array<T, N>::operator=(
-    const ArrayBase<T, N, OtherDerived> &other) {
+Tensor<T, N> &Tensor<T, N>::operator=(
+    const TensorBase<T, N, OtherDerived> &other) {
     copyFrom(other);
     return *this;
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
-Array<T, N> &Array<T, N>::operator=(
-    const ArrayBase<const T, N, OtherDerived> &other) {
+Tensor<T, N> &Tensor<T, N>::operator=(
+    const TensorBase<const T, N, OtherDerived> &other) {
     copyFrom(other);
     return *this;
 }
 
 template<typename T, size_t N>
-Array<T, N> &Array<T, N>::operator=(const Array &other) {
+Tensor<T, N> &Tensor<T, N>::operator=(const Tensor &other) {
     copyFrom(other);
     return *this;
 }
 
 template<typename T, size_t N>
-Array<T, N> &Array<T, N>::operator=(Array &&other) {
+Tensor<T, N> &Tensor<T, N>::operator=(Tensor &&other) {
     _data = std::move(other._data);
     Base::setPtrAndSize(other.data(), other.size());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});

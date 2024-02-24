@@ -4,19 +4,19 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array.h"
-#include "tensor/array_view.h"
+#include "tensor/tensor.h"
+#include "tensor/tensor_view.h"
 
 #include <gtest/gtest.h>
 
 using namespace vox;
 
-TEST(ConstArrayView, Constructors) {
-    Array2<double> arr = {{1, 2}, {3, 4}, {5, 6}};
-    ArrayView2<double> view = arr.view();
+TEST(ConstTensorView, Constructors) {
+    Tensor2<double> arr = {{1, 2}, {3, 4}, {5, 6}};
+    TensorView2<double> view = arr.view();
 
-    // Copy from mutable Array
-    ConstArrayView2<double> view2(arr);
+    // Copy from mutable Tensor
+    ConstTensorView2<double> view2(arr);
     EXPECT_EQ(Vector2UZ(2, 3), view2.size());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {
@@ -24,8 +24,8 @@ TEST(ConstArrayView, Constructors) {
         }
     }
 
-    // Copy from mutable ArrayView
-    ConstArrayView2<double> view3(arr.view());
+    // Copy from mutable TensorView
+    ConstTensorView2<double> view3(arr.view());
     EXPECT_EQ(Vector2UZ(2, 3), view3.size());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {
@@ -33,8 +33,8 @@ TEST(ConstArrayView, Constructors) {
         }
     }
 
-    // Copy from immutable ArrayView
-    ConstArrayView2<double> view4(view3);
+    // Copy from immutable TensorView
+    ConstTensorView2<double> view4(view3);
     EXPECT_EQ(Vector2UZ(2, 3), view4.size());
     for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 2; ++i) {

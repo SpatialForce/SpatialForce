@@ -6,19 +6,19 @@
 
 #include "tests_utils.h"
 
-#include "tensor/array.h"
-#include "tensor/array_samplers.h"
+#include "tensor/tensor.h"
+#include "tensor/tensor_samplers.h"
 
 #include <gtest/gtest.h>
 
 using namespace vox;
 
-TEST(NearestArraySampler1, Sample) {
+TEST(NearestTensorSampler1, Sample) {
     {
-        Array1<double> grid({1.0, 2.0, 3.0, 4.0});
+        Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});
         double gridSpacing = 1.0, gridOrigin = 0.0;
-        NearestArraySampler1<double> sampler(grid.view(), gridSpacing,
-                                             gridOrigin);
+        NearestTensorSampler1<double> sampler(grid.view(), gridSpacing,
+                                              gridOrigin);
 
         double s0 = sampler(0.45);
         EXPECT_LT(std::fabs(s0 - 1.0), 1e-9);
@@ -30,10 +30,10 @@ TEST(NearestArraySampler1, Sample) {
         EXPECT_LT(std::fabs(s2 - 4.0), 1e-9);
     }
     {
-        Array1<double> grid({1.0, 2.0, 3.0, 4.0});
+        Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});
         double gridSpacing = 0.5, gridOrigin = -1.0;
-        NearestArraySampler1<double> sampler(grid.view(), gridSpacing,
-                                             gridOrigin);
+        NearestTensorSampler1<double> sampler(grid.view(), gridSpacing,
+                                              gridOrigin);
 
         double s0 = sampler(0.45);
         EXPECT_LT(std::fabs(s0 - 4.0), 1e-9);
@@ -43,12 +43,12 @@ TEST(NearestArraySampler1, Sample) {
     }
 }
 
-TEST(LinearArraySampler1, Sample) {
+TEST(LinearTensorSampler1, Sample) {
     {
-        Array1<double> grid({1.0, 2.0, 3.0, 4.0});
+        Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});
         double gridSpacing = 1.0, gridOrigin = 0.0;
-        LinearArraySampler1<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler1<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         double s0 = sampler(0.5);
         EXPECT_LT(std::fabs(s0 - 1.5), 1e-9);
@@ -60,10 +60,10 @@ TEST(LinearArraySampler1, Sample) {
         EXPECT_NEAR(4.0, s2, 1e-9);
     }
     {
-        Array1<double> grid({1.0, 2.0, 3.0, 4.0});
+        Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});
         double gridSpacing = 0.5, gridOrigin = -1.0;
-        LinearArraySampler1<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler1<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         double s0 = sampler(0.2);
         EXPECT_LT(std::fabs(s0 - 3.4), 1e-9);
@@ -73,27 +73,27 @@ TEST(LinearArraySampler1, Sample) {
     }
 }
 
-TEST(CubicArraySampler1, Sample) {
-    Array1<double> grid({1.0, 2.0, 3.0, 4.0});
+TEST(CubicTensorSampler1, Sample) {
+    Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});
     double gridSpacing = 1.0, gridOrigin = 0.0;
-    MonotonicCatmullRomArraySampler1<double> sampler(grid.view(), gridSpacing,
-                                                     gridOrigin);
+    MonotonicCatmullRomTensorSampler1<double> sampler(grid.view(), gridSpacing,
+                                                      gridOrigin);
 
     double s0 = sampler(1.25);
     EXPECT_LT(2.0, s0);
     EXPECT_GT(3.0, s0);
 }
 
-TEST(NearestArraySampler2, Sample) {
+TEST(NearestTensorSampler2, Sample) {
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(1.0, 1.0), gridOrigin;
-        NearestArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                             gridOrigin);
+        NearestTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                              gridOrigin);
 
         double s0 = sampler(Vector2D(0.45, 0.45));
         EXPECT_NEAR(1.0, s0, kEps);
@@ -105,14 +105,14 @@ TEST(NearestArraySampler2, Sample) {
         EXPECT_NEAR(5.0, s2, kEps);
     }
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(0.5, 0.25), gridOrigin(-1.0, -0.5);
-        NearestArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                             gridOrigin);
+        NearestTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                              gridOrigin);
 
         double s0 = sampler(Vector2D(0.45, 0.4));
         EXPECT_NEAR(8.0, s0, kEps);
@@ -122,17 +122,17 @@ TEST(NearestArraySampler2, Sample) {
     }
 }
 
-TEST(LinearArraySampler2, Sample) {
+TEST(LinearTensorSampler2, Sample) {
     // From simple grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(1.0, 1.0), gridOrigin;
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         double s0 = sampler(Vector2D(0.5, 0.5));
         EXPECT_NEAR(s0, 2.0, kEps);
@@ -143,14 +143,14 @@ TEST(LinearArraySampler2, Sample) {
 
     // From more complex grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(0.5, 0.25), gridOrigin(-1.0, -0.5);
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         double s0 = sampler(Vector2D(0.5, 0.5));
         EXPECT_LT(std::fabs(s0 - 8.0), kEps);
@@ -160,17 +160,17 @@ TEST(LinearArraySampler2, Sample) {
     }
 }
 
-TEST(LinearArraySampler2, GetCoordinatesAndWeights) {
+TEST(LinearTensorSampler2, GetCoordinatesAndWeights) {
     // From simple grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(1.0, 1.0), gridOrigin;
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         std::array<Vector2UZ, 4> indices;
         std::array<double, 4> weights;
@@ -197,14 +197,14 @@ TEST(LinearArraySampler2, GetCoordinatesAndWeights) {
 
     // From more complex grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(0.5, 0.25), gridOrigin(-1.0, -0.5);
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         std::array<Vector2UZ, 4> indices;
         std::array<double, 4> weights;
@@ -231,17 +231,17 @@ TEST(LinearArraySampler2, GetCoordinatesAndWeights) {
     }
 }
 
-TEST(LinearArraySampler2, GetCoordinatesAndGradientWeights) {
+TEST(LinearTensorSampler2, GetCoordinatesAndGradientWeights) {
     // From simple grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(1.0, 1.0), gridOrigin;
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         std::array<Vector2UZ, 4> indices;
         std::array<Vector2D, 4> weights;
@@ -270,14 +270,14 @@ TEST(LinearArraySampler2, GetCoordinatesAndGradientWeights) {
 
     // From more complex grid
     {
-        Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                             {2.0, 3.0, 4.0, 5.0},
-                             {3.0, 4.0, 5.0, 6.0},
-                             {4.0, 5.0, 6.0, 7.0},
-                             {5.0, 6.0, 7.0, 8.0}});
+        Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                              {2.0, 3.0, 4.0, 5.0},
+                              {3.0, 4.0, 5.0, 6.0},
+                              {4.0, 5.0, 6.0, 7.0},
+                              {5.0, 6.0, 7.0, 8.0}});
         Vector2D gridSpacing(0.5, 0.25), gridOrigin(-1.0, -0.5);
-        LinearArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                            gridOrigin);
+        LinearTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                             gridOrigin);
 
         std::array<Vector2UZ, 4> indices;
         std::array<Vector2D, 4> weights;
@@ -305,23 +305,23 @@ TEST(LinearArraySampler2, GetCoordinatesAndGradientWeights) {
     }
 }
 
-TEST(CubicArraySampler2, Sample) {
-    Array2<double> grid({{1.0, 2.0, 3.0, 4.0},
-                         {2.0, 3.0, 4.0, 5.0},
-                         {3.0, 4.0, 5.0, 6.0},
-                         {4.0, 5.0, 6.0, 7.0},
-                         {5.0, 6.0, 7.0, 8.0}});
+TEST(CubicTensorSampler2, Sample) {
+    Tensor2<double> grid({{1.0, 2.0, 3.0, 4.0},
+                          {2.0, 3.0, 4.0, 5.0},
+                          {3.0, 4.0, 5.0, 6.0},
+                          {4.0, 5.0, 6.0, 7.0},
+                          {5.0, 6.0, 7.0, 8.0}});
     Vector2D gridSpacing(1.0, 1.0), gridOrigin;
-    MonotonicCatmullRomArraySampler2<double> sampler(grid.view(), gridSpacing,
-                                                     gridOrigin);
+    MonotonicCatmullRomTensorSampler2<double> sampler(grid.view(), gridSpacing,
+                                                      gridOrigin);
 
     double s0 = sampler(Vector2D(1.5, 2.8));
     EXPECT_LT(4.0, s0);
     EXPECT_GT(6.0, s0);
 }
 
-TEST(CubicArraySampler3, Sample) {
-    Array3<double> grid(4, 4, 4);
+TEST(CubicTensorSampler3, Sample) {
+    Tensor3<double> grid(4, 4, 4);
     for (size_t k = 0; k < 4; ++k) {
         for (size_t j = 0; j < 4; ++j) {
             for (size_t i = 0; i < 4; ++i) {
@@ -331,8 +331,8 @@ TEST(CubicArraySampler3, Sample) {
     }
 
     Vector3D gridSpacing(1.0, 1.0, 1.0), gridOrigin;
-    MonotonicCatmullRomArraySampler3<double> sampler(grid.view(), gridSpacing,
-                                                     gridOrigin);
+    MonotonicCatmullRomTensorSampler3<double> sampler(grid.view(), gridSpacing,
+                                                      gridOrigin);
 
     double s0 = sampler(Vector3D(1.5, 1.8, 1.2));
     EXPECT_LT(3.0, s0);

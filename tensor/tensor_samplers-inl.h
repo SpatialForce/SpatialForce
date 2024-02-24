@@ -139,11 +139,11 @@ struct GetCoordinatesAndGradientWeights<T, N, 1> {
 }// namespace internal
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: NearestArraySampler
+// MARK: NearestTensorSampler
 
 template<typename T, size_t N>
-NearestArraySampler<T, N>::NearestArraySampler(
-    const ArrayView<const T, N> &view, const VectorType &gridSpacing,
+NearestTensorSampler<T, N>::NearestTensorSampler(
+    const TensorView<const T, N> &view, const VectorType &gridSpacing,
     const VectorType &gridOrigin)
     : _view(view),
       _gridSpacing(gridSpacing),
@@ -151,20 +151,20 @@ NearestArraySampler<T, N>::NearestArraySampler(
       _gridOrigin(gridOrigin) {}
 
 template<typename T, size_t N>
-NearestArraySampler<T, N>::NearestArraySampler(const NearestArraySampler &other)
+NearestTensorSampler<T, N>::NearestTensorSampler(const NearestTensorSampler &other)
     : _view(other._view),
       _gridSpacing(other._gridSpacing),
       _invGridSpacing(other._invGridSpacing),
       _gridOrigin(other._gridOrigin) {}
 
 template<typename T, size_t N>
-T NearestArraySampler<T, N>::operator()(const VectorType &pt) const {
+T NearestTensorSampler<T, N>::operator()(const VectorType &pt) const {
     return _view(getCoordinate(pt));
 }
 
 template<typename T, size_t N>
-typename NearestArraySampler<T, N>::CoordIndexType
-NearestArraySampler<T, N>::getCoordinate(const VectorType &pt) const {
+typename NearestTensorSampler<T, N>::CoordIndexType
+NearestTensorSampler<T, N>::getCoordinate(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
@@ -180,33 +180,33 @@ NearestArraySampler<T, N>::getCoordinate(const VectorType &pt) const {
 }
 
 template<typename T, size_t N>
-std::function<T(const typename NearestArraySampler<T, N>::VectorType &)>
-NearestArraySampler<T, N>::functor() const {
-    NearestArraySampler sampler(*this);
+std::function<T(const typename NearestTensorSampler<T, N>::VectorType &)>
+NearestTensorSampler<T, N>::functor() const {
+    NearestTensorSampler sampler(*this);
     return [sampler](const VectorType &x) -> T { return sampler(x); };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: LinearArraySampler
+// MARK: LinearTensorSampler
 
 template<typename T, size_t N>
-LinearArraySampler<T, N>::LinearArraySampler(const ArrayView<const T, N> &view,
-                                             const VectorType &gridSpacing,
-                                             const VectorType &gridOrigin)
+LinearTensorSampler<T, N>::LinearTensorSampler(const TensorView<const T, N> &view,
+                                               const VectorType &gridSpacing,
+                                               const VectorType &gridOrigin)
     : _view(view),
       _gridSpacing(gridSpacing),
       _invGridSpacing(ScalarType{1} / gridSpacing),
       _gridOrigin(gridOrigin) {}
 
 template<typename T, size_t N>
-LinearArraySampler<T, N>::LinearArraySampler(const LinearArraySampler &other)
+LinearTensorSampler<T, N>::LinearTensorSampler(const LinearTensorSampler &other)
     : _view(other._view),
       _gridSpacing(other._gridSpacing),
       _invGridSpacing(other._invGridSpacing),
       _gridOrigin(other._gridOrigin) {}
 
 template<typename T, size_t N>
-T LinearArraySampler<T, N>::operator()(const VectorType &pt) const {
+T LinearTensorSampler<T, N>::operator()(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
@@ -220,7 +220,7 @@ T LinearArraySampler<T, N>::operator()(const VectorType &pt) const {
 }
 
 template<typename T, size_t N>
-void LinearArraySampler<T, N>::getCoordinatesAndWeights(
+void LinearTensorSampler<T, N>::getCoordinatesAndWeights(
     const VectorType &pt, std::array<CoordIndexType, kFlatKernelSize> &indices,
     std::array<ScalarType, kFlatKernelSize> &weights) const {
     Vector<ssize_t, N> is;
@@ -233,15 +233,15 @@ void LinearArraySampler<T, N>::getCoordinatesAndWeights(
     }
 
     Vector<size_t, N> viewSize = Vector<size_t, N>::makeConstant(2);
-    ArrayView<CoordIndexType, N> indexView(indices.data(), viewSize);
-    ArrayView<ScalarType, N> weightView(weights.data(), viewSize);
+    TensorView<CoordIndexType, N> indexView(indices.data(), viewSize);
+    TensorView<ScalarType, N> weightView(weights.data(), viewSize);
 
     internal::GetCoordinatesAndWeights<ScalarType, N, N>::call(
         indexView, weightView, is.template castTo<size_t>(), ts, 1);
 }
 
 template<typename T, size_t N>
-void LinearArraySampler<T, N>::getCoordinatesAndGradientWeights(
+void LinearTensorSampler<T, N>::getCoordinatesAndGradientWeights(
     const VectorType &pt, std::array<CoordIndexType, kFlatKernelSize> &indices,
     std::array<VectorType, kFlatKernelSize> &weights) const {
     Vector<ssize_t, N> is;
@@ -254,8 +254,8 @@ void LinearArraySampler<T, N>::getCoordinatesAndGradientWeights(
     }
 
     Vector<size_t, N> viewSize = Vector<size_t, N>::makeConstant(2);
-    ArrayView<CoordIndexType, N> indexView(indices.data(), viewSize);
-    ArrayView<VectorType, N> weightView(weights.data(), viewSize);
+    TensorView<CoordIndexType, N> indexView(indices.data(), viewSize);
+    TensorView<VectorType, N> weightView(weights.data(), viewSize);
 
     internal::GetCoordinatesAndGradientWeights<ScalarType, N, N>::call(
         indexView, weightView, is.template castTo<size_t>(), ts,
@@ -263,18 +263,18 @@ void LinearArraySampler<T, N>::getCoordinatesAndGradientWeights(
 }
 
 template<typename T, size_t N>
-std::function<T(const typename LinearArraySampler<T, N>::VectorType &)>
-LinearArraySampler<T, N>::functor() const {
-    LinearArraySampler sampler(*this);
+std::function<T(const typename LinearTensorSampler<T, N>::VectorType &)>
+LinearTensorSampler<T, N>::functor() const {
+    LinearTensorSampler sampler(*this);
     return [sampler](const VectorType &x) -> T { return sampler(x); };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: CubicArraySampler
+// MARK: CubicTensorSampler
 
 template<typename T, size_t N, typename CIOp>
-CubicArraySampler<T, N, CIOp>::CubicArraySampler(
-    const ArrayView<const T, N> &view, const VectorType &gridSpacing,
+CubicTensorSampler<T, N, CIOp>::CubicTensorSampler(
+    const TensorView<const T, N> &view, const VectorType &gridSpacing,
     const VectorType &gridOrigin)
     : _view(view),
       _gridSpacing(gridSpacing),
@@ -282,14 +282,14 @@ CubicArraySampler<T, N, CIOp>::CubicArraySampler(
       _gridOrigin(gridOrigin) {}
 
 template<typename T, size_t N, typename CIOp>
-CubicArraySampler<T, N, CIOp>::CubicArraySampler(const CubicArraySampler &other)
+CubicTensorSampler<T, N, CIOp>::CubicTensorSampler(const CubicTensorSampler &other)
     : _view(other._view),
       _gridSpacing(other._gridSpacing),
       _invGridSpacing(other._invGridSpacing),
       _gridOrigin(other._gridOrigin) {}
 
 template<typename T, size_t N, typename CIOp>
-T CubicArraySampler<T, N, CIOp>::operator()(const VectorType &pt) const {
+T CubicTensorSampler<T, N, CIOp>::operator()(const VectorType &pt) const {
     Vector<ssize_t, N> is;
     Vector<ScalarType, N> ts;
     VectorType npt = elemMul(pt - _gridOrigin, _invGridSpacing);
@@ -303,9 +303,9 @@ T CubicArraySampler<T, N, CIOp>::operator()(const VectorType &pt) const {
 }
 
 template<typename T, size_t N, typename CIOp>
-std::function<T(const typename CubicArraySampler<T, N, CIOp>::VectorType &)>
-CubicArraySampler<T, N, CIOp>::functor() const {
-    CubicArraySampler sampler(*this);
+std::function<T(const typename CubicTensorSampler<T, N, CIOp>::VectorType &)>
+CubicTensorSampler<T, N, CIOp>::functor() const {
+    CubicTensorSampler sampler(*this);
     return [sampler](const VectorType &x) -> T { return sampler(x); };
 }
 

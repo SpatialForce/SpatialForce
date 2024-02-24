@@ -4,7 +4,7 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array.h"
+#include "tensor/tensor.h"
 
 #include <gtest/gtest.h>
 
@@ -12,14 +12,14 @@
 
 using namespace vox;
 
-TEST(Array2, Constructors) {
+TEST(Tensor2, Constructors) {
     {
-        Array2<float> arr;
+        Tensor2<float> arr;
         EXPECT_EQ(0u, arr.width());
         EXPECT_EQ(0u, arr.height());
     }
     {
-        Array2<float> arr(Vector2UZ(3, 7));
+        Tensor2<float> arr(Vector2UZ(3, 7));
         EXPECT_EQ(3u, arr.width());
         EXPECT_EQ(7u, arr.height());
         for (size_t i = 0; i < 21; ++i) {
@@ -27,7 +27,7 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr(Vector2UZ(1, 9), 1.5f);
+        Tensor2<float> arr(Vector2UZ(1, 9), 1.5f);
         EXPECT_EQ(1u, arr.width());
         EXPECT_EQ(9u, arr.height());
         for (size_t i = 0; i < 9; ++i) {
@@ -35,7 +35,7 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr(5, 2);
+        Tensor2<float> arr(5, 2);
         EXPECT_EQ(5u, arr.width());
         EXPECT_EQ(2u, arr.height());
         for (size_t i = 0; i < 10; ++i) {
@@ -43,7 +43,7 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr(3, 4, 7.f);
+        Tensor2<float> arr(3, 4, 7.f);
         EXPECT_EQ(3u, arr.width());
         EXPECT_EQ(4u, arr.height());
         for (size_t i = 0; i < 12; ++i) {
@@ -51,9 +51,9 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr({{1.f, 2.f, 3.f, 4.f},
-                           {5.f, 6.f, 7.f, 8.f},
-                           {9.f, 10.f, 11.f, 12.f}});
+        Tensor2<float> arr({{1.f, 2.f, 3.f, 4.f},
+                            {5.f, 6.f, 7.f, 8.f},
+                            {9.f, 10.f, 11.f, 12.f}});
         EXPECT_EQ(4u, arr.width());
         EXPECT_EQ(3u, arr.height());
         for (size_t i = 0; i < 12; ++i) {
@@ -61,10 +61,10 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr({{1.f, 2.f, 3.f, 4.f},
-                           {5.f, 6.f, 7.f, 8.f},
-                           {9.f, 10.f, 11.f, 12.f}});
-        Array2<float> arr2(arr);
+        Tensor2<float> arr({{1.f, 2.f, 3.f, 4.f},
+                            {5.f, 6.f, 7.f, 8.f},
+                            {9.f, 10.f, 11.f, 12.f}});
+        Tensor2<float> arr2(arr);
         EXPECT_EQ(4u, arr2.width());
         EXPECT_EQ(3u, arr2.height());
         for (size_t i = 0; i < 12; ++i) {
@@ -72,10 +72,10 @@ TEST(Array2, Constructors) {
         }
     }
     {
-        Array2<float> arr({{1.f, 2.f, 3.f, 4.f},
-                           {5.f, 6.f, 7.f, 8.f},
-                           {9.f, 10.f, 11.f, 12.f}});
-        ArrayView2<float> arrVew(arr.data(), arr.size());
+        Tensor2<float> arr({{1.f, 2.f, 3.f, 4.f},
+                            {5.f, 6.f, 7.f, 8.f},
+                            {9.f, 10.f, 11.f, 12.f}});
+        TensorView2<float> arrVew(arr.data(), arr.size());
         EXPECT_EQ(4u, arrVew.width());
         EXPECT_EQ(3u, arrVew.height());
         for (size_t i = 0; i < 12; ++i) {
@@ -84,8 +84,8 @@ TEST(Array2, Constructors) {
     }
 }
 
-TEST(Array2, Clear) {
-    Array2<float> arr(
+TEST(Tensor2, Clear) {
+    Tensor2<float> arr(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
 
     arr.clear();
@@ -93,9 +93,9 @@ TEST(Array2, Clear) {
     EXPECT_EQ(0u, arr.height());
 }
 
-TEST(Array2, ResizeMethod) {
+TEST(Tensor2, ResizeMethod) {
     {
-        Array2<float> arr;
+        Tensor2<float> arr;
         arr.resize(Vector2UZ(2, 9));
         EXPECT_EQ(2u, arr.width());
         EXPECT_EQ(9u, arr.height());
@@ -117,7 +117,7 @@ TEST(Array2, ResizeMethod) {
         }
     }
     {
-        Array2<float> arr;
+        Tensor2<float> arr;
         arr.resize(7, 6);
         EXPECT_EQ(7u, arr.width());
         EXPECT_EQ(6u, arr.height());
@@ -140,11 +140,11 @@ TEST(Array2, ResizeMethod) {
     }
 }
 
-TEST(Array2, AtMethod) {
+TEST(Tensor2, AtMethod) {
     {
         float values[12] = {0.f, 1.f, 2.f, 3.f, 4.f, 5.f,
                             6.f, 7.f, 8.f, 9.f, 10.f, 11.f};
-        Array2<float> arr(4, 3);
+        Tensor2<float> arr(4, 3);
         for (size_t i = 0; i < 12; ++i) {
             arr[i] = values[i];
         }
@@ -165,8 +165,8 @@ TEST(Array2, AtMethod) {
     }
 }
 
-TEST(Array2, Iterators) {
-    Array2<float> arr1(
+TEST(Tensor2, Iterators) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
 
     float cnt = 1.f;
@@ -182,8 +182,8 @@ TEST(Array2, Iterators) {
     }
 }
 
-TEST(Array2, ForEach) {
-    Array2<float> arr1(
+TEST(Tensor2, ForEach) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
 
     size_t i = 0;
@@ -193,8 +193,8 @@ TEST(Array2, ForEach) {
     });
 }
 
-TEST(Array2, ForEachIndex) {
-    Array2<float> arr1(
+TEST(Tensor2, ForEachIndex) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
 
     forEachIndex(arr1.size(), [&](size_t i, size_t j) {
@@ -203,10 +203,10 @@ TEST(Array2, ForEachIndex) {
     });
 }
 
-TEST(Array2, View) {
-    Array2<float> arr(
+TEST(Tensor2, View) {
+    Tensor2<float> arr(
         {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
-    ArrayView2<float> arr2 = arr.view();
+    TensorView2<float> arr2 = arr.view();
     EXPECT_EQ(4u, arr2.width());
     EXPECT_EQ(3u, arr2.height());
     for (size_t i = 0; i < 12; ++i) {

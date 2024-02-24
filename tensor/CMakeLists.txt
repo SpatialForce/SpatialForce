@@ -9,10 +9,10 @@ cmake_minimum_required(VERSION 3.16)
 project(tensor LANGUAGES C CXX CUDA)
 
 set(COMMON_FILES
-        array.h
-        array_samplers.h
-        array_utils.h
-        array_view.h
+        tensor.h
+        tensor_samplers.h
+        tensor_utils.h
+        tensor_view.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

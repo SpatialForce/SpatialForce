@@ -4,28 +4,28 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array.h"
-#include "tensor/array_view.h"
+#include "tensor/tensor.h"
+#include "tensor/tensor_view.h"
 
 #include <gtest/gtest.h>
 
 using namespace vox;
 
-TEST(ArrayView2, Constructors) {
+TEST(TensorView2, Constructors) {
     double data[20];
     for (int i = 0; i < 20; ++i) {
         data[i] = static_cast<double>(i);
     }
 
-    ArrayView2<double> acc(data, Vector2UZ(5, 4));
+    TensorView2<double> acc(data, Vector2UZ(5, 4));
 
     EXPECT_EQ(5u, acc.size().x);
     EXPECT_EQ(4u, acc.size().y);
     EXPECT_EQ(data, acc.data());
 }
 
-TEST(ArrayView2, Iterators) {
-    Array2<float> arr1(
+TEST(TensorView2, Iterators) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f},
          {5.f, 6.f, 7.f, 8.f},
          {9.f, 10.f, 11.f, 12.f}});
@@ -44,8 +44,8 @@ TEST(ArrayView2, Iterators) {
     }
 }
 
-TEST(ArrayView2, ForEachIndex) {
-    Array2<float> arr1(
+TEST(TensorView2, ForEachIndex) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f},
          {5.f, 6.f, 7.f, 8.f},
          {9.f, 10.f, 11.f, 12.f}});
@@ -56,23 +56,23 @@ TEST(ArrayView2, ForEachIndex) {
     });
 }
 
-TEST(ConstArrayView2, Constructors) {
+TEST(ConstTensorView2, Constructors) {
     double data[20];
     for (int i = 0; i < 20; ++i) {
         data[i] = static_cast<double>(i);
     }
 
-    // Construct with ArrayView2
-    ArrayView2<double> acc(data, Vector2UZ(5, 4));
-    ConstArrayView2<double> cacc(acc);
+    // Construct with TensorView2
+    TensorView2<double> acc(data, Vector2UZ(5, 4));
+    ConstTensorView2<double> cacc(acc);
 
     EXPECT_EQ(5u, cacc.size().x);
     EXPECT_EQ(4u, cacc.size().y);
     EXPECT_EQ(data, cacc.data());
 }
 
-TEST(ConstArrayView2, Iterators) {
-    Array2<float> arr1(
+TEST(ConstTensorView2, Iterators) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f},
          {5.f, 6.f, 7.f, 8.f},
          {9.f, 10.f, 11.f, 12.f}});
@@ -85,8 +85,8 @@ TEST(ConstArrayView2, Iterators) {
     }
 }
 
-TEST(ConstArrayView2, ForEach) {
-    Array2<float> arr1(
+TEST(ConstTensorView2, ForEach) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f},
          {5.f, 6.f, 7.f, 8.f},
          {9.f, 10.f, 11.f, 12.f}});
@@ -99,8 +99,8 @@ TEST(ConstArrayView2, ForEach) {
     });
 }
 
-TEST(ConstArrayView2, ForEachIndex) {
-    Array2<float> arr1(
+TEST(ConstTensorView2, ForEachIndex) {
+    Tensor2<float> arr1(
         {{1.f, 2.f, 3.f, 4.f},
          {5.f, 6.f, 7.f, 8.f},
          {9.f, 10.f, 11.f, 12.f}});

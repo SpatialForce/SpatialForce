@@ -15,12 +15,12 @@
 
 namespace vox {
 
-// MARK: ArrayBase
+// MARK: TensorBase
 
-template<typename T, size_t N, typename DerivedArray>
-class ArrayBase {
+template<typename T, size_t N, typename DerivedTensor>
+class TensorBase {
 public:
-    using Derived = DerivedArray;
+    using Derived = DerivedTensor;
     using value_type = T;
     using reference = T &;
     using const_reference = const T &;
@@ -29,7 +29,7 @@ public:
     using iterator = T *;
     using const_iterator = const T *;
 
-    virtual ~ArrayBase() = default;
+    virtual ~TensorBase() = default;
 
     size_t index(size_t i) const;
 
@@ -106,24 +106,24 @@ protected:
     pointer _ptr = nullptr;
     Vector<size_t, N> _size;
 
-    ArrayBase();
+    TensorBase();
 
-    ArrayBase(const ArrayBase &other);
+    TensorBase(const TensorBase &other);
 
-    ArrayBase(ArrayBase &&other);
+    TensorBase(TensorBase &&other);
 
     template<typename... Args>
     void setPtrAndSize(pointer ptr, size_t ni, Args... args);
 
     void setPtrAndSize(pointer data, Vector<size_t, N> size);
 
-    void swapPtrAndSize(ArrayBase &other);
+    void swapPtrAndSize(TensorBase &other);
 
     void clearPtrAndSize();
 
-    ArrayBase &operator=(const ArrayBase &other);
+    TensorBase &operator=(const TensorBase &other);
 
-    ArrayBase &operator=(ArrayBase &&other);
+    TensorBase &operator=(TensorBase &&other);
 
 private:
     template<typename... Args>
@@ -136,14 +136,14 @@ private:
                   std::index_sequence<I...>) const;
 };
 
-// MARK: Array
+// MARK: Tensor
 
 template<typename T, size_t N>
-class ArrayView;
+class TensorView;
 
 template<typename T, size_t N>
-class Array final : public ArrayBase<T, N, Array<T, N>> {
-    using Base = ArrayBase<T, N, Array<T, N>>;
+class Tensor final : public TensorBase<T, N, Tensor<T, N>> {
+    using Base = TensorBase<T, N, Tensor<T, N>>;
     using Base::_size;
     using Base::at;
     using Base::clearPtrAndSize;
@@ -152,30 +152,30 @@ class Array final : public ArrayBase<T, N, Array<T, N>> {
 
 public:
     // CTOR
-    Array();
+    Tensor();
 
-    Array(const Vector<size_t, N> &size_, const T &initVal = T{});
+    Tensor(const Vector<size_t, N> &size_, const T &initVal = T{});
 
     template<typename... Args>
-    Array(size_t nx, Args... args);
+    Tensor(size_t nx, Args... args);
 
-    Array(NestedInitializerListsT<T, N> lst);
-
-    template<typename OtherDerived>
-    Array(const ArrayBase<T, N, OtherDerived> &other);
+    Tensor(NestedInitializerListsT<T, N> lst);
 
     template<typename OtherDerived>
-    Array(const ArrayBase<const T, N, OtherDerived> &other);
+    Tensor(const TensorBase<T, N, OtherDerived> &other);
 
-    Array(const Array &other);
+    template<typename OtherDerived>
+    Tensor(const TensorBase<const T, N, OtherDerived> &other);
 
-    Array(Array &&other);
+    Tensor(const Tensor &other);
+
+    Tensor(Tensor &&other);
 
     template<typename D>
-    void copyFrom(const ArrayBase<T, N, D> &other);
+    void copyFrom(const TensorBase<T, N, D> &other);
 
     template<typename D>
-    void copyFrom(const ArrayBase<const T, N, D> &other);
+    void copyFrom(const TensorBase<const T, N, D> &other);
 
     void fill(const T &val);
 
@@ -190,48 +190,48 @@ public:
 
     template<typename OtherDerived, size_t M = N>
     std::enable_if_t<(M == 1), void> append(
-        const ArrayBase<T, N, OtherDerived> &extra);
+        const TensorBase<T, N, OtherDerived> &extra);
 
     template<typename OtherDerived, size_t M = N>
     std::enable_if_t<(M == 1), void> append(
-        const ArrayBase<const T, N, OtherDerived> &extra);
+        const TensorBase<const T, N, OtherDerived> &extra);
 
     void clear();
 
-    void swap(Array &other);
+    void swap(Tensor &other);
 
     // Views
-    ArrayView<T, N> view();
+    TensorView<T, N> view();
 
-    ArrayView<const T, N> view() const;
+    TensorView<const T, N> view() const;
 
     // Assignment Operators
     template<typename OtherDerived>
-    Array &operator=(const ArrayBase<T, N, OtherDerived> &other);
+    Tensor &operator=(const TensorBase<T, N, OtherDerived> &other);
 
     template<typename OtherDerived>
-    Array &operator=(const ArrayBase<const T, N, OtherDerived> &other);
+    Tensor &operator=(const TensorBase<const T, N, OtherDerived> &other);
 
-    Array &operator=(const Array &other);
+    Tensor &operator=(const Tensor &other);
 
-    Array &operator=(Array &&other);
+    Tensor &operator=(Tensor &&other);
 
 private:
     std::vector<T> _data;
 };
 
 template<class T>
-using Array1 = Array<T, 1>;
+using Tensor1 = Tensor<T, 1>;
 
 template<class T>
-using Array2 = Array<T, 2>;
+using Tensor2 = Tensor<T, 2>;
 
 template<class T>
-using Array3 = Array<T, 3>;
+using Tensor3 = Tensor<T, 3>;
 
 template<class T>
-using Array4 = Array<T, 4>;
+using Tensor4 = Tensor<T, 4>;
 
 }// namespace vox
 
-#include "array-inl.h"
+#include "tensor-inl.h"

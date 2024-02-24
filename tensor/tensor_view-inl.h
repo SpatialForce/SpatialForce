@@ -8,136 +8,136 @@
 
 namespace vox {
 
-// MARK: ArrayView
+// MARK: TensorView
 
 template<typename T, size_t N>
-ArrayView<T, N>::ArrayView() : Base() {}
+TensorView<T, N>::TensorView() : Base() {}
 
 template<typename T, size_t N>
-ArrayView<T, N>::ArrayView(T *ptr, const Vector<size_t, N> &size_)
-    : ArrayView() {
+TensorView<T, N>::TensorView(T *ptr, const Vector<size_t, N> &size_)
+    : TensorView() {
     Base::setPtrAndSize(ptr, size_);
 }
 
 template<typename T, size_t N>
 template<size_t M>
-ArrayView<T, N>::ArrayView(typename std::enable_if_t<(M == 1), T *> ptr,
-                           size_t size_)
-    : ArrayView(ptr, Vector<size_t, N>{size_}) {}
+TensorView<T, N>::TensorView(typename std::enable_if_t<(M == 1), T *> ptr,
+                             size_t size_)
+    : TensorView(ptr, Vector<size_t, N>{size_}) {}
 
 template<typename T, size_t N>
-ArrayView<T, N>::ArrayView(Array<T, N> &other) : ArrayView() {
+TensorView<T, N>::TensorView(Tensor<T, N> &other) : TensorView() {
     set(other);
 }
 
 template<typename T, size_t N>
-ArrayView<T, N>::ArrayView(const ArrayView &other) {
+TensorView<T, N>::TensorView(const TensorView &other) {
     set(other);
 }
 
 template<typename T, size_t N>
-ArrayView<T, N>::ArrayView(ArrayView &&other) noexcept : ArrayView() {
+TensorView<T, N>::TensorView(TensorView &&other) noexcept : TensorView() {
     *this = std::move(other);
 }
 
 template<typename T, size_t N>
-void ArrayView<T, N>::set(Array<T, N> &other) {
+void TensorView<T, N>::set(Tensor<T, N> &other) {
     Base::setPtrAndSize(other.data(), other.size());
 }
 
 template<typename T, size_t N>
-void ArrayView<T, N>::set(const ArrayView &other) {
+void TensorView<T, N>::set(const TensorView &other) {
     Base::setPtrAndSize(const_cast<T *>(other.data()), other.size());
 }
 
 template<typename T, size_t N>
-void ArrayView<T, N>::fill(const T &val) {
+void TensorView<T, N>::fill(const T &val) {
     forEachIndex(Vector<size_t, N>{}, _size,
                  [&](auto... idx) { this->at(idx...) = val; });
 }
 
 template<typename T, size_t N>
-ArrayView<T, N> &ArrayView<T, N>::operator=(const ArrayView &other) {
+TensorView<T, N> &TensorView<T, N>::operator=(const TensorView &other) {
     set(other);
     return *this;
 }
 
 template<typename T, size_t N>
-ArrayView<T, N> &ArrayView<T, N>::operator=(ArrayView &&other) noexcept {
+TensorView<T, N> &TensorView<T, N>::operator=(TensorView &&other) noexcept {
     Base::setPtrAndSize(other.data(), other.size());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;
 }
 
-// MARK: ConstArrayView
+// MARK: ConstTensorView
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView() : Base() {}
+TensorView<const T, N>::TensorView() : Base() {}
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView(const T *ptr, const Vector<size_t, N> &size_)
-    : ArrayView() {
+TensorView<const T, N>::TensorView(const T *ptr, const Vector<size_t, N> &size_)
+    : TensorView() {
     Base::setPtrAndSize(ptr, size_);
 }
 
 template<typename T, size_t N>
 template<size_t M>
-ArrayView<const T, N>::ArrayView(
+TensorView<const T, N>::TensorView(
     typename std::enable_if_t<(M == 1), const T *> ptr, size_t size_)
-    : ArrayView(ptr, Vector<size_t, N>{size_}) {}
+    : TensorView(ptr, Vector<size_t, N>{size_}) {}
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView(const Array<T, N> &other) : ArrayView() {
+TensorView<const T, N>::TensorView(const Tensor<T, N> &other) : TensorView() {
     set(other);
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView(const ArrayView<T, N> &other) {
+TensorView<const T, N>::TensorView(const TensorView<T, N> &other) {
     set(other);
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView(const ArrayView<const T, N> &other) {
+TensorView<const T, N>::TensorView(const TensorView<const T, N> &other) {
     set(other);
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N>::ArrayView(ArrayView &&other) noexcept : ArrayView() {
+TensorView<const T, N>::TensorView(TensorView &&other) noexcept : TensorView() {
     *this = std::move(other);
 }
 
 template<typename T, size_t N>
-void ArrayView<const T, N>::set(const Array<T, N> &other) {
+void TensorView<const T, N>::set(const Tensor<T, N> &other) {
     Base::setPtrAndSize(other.data(), other.size());
 }
 
 template<typename T, size_t N>
-void ArrayView<const T, N>::set(const ArrayView<T, N> &other) {
+void TensorView<const T, N>::set(const TensorView<T, N> &other) {
     Base::setPtrAndSize(other.data(), other.size());
 }
 
 template<typename T, size_t N>
-void ArrayView<const T, N>::set(const ArrayView<const T, N> &other) {
+void TensorView<const T, N>::set(const TensorView<const T, N> &other) {
     Base::setPtrAndSize(other.data(), other.size());
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N> &ArrayView<const T, N>::operator=(
-    const ArrayView<T, N> &other) {
+TensorView<const T, N> &TensorView<const T, N>::operator=(
+    const TensorView<T, N> &other) {
     set(other);
     return *this;
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N> &ArrayView<const T, N>::operator=(
-    const ArrayView<const T, N> &other) {
+TensorView<const T, N> &TensorView<const T, N>::operator=(
+    const TensorView<const T, N> &other) {
     set(other);
     return *this;
 }
 
 template<typename T, size_t N>
-ArrayView<const T, N> &ArrayView<const T, N>::operator=(
-    ArrayView<const T, N> &&other) noexcept {
+TensorView<const T, N> &TensorView<const T, N>::operator=(
+    TensorView<const T, N> &&other) noexcept {
     Base::setPtrAndSize(other.data(), other.size());
     other.setPtrAndSize(nullptr, Vector<size_t, N>{});
     return *this;

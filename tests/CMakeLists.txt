@@ -25,15 +25,15 @@ set(MATH_TESTS
 )
 
 set(TENSOR_FILES
-        tensor/array1_tests.cu
-        tensor/array2_tests.cu
-        tensor/array3_tests.cu
-        tensor/array_accessor1_tests.cu
-        tensor/array_accessor2_tests.cu
-        tensor/array_accessor3_tests.cu
-        tensor/array_samplers_tests.cu
-        tensor/array_utils_tests.cu
-        tensor/array_view_tests.cu
+        tensor/tensor1_tests.cu
+        tensor/tensor2_tests.cu
+        tensor/tensor3_tests.cu
+        tensor/tensor_accessor1_tests.cu
+        tensor/tensor_accessor2_tests.cu
+        tensor/tensor_accessor3_tests.cu
+        tensor/tensor_samplers_tests.cu
+        tensor/tensor_utils_tests.cu
+        tensor/tensor_view_tests.cu
 )
 
 set(FIELDS_TESTS
@@ -44,7 +44,7 @@ set(FIELDS_TESTS
 set(SRC
         cuda_gtest_plugin.h
         tests_utils.h
-#        tests_utils.cpp
+        tests_utils.cu
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
         ${TENSOR_FILES}

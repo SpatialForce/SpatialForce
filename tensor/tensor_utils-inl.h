@@ -6,55 +6,55 @@
 
 #pragma once
 
-#include "array.h"
+#include "tensor.h"
 #include "iteration_utils.h"
 #include "type_helpers.h"
 
 namespace vox {
 
 template<typename T, size_t N>
-void fill(ArrayView<T, N> a, const Vector<size_t, N> &begin,
+void fill(TensorView<T, N> a, const Vector<size_t, N> &begin,
           const Vector<size_t, N> &end, const T &val) {
     forEachIndex(begin, end, [&](auto... idx) { a(idx...) = val; });
 }
 
 template<typename T, size_t N>
-void fill(ArrayView<T, N> a, const T &val) {
+void fill(TensorView<T, N> a, const T &val) {
     fill(a, Vector<size_t, N>{}, Vector<size_t, N>{a.size()}, val);
 }
 
 template<typename T>
-void fill(ArrayView<T, 1> a, size_t begin, size_t end, const T &val) {
+void fill(TensorView<T, 1> a, size_t begin, size_t end, const T &val) {
     fill(a, Vector1UZ{begin}, Vector1UZ{end}, val);
 }
 
 template<typename T, typename U, size_t N>
-void copy(ArrayView<T, N> src, const Vector<size_t, N> &begin,
-          const Vector<size_t, N> &end, ArrayView<U, N> dst) {
+void copy(TensorView<T, N> src, const Vector<size_t, N> &begin,
+          const Vector<size_t, N> &end, TensorView<U, N> dst) {
     forEachIndex(begin, end, [&](auto... idx) { dst(idx...) = src(idx...); });
 }
 
 template<typename T, typename U, size_t N>
-void copy(ArrayView<T, N> src, ArrayView<U, N> dst) {
+void copy(TensorView<T, N> src, TensorView<U, N> dst) {
     copy(src, Vector<size_t, N>{}, Vector<size_t, N>{src.size()}, dst);
 }
 
 template<typename T, typename U>
-void copy(ArrayView<T, 1> src, size_t begin, size_t end, ArrayView<U, 1> dst) {
+void copy(TensorView<T, 1> src, size_t begin, size_t end, TensorView<U, 1> dst) {
     copy(src, Vector1UZ{begin}, Vector1UZ{end}, dst);
 }
 
 template<typename T, typename U>
-void extrapolateToRegion(ArrayView2<T> input, ArrayView2<char> valid,
+void extrapolateToRegion(TensorView2<T> input, TensorView2<char> valid,
                          unsigned int numberOfIterations,
-                         ArrayView2<U> output) {
+                         TensorView2<U> output) {
     const Vector2UZ size = input.size();
 
     ASSERT(size == valid.size());
     ASSERT(size == output.size());
 
-    Array2<char> valid0(size);
-    Array2<char> valid1(size);
+    Tensor2<char> valid0(size);
+    Tensor2<char> valid1(size);
 
     forEachIndex(valid0.size(), [&](size_t i, size_t j) {
         valid0(i, j) = valid(i, j);
@@ -103,16 +103,16 @@ void extrapolateToRegion(ArrayView2<T> input, ArrayView2<char> valid,
 }
 
 template<typename T, typename U>
-void extrapolateToRegion(ArrayView3<T> input, ArrayView3<char> valid,
+void extrapolateToRegion(TensorView3<T> input, TensorView3<char> valid,
                          unsigned int numberOfIterations,
-                         ArrayView3<U> output) {
+                         TensorView3<U> output) {
     const Vector3UZ size = input.size();
 
     ASSERT(size == valid.size());
     ASSERT(size == output.size());
 
-    Array3<char> valid0(size);
-    Array3<char> valid1(size);
+    Tensor3<char> valid0(size);
+    Tensor3<char> valid1(size);
 
     forEachIndex(valid0.size(), [&](size_t i, size_t j, size_t k) {
         valid0(i, j, k) = valid(i, j, k);

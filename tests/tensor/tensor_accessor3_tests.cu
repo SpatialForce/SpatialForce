@@ -4,20 +4,20 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "tensor/array.h"
-#include "tensor/array_view.h"
+#include "tensor/tensor.h"
+#include "tensor/tensor_view.h"
 
 #include <gtest/gtest.h>
 
 using namespace vox;
 
-TEST(ArrayView3, Constructors) {
+TEST(TensorView3, Constructors) {
     double data[60];
     for (int i = 0; i < 60; ++i) {
         data[i] = static_cast<double>(i);
     }
 
-    ArrayView3<double> acc(data, Vector3UZ(5, 4, 3));
+    TensorView3<double> acc(data, Vector3UZ(5, 4, 3));
 
     EXPECT_EQ(5u, acc.size().x);
     EXPECT_EQ(4u, acc.size().y);
@@ -25,8 +25,8 @@ TEST(ArrayView3, Constructors) {
     EXPECT_EQ(data, acc.data());
 }
 
-TEST(ArrayView3, Iterators) {
-    Array3<float> arr1(
+TEST(TensorView3, Iterators) {
+    Tensor3<float> arr1(
         {{{1.f, 2.f, 3.f, 4.f},
           {5.f, 6.f, 7.f, 8.f},
           {9.f, 10.f, 11.f, 12.f}},
@@ -48,8 +48,8 @@ TEST(ArrayView3, Iterators) {
     }
 }
 
-TEST(ArrayView3, ForEachIndex) {
-    Array3<float> arr1(
+TEST(TensorView3, ForEachIndex) {
+    Tensor3<float> arr1(
         {{{1.f, 2.f, 3.f, 4.f},
           {5.f, 6.f, 7.f, 8.f},
           {9.f, 10.f, 11.f, 12.f}},
@@ -64,15 +64,15 @@ TEST(ArrayView3, ForEachIndex) {
     });
 }
 
-TEST(ConstArrayView3, Constructors) {
+TEST(ConstTensorView3, Constructors) {
     double data[60];
     for (int i = 0; i < 60; ++i) {
         data[i] = static_cast<double>(i);
     }
 
-    // Construct with ArrayView3
-    ArrayView3<double> acc(data, Vector3UZ(5, 4, 3));
-    ConstArrayView3<double> cacc(acc);
+    // Construct with TensorView3
+    TensorView3<double> acc(data, Vector3UZ(5, 4, 3));
+    ConstTensorView3<double> cacc(acc);
 
     EXPECT_EQ(5u, cacc.size().x);
     EXPECT_EQ(4u, cacc.size().y);
@@ -80,8 +80,8 @@ TEST(ConstArrayView3, Constructors) {
     EXPECT_EQ(data, cacc.data());
 }
 
-TEST(ConstArrayView3, Iterators) {
-    Array3<float> arr1(
+TEST(ConstTensorView3, Iterators) {
+    Tensor3<float> arr1(
         {{{1.f, 2.f, 3.f, 4.f},
           {5.f, 6.f, 7.f, 8.f},
           {9.f, 10.f, 11.f, 12.f}},
@@ -97,8 +97,8 @@ TEST(ConstArrayView3, Iterators) {
     }
 }
 
-TEST(ConstArrayView3, ForEachIndex) {
-    Array3<float> arr1(
+TEST(ConstTensorView3, ForEachIndex) {
+    Tensor3<float> arr1(
         {{{1.f, 2.f, 3.f, 4.f},
           {5.f, 6.f, 7.f, 8.f},
           {9.f, 10.f, 11.f, 12.f}},

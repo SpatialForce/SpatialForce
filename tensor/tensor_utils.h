@@ -6,30 +6,30 @@
 
 #pragma once
 
-#include "array.h"
-#include "array_view.h"
+#include "tensor.h"
+#include "tensor_view.h"
 
 namespace vox {
 
 template<typename T, size_t N>
-void fill(ArrayView<T, N> a, const Vector<size_t, N> &begin,
+void fill(TensorView<T, N> a, const Vector<size_t, N> &begin,
           const Vector<size_t, N> &end, const T &val);
 
 template<typename T, size_t N>
-void fill(ArrayView<T, N> a, const T &val);
+void fill(TensorView<T, N> a, const T &val);
 
 template<typename T>
-void fill(ArrayView<T, 1> a, size_t begin, size_t end, const T &val);
+void fill(TensorView<T, 1> a, size_t begin, size_t end, const T &val);
 
 template<typename T, typename U, size_t N>
-void copy(ArrayView<T, N> src, const Vector<size_t, N> &begin,
-          const Vector<size_t, N> &end, ArrayView<U, N> dst);
+void copy(TensorView<T, N> src, const Vector<size_t, N> &begin,
+          const Vector<size_t, N> &end, TensorView<U, N> dst);
 
 template<typename T, typename U, size_t N>
-void copy(ArrayView<T, N> src, ArrayView<U, N> dst);
+void copy(TensorView<T, N> src, TensorView<U, N> dst);
 
 template<typename T, typename U>
-void copy(ArrayView<T, 1> src, size_t begin, size_t end, ArrayView<U, 1> dst);
+void copy(TensorView<T, 1> src, size_t begin, size_t end, TensorView<U, 1> dst);
 
 //!
 //! \brief Extrapolates 2-D input data from 'valid' (1) to 'invalid' (0) region.
@@ -46,8 +46,8 @@ void copy(ArrayView<T, 1> src, size_t begin, size_t end, ArrayView<U, 1> dst);
 //! \param output - extrapolated output
 //!
 template<typename T, typename U>
-void extrapolateToRegion(ArrayView2<T> input, ArrayView2<char> valid,
-                         unsigned int numberOfIterations, ArrayView2<U> output);
+void extrapolateToRegion(TensorView2<T> input, TensorView2<char> valid,
+                         unsigned int numberOfIterations, TensorView2<U> output);
 
 //!
 //! \brief Extrapolates 3-D input data from 'valid' (1) to 'invalid' (0) region.
@@ -64,9 +64,9 @@ void extrapolateToRegion(ArrayView2<T> input, ArrayView2<char> valid,
 //! \param output - extrapolated output
 //!
 template<typename T, typename U>
-void extrapolateToRegion(ArrayView3<T> input, ArrayView3<char> valid,
-                         unsigned int numberOfIterations, ArrayView3<U> output);
+void extrapolateToRegion(TensorView3<T> input, TensorView3<char> valid,
+                         unsigned int numberOfIterations, TensorView3<U> output);
 
 }// namespace vox
 
-#include "array_utils-inl.h"
+#include "tensor_utils-inl.h"
