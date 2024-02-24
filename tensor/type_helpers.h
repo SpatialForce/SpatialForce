@@ -14,4 +14,9 @@ struct GetScalarType {
     typedef T value;
 };
 
+template<typename T, size_t Rows, size_t Cols>
+struct GetScalarType<Matrix<T, Rows, Cols>> {
+    using value = T;
+};
+
 }// namespace vox

@@ -24,6 +24,18 @@ set(MATH_TESTS
         math/matrix_tests.cu
 )
 
+set(TENSOR_FILES
+        tensor/array1_tests.cu
+        tensor/array2_tests.cu
+        tensor/array3_tests.cu
+        tensor/array_accessor1_tests.cu
+        tensor/array_accessor2_tests.cu
+        tensor/array_accessor3_tests.cu
+        tensor/array_samplers_tests.cu
+        tensor/array_utils_tests.cu
+        tensor/array_view_tests.cu
+)
+
 set(FIELDS_TESTS
         fields/compile_tests.cu
         fields/volume_integrator_tests.cu
@@ -31,8 +43,11 @@ set(FIELDS_TESTS
 
 set(SRC
         cuda_gtest_plugin.h
+        tests_utils.h
+#        tests_utils.cpp
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
+        ${TENSOR_FILES}
         ${FIELDS_TESTS}
 )
 
@@ -41,7 +56,7 @@ add_executable(${PROJECT_NAME} ${SRC})
 find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        runtime fields
+        runtime fields math tensor
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         CUDA::cuda_driver
 )

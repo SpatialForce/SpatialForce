@@ -12,7 +12,6 @@
 #include <cstdio>
 #include <cmath>
 
-namespace vox {
 #if !defined(__CUDACC__)
 #define CUDA_CALLABLE
 #define CUDA_CALLABLE_DEVICE
@@ -21,5 +20,25 @@ namespace vox {
 #define CUDA_CALLABLE_DEVICE __device__
 #endif
 
-#define kEps 0.0f
-}// namespace vox
+static constexpr double kEps = 1e-10;
+
+// MARK: Debug mode
+#if defined(NDEBUG)
+#define ASSERT(x)
+#else
+#include <cassert>
+#define ASSERT(x) assert(x)
+#endif
+
+// MARK: C++ exceptions
+#ifdef __cplusplus
+#include <stdexcept>
+#define THROW_INVALID_ARG_IF(expression)          \
+    if (expression) {                             \
+        throw std::invalid_argument(#expression); \
+    }
+#define THROW_INVALID_ARG_WITH_MESSAGE_IF(expression, message) \
+    if (expression) {                                          \
+        throw std::invalid_argument(message);                  \
+    }
+#endif

@@ -9,7 +9,6 @@
 #include "functors.h"
 #include "matrix_dense_base.h"
 #include "matrix_expression.h"
-#include "type_helpers.h"
 #include "cuda_std_array.h"
 
 #include <numeric>
@@ -698,11 +697,6 @@ using VectorNF = VectorN<float>;
 using VectorND = VectorN<double>;
 using VectorNZ = VectorN<ssize_t>;
 using VectorNUZ = VectorN<size_t>;
-
-template<typename T, size_t Rows, size_t Cols>
-struct GetScalarType<Matrix<T, Rows, Cols>> {
-    using value = T;
-};
 
 #pragma endregion
 ////////////////////////////////////////////////////////////////////////////////

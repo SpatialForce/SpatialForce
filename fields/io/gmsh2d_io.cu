@@ -12,11 +12,6 @@
 #include <set>
 
 namespace vox::fields {
-#define THROW_INVALID_ARG_WITH_MESSAGE_IF(expression, message) \
-    if (expression) {                                          \
-        throw std::invalid_argument(message);                  \
-    }
-
 GmshMesh2D::GmshMesh2D(const std::string &filename) {
     parse_gmsh(filename);
     generate_mesh();
