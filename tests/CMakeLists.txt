@@ -10,7 +10,9 @@ project(sim-tests LANGUAGES C CXX CUDA)
 set(RUNTIME_TESTS
         runtime/device_tests.cu
         runtime/buffer_tests.cu
-        runtime/tensor_tests.cu
+        runtime/cuda_tensor1_tests.cu
+        runtime/cuda_tensor2_tests.cu
+        runtime/cuda_tensor3_tests.cu
 )
 
 set(MATH_TESTS

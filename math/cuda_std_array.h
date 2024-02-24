@@ -30,11 +30,13 @@ public:
 
     CUDA_CALLABLE CudaStdArray(const std::initializer_list<T> &lst);
 
-    CUDA_CALLABLE explicit CudaStdArray(const Vector<T, N>& other);
+    CUDA_CALLABLE explicit CudaStdArray(const Vector<T, N> &other);
 
     CUDA_CALLABLE CudaStdArray(const CudaStdArray &other);
 
     CUDA_CALLABLE void fill(const_reference val);
+
+    CUDA_CALLABLE Vector<T, N> toVector() const;
 
     CUDA_CALLABLE reference operator[](size_t i);
 

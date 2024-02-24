@@ -68,7 +68,7 @@ CUDA_CALLABLE CudaTensorView<T, N> &CudaTensorView<T, N>::operator=(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// MARK: ConstCudaArrayView
+// MARK: ConstCudaTensorView
 
 template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView() : Base() {}

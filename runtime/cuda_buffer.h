@@ -74,10 +74,18 @@ public:
 
     void swap(CudaBuffer &other);
 
-    template<typename A>
-    void copyFrom(const std::vector<T, A> &other);
+    void copyFromHost(const T *other);
+
+    void copyFromDevice(const T *other);
+
+    void copyToHost(T *other);
+
+    void copyToDevice(T *other);
 
     void copyFrom(const CudaBuffer &other);
+
+    template<typename A>
+    void copyFrom(const std::vector<T, A> &other);
 
     template<typename A>
     void copyTo(std::vector<T, A> &other);

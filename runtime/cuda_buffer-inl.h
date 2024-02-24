@@ -99,34 +99,44 @@ void CudaBuffer<T>::swap(CudaBuffer &other) {
 }
 
 template<typename T>
-template<typename A>
-void CudaBuffer<T>::copyFrom(const std::vector<T, A> &other) {
-    if (_size == other.size()) {
-        ContextGuard guard(_device.primary_context());
-        check_cuda(cudaMemcpyAsync(_handle, other.data(), byte_size(), cudaMemcpyHostToDevice, _device.stream.handle()));
-    } else {
-        CudaBuffer newBuffer(other, device());
-        swap(newBuffer);
-    }
+void CudaBuffer<T>::copyFromHost(const T *other) {
+    ContextGuard guard(_device.primary_context());
+    check_cuda(cudaMemcpyAsync(_handle, other, byte_size(), cudaMemcpyHostToDevice, _device.stream.handle()));
+}
+
+template<typename T>
+void CudaBuffer<T>::copyFromDevice(const T *other) {
+    ContextGuard guard(_device.primary_context());
+    check_cuda(cudaMemcpyAsync(_handle, other, byte_size(), cudaMemcpyDeviceToDevice, _device.stream.handle()));
+}
+
+template<typename T>
+void CudaBuffer<T>::copyToHost(T *other) {
+    ContextGuard guard(_device.primary_context());
+    check_cuda(cudaMemcpyAsync(other, _handle, byte_size(), cudaMemcpyDeviceToHost, _device.stream.handle()));
+}
+
+template<typename T>
+void CudaBuffer<T>::copyToDevice(T *other) {
+    ContextGuard guard(_device.primary_context());
+    check_cuda(cudaMemcpyAsync(other, _handle, byte_size(), cudaMemcpyDeviceToDevice, _device.stream.handle()));
 }
 
 template<typename T>
 void CudaBuffer<T>::copyFrom(const CudaBuffer &other) {
-    if (_size == other.size()) {
-        ContextGuard guard(_device.primary_context());
-        check_cuda(cudaMemcpyAsync(other.data(), _handle, byte_size(), cudaMemcpyDeviceToDevice, _device.stream.handle()));
-    } else {
-        CudaBuffer newBuffer(other);
-        swap(newBuffer);
-    }
+    copyFromDevice(other.data());
+}
+
+template<typename T>
+template<typename A>
+void CudaBuffer<T>::copyFrom(const std::vector<T, A> &other) {
+    copyFromHost(other.data());
 }
 
 template<typename T>
 template<typename A>
 void CudaBuffer<T>::copyTo(std::vector<T, A> &other) {
-    other.resize(_size);
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(other.data(), _handle, byte_size(), cudaMemcpyDeviceToHost, _device.stream.handle()));
+    copyToHost(other.data());
 }
 
 template<typename T>

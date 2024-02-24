@@ -31,7 +31,7 @@ CUDA_CALLABLE CudaStdArray<T, N>::CudaStdArray(const std::initializer_list<T> &l
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE CudaStdArray<T, N>::CudaStdArray(const Vector<T, N>& other) {
+CUDA_CALLABLE CudaStdArray<T, N>::CudaStdArray(const Vector<T, N> &other) {
     for (size_t i = 0; i < N; ++i) {
         _elements[i] = other[i];
     }
@@ -49,6 +49,15 @@ CUDA_CALLABLE void CudaStdArray<T, N>::fill(const_reference val) {
     for (size_t i = 0; i < N; ++i) {
         _elements[i] = val;
     }
+}
+
+template<typename T, size_t N>
+CUDA_CALLABLE Vector<T, N> CudaStdArray<T, N>::toVector() const {
+    Vector<T, N> vec;
+    for (size_t i = 0; i < N; ++i) {
+        vec[i] = _elements[i];
+    }
+    return vec;
 }
 
 template<typename T, size_t N>

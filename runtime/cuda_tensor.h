@@ -81,17 +81,17 @@ public:
     template<typename... Args>
     void resize(size_t nx, Args... args);
 
-    template<size_t M = N>
-    std::enable_if_t<(M == 1), void> append(const T &val);
-
-    template<typename A, size_t M = N>
-    std::enable_if_t<(M == 1), void> append(const std::vector<T, A> &extra);
-
-    template<typename OtherDerived, size_t M = N>
-    std::enable_if_t<(M == 1), void> append(const TensorBase<T, N, OtherDerived> &extra);
-
-    template<typename OtherDerived, size_t M = N>
-    std::enable_if_t<(M == 1), void> append(const CudaTensorBase<T, N, OtherDerived> &extra);
+//    template<size_t M = N>
+//    std::enable_if_t<(M == 1), void> append(const T &val);
+//
+//    template<typename A, size_t M = N>
+//    std::enable_if_t<(M == 1), void> append(const std::vector<T, A> &extra);
+//
+//    template<typename OtherDerived, size_t M = N>
+//    std::enable_if_t<(M == 1), void> append(const TensorBase<T, N, OtherDerived> &extra);
+//
+//    template<typename OtherDerived, size_t M = N>
+//    std::enable_if_t<(M == 1), void> append(const CudaTensorBase<T, N, OtherDerived> &extra);
 
     void clear();
 

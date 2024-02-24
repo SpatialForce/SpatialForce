@@ -176,77 +176,74 @@ CudaTensor<T, N>::CudaTensor(CudaTensor &&other) noexcept : CudaTensor() {
 
 template<typename T, size_t N>
 template<typename A, size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::copyFrom(
-    const std::vector<T, A> &vec) {
+std::enable_if_t<(M == 1), void> CudaTensor<T, N>::copyFrom(const std::vector<T, A> &vec) {
     CudaTensor newArray(vec.size());
     newArray._data.copyFrom(vec);
-    newArray.setPtrAndShape(newArray._data.data(), newArray.size());
+    newArray.setPtrAndShape(newArray._data.data(), newArray.shape());
     *this = std::move(newArray);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
 void CudaTensor<T, N>::copyFrom(const TensorBase<T, N, OtherDerived> &other) {
-    CudaTensor newArray(other.size());
-    cudaCopyHostToDevice(other.data(), other.length(), newArray.data());
+    CudaTensor newArray(CudaStdArray<size_t, N>(other.shape()));
+    newArray._data.copyFromHost(other.data());
     *this = std::move(newArray);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
 void CudaTensor<T, N>::copyFrom(const TensorBase<const T, N, OtherDerived> &other) {
-    CudaTensor newArray(other.size());
-    cudaCopyHostToDevice(other.data(), other.length(), newArray.data());
+    CudaTensor newArray(CudaStdArray<size_t, N>(other.shape()));
+    newArray._data.copyFromHost(other.data());
     *this = std::move(newArray);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
 void CudaTensor<T, N>::copyFrom(const CudaTensorBase<T, N, OtherDerived> &other) {
-    CudaTensor newArray(other.size());
-    cudaCopyDeviceToDevice(other.data(), other.length(), newArray.data());
+    CudaTensor newArray(other.shape());
+    newArray._data.copyFromDevice(other.data());
     *this = std::move(newArray);
 }
 
 template<typename T, size_t N>
 template<typename OtherDerived>
-void CudaTensor<T, N>::copyFrom(
-    const CudaTensorBase<const T, N, OtherDerived> &other) {
-    CudaTensor newArray(other.size());
-    cudaCopyDeviceToDevice(other.data(), other.length(), newArray.data());
+void CudaTensor<T, N>::copyFrom(const CudaTensorBase<const T, N, OtherDerived> &other) {
+    CudaTensor newArray(other.shape());
+    newArray._data.copyFromDevice(other.data());
     *this = std::move(newArray);
 }
 
 template<typename T, size_t N>
 template<typename A, size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::copyTo(
-    std::vector<T, A> &vec) {
+std::enable_if_t<(M == 1), void> CudaTensor<T, N>::copyTo(std::vector<T, A> &vec) {
     vec.resize(length());
-    cudaCopyDeviceToHost(data(), length(), vec.data());
+    _data.copyToHost(vec.data());
 }
 
 template<typename T, size_t N>
 void CudaTensor<T, N>::copyTo(Tensor<T, N> &other) {
     other.resize(_shape.toVector());
-    cudaCopyDeviceToHost(data(), length(), other.data());
+    _data.copyToHost(other.data());
 }
 
 template<typename T, size_t N>
 void CudaTensor<T, N>::copyTo(TensorView<T, N> &other) {
-    JET_ASSERT(_shape.toVector() == other.size());
-    cudaCopyDeviceToHost(data(), length(), other.data());
+    ASSERT(_shape.toVector() == other.shape());
+    _data.copyToHost(other.data());
 }
 
 template<typename T, size_t N>
 void CudaTensor<T, N>::copyTo(CudaTensor<T, N> &other) {
-    other.resize(_shape.toVector());
-    cudaCopyDeviceToDevice(data(), length(), other.data());
+    other.resize(CudaStdArray<size_t, N>(_shape.toVector()));
+    _data.copyToDevice(other.data());
 }
 
 template<typename T, size_t N>
 void CudaTensor<T, N>::copyTo(CudaTensorView<T, N> &other) {
-    JET_ASSERT(length() == other.length());
-    cudaCopyDeviceToDevice(data(), length(), other.data());
+    ASSERT(length() == other.length());
+    _data.copyToDevice(other.data());
 }
 
 template<typename T, size_t N>
@@ -286,40 +283,43 @@ void CudaTensor<T, N>::resize(size_t nx, Args... args) {
 
 #endif// __CUDACC__
 
-template<typename T, size_t N>
-template<size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(const T &val) {
-    _data.push_back(val);
-    Base::setPtrAndShape(_data.data(), _data.size());
-}
-
-template<typename T, size_t N>
-template<typename A, size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(
-    const std::vector<T, A> &extra) {
-    _data.append(extra);
-    _shape[0] = _data.size();
-}
-
-template<typename T, size_t N>
-template<typename OtherDerived, size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(const TensorBase<T, N, OtherDerived> &extra) {
-    CudaTensor newArray(length() + extra.length());
-    cudaCopy(data(), length(), newArray.data());
-    cudaCopyHostToDevice(extra.data(), extra.length(),
-                         newArray.data() + _shape[0]);
-    swap(newArray);
-}
-
-template<typename T, size_t N>
-template<typename OtherDerived, size_t M>
-std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(
-    const CudaTensorBase<T, N, OtherDerived> &extra) {
-    CudaTensor newArray(length() + extra.length());
-    cudaCopy(data(), length(), newArray.data());
-    cudaCopy(extra.data(), extra.length(), newArray.data() + _shape[0]);
-    swap(newArray);
-}
+//template<typename T, size_t N>
+//template<size_t M>
+//std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(const T &val) {
+//    _data.push_back(val);
+//    Base::setPtrAndShape(_data.data(), _data.size());
+//}
+//
+//template<typename T, size_t N>
+//template<typename A, size_t M>
+//std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(
+//    const std::vector<T, A> &extra) {
+//    _data.append(extra);
+//    _shape[0] = _data.size();
+//}
+//
+//template<typename T, size_t N>
+//template<typename OtherDerived, size_t M>
+//std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(const TensorBase<T, N, OtherDerived> &extra) {
+//    CudaTensor newArray(length() + extra.length());
+//    newArray.copyFrom(data());
+//    newArray.copyFromHost
+//
+//    cudaCopy(data(), length(), newArray.data());
+//    cudaCopyHostToDevice(extra.data(), extra.length(),
+//                         newArray.data() + _shape[0]);
+//    swap(newArray);
+//}
+//
+//template<typename T, size_t N>
+//template<typename OtherDerived, size_t M>
+//std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(
+//    const CudaTensorBase<T, N, OtherDerived> &extra) {
+//    CudaTensor newArray(length() + extra.length());
+//    cudaCopy(data(), length(), newArray.data());
+//    cudaCopy(extra.data(), extra.length(), newArray.data() + _shape[0]);
+//    swap(newArray);
+//}
 
 template<typename T, size_t N>
 void CudaTensor<T, N>::clear() {
@@ -382,7 +382,7 @@ CudaTensor<T, N> &CudaTensor<T, N>::operator=(const CudaTensorBase<const T, N, O
 template<typename T, size_t N>
 CudaTensor<T, N> &CudaTensor<T, N>::operator=(const CudaTensor &other) {
     _data = other._data;
-    Base::setPtrAndShape(_data.data(), other.size());
+    Base::setPtrAndShape(_data.data(), other.shape());
     return *this;
 }
 
