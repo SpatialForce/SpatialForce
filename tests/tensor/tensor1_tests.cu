@@ -5,7 +5,8 @@
 //  property of any third parties.
 
 #include "tensor/tensor.h"
-
+#include "tensor/cuda_tensor.h"
+#include "tensor/cuda_tensor_view.h"
 #include <gtest/gtest.h>
 
 #include <vector>

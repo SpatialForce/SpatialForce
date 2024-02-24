@@ -17,56 +17,56 @@ class Tensor;
 namespace internal {
 
 template<typename T, size_t N, size_t I>
-struct GetSizeAndInitVal {
+struct GetShapeAndInitVal {
     template<typename... Args>
-    static void call(Vector<size_t, N> &size, T &value, size_t n,
+    static void call(Vector<size_t, N> &shape, T &value, size_t n,
                      Args... args) {
-        size[N - I - 1] = n;
-        GetSizeAndInitVal<T, N, I - 1>::call(size, value, args...);
+        shape[N - I - 1] = n;
+        GetShapeAndInitVal<T, N, I - 1>::call(shape, value, args...);
     }
 };
 
 template<typename T, size_t N>
-struct GetSizeAndInitVal<T, N, 0> {
-    static void call(Vector<size_t, N> &size, T &value, size_t n) {
-        call(size, value, n, T{});
+struct GetShapeAndInitVal<T, N, 0> {
+    static void call(Vector<size_t, N> &shape, T &value, size_t n) {
+        call(shape, value, n, T{});
     }
 
-    static void call(Vector<size_t, N> &size, T &value, size_t n,
+    static void call(Vector<size_t, N> &shape, T &value, size_t n,
                      const T &initVal) {
-        size[N - 1] = n;
+        shape[N - 1] = n;
         value = initVal;
     }
 };
 
 template<typename T, size_t N, size_t I>
-struct GetSizeFromInitList {
-    static size_t call(Vector<size_t, N> &size,
+struct GetShapeFromInitList {
+    static size_t call(Vector<size_t, N> &shape,
                        NestedInitializerListsT<T, I> lst) {
-        size[I - 1] = lst.size();
+        shape[I - 1] = lst.size();
         size_t i = 0;
         for (auto subLst : lst) {
             if (i == 0) {
-                GetSizeFromInitList<T, N, I - 1>::call(size, subLst);
+                GetShapeFromInitList<T, N, I - 1>::call(shape, subLst);
             } else {
                 Vector<size_t, N> tempSizeN;
                 size_t otherSize =
-                    GetSizeFromInitList<T, N, I - 1>::call(tempSizeN, subLst);
+                    GetShapeFromInitList<T, N, I - 1>::call(tempSizeN, subLst);
                 (void)otherSize;
                 ASSERT(otherSize == tempSizeN[I - 2]);
             }
             ++i;
         }
-        return size[I - 1];
+        return shape[I - 1];
     }
 };
 
 template<typename T, size_t N>
-struct GetSizeFromInitList<T, N, 1> {
-    static size_t call(Vector<size_t, N> &size,
+struct GetShapeFromInitList<T, N, 1> {
+    static size_t call(Vector<size_t, N> &shape,
                        NestedInitializerListsT<T, 1> lst) {
-        size[0] = lst.size();
-        return size[0];
+        shape[0] = lst.size();
+        return shape[0];
     }
 };
 
@@ -289,7 +289,7 @@ TensorBase<T, N, D>::TensorBase() : _shape{} {}
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D>::TensorBase(const TensorBase &other) {
-    setPtrAndSize(other._ptr, other._shape);
+    setPtrAndShape(other._ptr, other._shape);
 }
 
 template<typename T, size_t N, typename D>
@@ -299,37 +299,37 @@ TensorBase<T, N, D>::TensorBase(TensorBase &&other) {
 
 template<typename T, size_t N, typename D>
 template<typename... Args>
-void TensorBase<T, N, D>::setPtrAndSize(T *ptr, size_t ni, Args... args) {
-    setPtrAndSize(ptr, Vector<size_t, N>{ni, args...});
+void TensorBase<T, N, D>::setPtrAndShape(T *ptr, size_t ni, Args... args) {
+    setPtrAndShape(ptr, Vector<size_t, N>{ni, args...});
 }
 
 template<typename T, size_t N, typename D>
-void TensorBase<T, N, D>::setPtrAndSize(T *data, Vector<size_t, N> size) {
+void TensorBase<T, N, D>::setPtrAndShape(T *data, Vector<size_t, N> shape) {
     _ptr = data;
-    _shape = size;
+    _shape = shape;
 }
 
 template<typename T, size_t N, typename D>
-void TensorBase<T, N, D>::clearPtrAndSize() {
-    setPtrAndSize(nullptr, Vector<size_t, N>{});
+void TensorBase<T, N, D>::clearPtrAndShape() {
+    setPtrAndShape(nullptr, Vector<size_t, N>{});
 }
 
 template<typename T, size_t N, typename D>
-void TensorBase<T, N, D>::swapPtrAndSize(TensorBase &other) {
+void TensorBase<T, N, D>::swapPtrAndShape(TensorBase &other) {
     std::swap(_ptr, other._ptr);
     std::swap(_shape, other._shape);
 }
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(const TensorBase &other) {
-    setPtrAndSize(other.data(), other.shape());
+    setPtrAndShape(other.data(), other.shape());
     return *this;
 }
 
 template<typename T, size_t N, typename D>
 TensorBase<T, N, D> &TensorBase<T, N, D>::operator=(TensorBase &&other) {
-    setPtrAndSize(other.data(), other.shape());
-    other.setPtrAndSize(nullptr, Vector<size_t, N>{});
+    setPtrAndShape(other.data(), other.shape());
+    other.setPtrAndShape(nullptr, Vector<size_t, N>{});
     return *this;
 }
 
@@ -360,25 +360,25 @@ Tensor<T, N>::Tensor() : Base() {}
 template<typename T, size_t N>
 Tensor<T, N>::Tensor(const Vector<size_t, N> &size_, const T &initVal) : Tensor() {
     _data.resize(product<size_t, N>(size_, 1), initVal);
-    Base::setPtrAndSize(_data.data(), size_);
+    Base::setPtrAndShape(_data.data(), size_);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
 Tensor<T, N>::Tensor(size_t nx, Args... args) {
-    Vector<size_t, N> size_;
+    Vector<size_t, N> shape_;
     T initVal;
-    internal::GetSizeAndInitVal<T, N, N - 1>::call(size_, initVal, nx, args...);
-    _data.resize(product<size_t, N>(size_, 1), initVal);
-    Base::setPtrAndSize(_data.data(), size_);
+    internal::GetShapeAndInitVal<T, N, N - 1>::call(shape_, initVal, nx, args...);
+    _data.resize(product<size_t, N>(shape_, 1), initVal);
+    Base::setPtrAndShape(_data.data(), shape_);
 }
 
 template<typename T, size_t N>
 Tensor<T, N>::Tensor(NestedInitializerListsT<T, N> lst) {
-    Vector<size_t, N> newSize{};
-    internal::GetSizeFromInitList<T, N, N>::call(newSize, lst);
-    _data.resize(product<size_t, N>(newSize, 1));
-    Base::setPtrAndSize(_data.data(), newSize);
+    Vector<size_t, N> newShape{};
+    internal::GetShapeFromInitList<T, N, N>::call(newShape, lst);
+    _data.resize(product<size_t, N>(newShape, 1));
+    Base::setPtrAndShape(_data.data(), newShape);
     internal::SetTensorFromInitList<T, N, N>::call(*this, lst);
 }
 
@@ -426,10 +426,10 @@ void Tensor<T, N>::fill(const T &val) {
 }
 
 template<typename T, size_t N>
-void Tensor<T, N>::resize(Vector<size_t, N> size_, const T &initVal) {
-    Tensor newTensor(size_, initVal);
-    Vector<size_t, N> minSize = min(_shape, newTensor._shape);
-    forEachIndex(minSize,
+void Tensor<T, N>::resize(Vector<size_t, N> shape_, const T &initVal) {
+    Tensor newTensor(shape_, initVal);
+    Vector<size_t, N> minShape = min(_shape, newTensor._shape);
+    forEachIndex(minShape,
                  [&](auto... idx) { newTensor(idx...) = (*this)(idx...); });
     *this = std::move(newTensor);
 }
@@ -437,18 +437,18 @@ void Tensor<T, N>::resize(Vector<size_t, N> size_, const T &initVal) {
 template<typename T, size_t N>
 template<typename... Args>
 void Tensor<T, N>::resize(size_t nx, Args... args) {
-    Vector<size_t, N> size_;
+    Vector<size_t, N> shape_;
     T initVal;
-    internal::GetSizeAndInitVal<T, N, N - 1>::call(size_, initVal, nx, args...);
+    internal::GetShapeAndInitVal<T, N, N - 1>::call(shape_, initVal, nx, args...);
 
-    resize(size_, initVal);
+    resize(shape_, initVal);
 }
 
 template<typename T, size_t N>
 template<size_t M>
 std::enable_if_t<(M == 1), void> Tensor<T, N>::append(const T &val) {
     _data.push_back(val);
-    Base::setPtrAndSize(_data.data(), _data.size());
+    Base::setPtrAndShape(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
@@ -456,7 +456,7 @@ template<typename OtherDerived, size_t M>
 std::enable_if_t<(M == 1), void> Tensor<T, N>::append(
     const TensorBase<T, N, OtherDerived> &extra) {
     _data.insert(_data.end(), extra.begin(), extra.end());
-    Base::setPtrAndSize(_data.data(), _data.size());
+    Base::setPtrAndShape(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
@@ -464,18 +464,18 @@ template<typename OtherDerived, size_t M>
 std::enable_if_t<(M == 1), void> Tensor<T, N>::append(
     const TensorBase<const T, N, OtherDerived> &extra) {
     _data.insert(_data.end(), extra.begin(), extra.end());
-    Base::setPtrAndSize(_data.data(), _data.size());
+    Base::setPtrAndShape(_data.data(), _data.size());
 }
 
 template<typename T, size_t N>
 void Tensor<T, N>::clear() {
-    Base::clearPtrAndSize();
+    Base::clearPtrAndShape();
     _data.clear();
 }
 
 template<typename T, size_t N>
 void Tensor<T, N>::swap(Tensor &other) {
-    Base::swapPtrAndSize(other);
+    Base::swapPtrAndShape(other);
     std::swap(_data, other._data);
 }
 
@@ -514,8 +514,8 @@ Tensor<T, N> &Tensor<T, N>::operator=(const Tensor &other) {
 template<typename T, size_t N>
 Tensor<T, N> &Tensor<T, N>::operator=(Tensor &&other) {
     _data = std::move(other._data);
-    Base::setPtrAndSize(other.data(), other.shape());
-    other.setPtrAndSize(nullptr, Vector<size_t, N>{});
+    Base::setPtrAndShape(other.data(), other.shape());
+    other.setPtrAndShape(nullptr, Vector<size_t, N>{});
 
     return *this;
 }

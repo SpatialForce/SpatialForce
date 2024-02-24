@@ -27,7 +27,7 @@ public:
     CUDA_CALLABLE CudaTensorView();
 
     CUDA_CALLABLE CudaTensorView(T *ptr,
-                                const CudaStdArray<size_t, N> &size_);
+                                 const CudaStdArray<size_t, N> &size_);
 
     template<size_t M = N>
     CUDA_CALLABLE CudaTensorView(

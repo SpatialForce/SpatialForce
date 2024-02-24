@@ -17,7 +17,7 @@ CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView() : Base() {}
 template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView(T *ptr, const CudaStdArray<size_t, N> &size_)
     : CudaTensorView() {
-    Base::setPtrAndSize(ptr, size_);
+    Base::setPtrAndShape(ptr, size_);
 }
 
 template<typename T, size_t N>
@@ -39,7 +39,7 @@ CUDA_CALLABLE CudaTensorView<T, N>::CudaTensorView(CudaTensorView &&other) noexc
 
 template<typename T, size_t N>
 CUDA_CALLABLE void CudaTensorView<T, N>::set(const CudaTensorView &other) {
-    Base::setPtrAndSize(const_cast<T *>(other.data()), other.size());
+    Base::setPtrAndShape(const_cast<T *>(other.data()), other.shape());
 }
 
 template<typename T, size_t N>
@@ -52,8 +52,8 @@ CUDA_CALLABLE CudaTensorView<T, N> &CudaTensorView<T, N>::operator=(
 template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<T, N> &CudaTensorView<T, N>::operator=(
     CudaTensorView &&other) noexcept {
-    Base::setPtrAndSize(other.data(), other.size());
-    other.setPtrAndSize(nullptr, CudaStdArray<size_t, N>{});
+    Base::setPtrAndShape(other.data(), other.shape());
+    other.setPtrAndShape(nullptr, CudaStdArray<size_t, N>{});
     return *this;
 }
 
@@ -65,9 +65,9 @@ CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView() : Base() {}
 
 template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(const T *ptr,
-                                                       const CudaStdArray<size_t, N> &size_)
+                                                         const CudaStdArray<size_t, N> &size_)
     : CudaTensorView() {
-    Base::setPtrAndSize(MemoryHandle(ptr), size_);
+    Base::setPtrAndShape(MemoryHandle(ptr), size_);
 }
 
 template<typename T, size_t N>
@@ -94,12 +94,12 @@ CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(CudaTensorView &&other)
 
 template<typename T, size_t N>
 CUDA_CALLABLE void CudaTensorView<const T, N>::set(const CudaTensorView<T, N> &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndShape(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
 CUDA_CALLABLE void CudaTensorView<const T, N>::set(const CudaTensorView &other) {
-    Base::setPtrAndSize(other.data(), other.size());
+    Base::setPtrAndShape(other.data(), other.shape());
 }
 
 template<typename T, size_t N>
@@ -119,8 +119,8 @@ CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
 template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
     CudaTensorView &&other) noexcept {
-    Base::setPtrAndSize(other.data(), other.size());
-    other.setPtrAndSize(nullptr, CudaStdArray<size_t, N>{});
+    Base::setPtrAndShape(other.data(), other.shape());
+    other.setPtrAndShape(nullptr, CudaStdArray<size_t, N>{});
     return *this;
 }
 

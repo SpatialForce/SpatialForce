@@ -113,13 +113,13 @@ protected:
     TensorBase(TensorBase &&other);
 
     template<typename... Args>
-    void setPtrAndSize(pointer ptr, size_t ni, Args... args);
+    void setPtrAndShape(pointer ptr, size_t ni, Args... args);
 
-    void setPtrAndSize(pointer data, Vector<size_t, N> size);
+    void setPtrAndShape(pointer data, Vector<size_t, N> shape);
 
-    void swapPtrAndSize(TensorBase &other);
+    void swapPtrAndShape(TensorBase &other);
 
-    void clearPtrAndSize();
+    void clearPtrAndShape();
 
     TensorBase &operator=(const TensorBase &other);
 
@@ -146,9 +146,9 @@ class Tensor final : public TensorBase<T, N, Tensor<T, N>> {
     using Base = TensorBase<T, N, Tensor<T, N>>;
     using Base::_shape;
     using Base::at;
-    using Base::clearPtrAndSize;
-    using Base::setPtrAndSize;
-    using Base::swapPtrAndSize;
+    using Base::clearPtrAndShape;
+    using Base::setPtrAndShape;
+    using Base::swapPtrAndShape;
 
 public:
     // CTOR
@@ -180,7 +180,7 @@ public:
     void fill(const T &val);
 
     // resize
-    void resize(Vector<size_t, N> size_, const T &initVal = T{});
+    void resize(Vector<size_t, N> shape_, const T &initVal = T{});
 
     template<typename... Args>
     void resize(size_t nx, Args... args);

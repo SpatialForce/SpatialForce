@@ -22,14 +22,14 @@ template<typename T, size_t N>
 class TensorView final : public TensorBase<T, N, TensorView<T, N>> {
     using Base = TensorBase<T, N, TensorView<T, N>>;
     using Base::_shape;
-    using Base::setPtrAndSize;
+    using Base::setPtrAndShape;
     using Base::at;
 
 public:
     // CTOR
     TensorView();
 
-    TensorView(T *ptr, const Vector<size_t, N> &size_);
+    TensorView(T *ptr, const Vector<size_t, N> &shape_);
 
     template<size_t M = N>
     TensorView(typename std::enable_if_t<(M == 1), T *> ptr, size_t size_);
@@ -59,13 +59,13 @@ class TensorView<const T, N> final
     : public TensorBase<const T, N, TensorView<const T, N>> {
     using Base = TensorBase<const T, N, TensorView<const T, N>>;
     using Base::_shape;
-    using Base::setPtrAndSize;
+    using Base::setPtrAndShape;
 
 public:
     // CTOR
     TensorView();
 
-    TensorView(const T *ptr, const Vector<size_t, N> &size_);
+    TensorView(const T *ptr, const Vector<size_t, N> &shape_);
 
     template<size_t M = N>
     TensorView(typename std::enable_if_t<(M == 1), const T *> ptr, size_t size_);

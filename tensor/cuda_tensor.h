@@ -37,7 +37,7 @@ public:
 
     CUDA_CALLABLE const T *data() const;
 
-    CUDA_CALLABLE const CudaStdArray<size_t, N> &size() const;
+    CUDA_CALLABLE const CudaStdArray<size_t, N> &shape() const;
 
     template<size_t M = N>
     CUDA_CALLABLE std::enable_if_t<(M > 0), size_t> width() const;
@@ -89,15 +89,13 @@ protected:
     CUDA_CALLABLE CudaTensorBase(CudaTensorBase &&other);
 
     template<typename... Args>
-    CUDA_CALLABLE void setPtrAndSize(pointer ptr, size_t ni,
-                                     Args... args);
+    CUDA_CALLABLE void setPtrAndShape(pointer ptr, size_t ni, Args... args);
 
-    CUDA_CALLABLE void setPtrAndSize(pointer data,
-                                     CudaStdArray<size_t, N> size);
+    CUDA_CALLABLE void setPtrAndShape(pointer data, CudaStdArray<size_t, N> shape);
 
-    CUDA_CALLABLE void swapPtrAndSize(CudaTensorBase &other);
+    CUDA_CALLABLE void swapPtrAndShape(CudaTensorBase &other);
 
-    CUDA_CALLABLE void clearPtrAndSize();
+    CUDA_CALLABLE void clearPtrAndShape();
 
     CUDA_CALLABLE CudaTensorBase &operator=(const CudaTensorBase &other);
 

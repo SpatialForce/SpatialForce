@@ -40,7 +40,7 @@ CUDA_CALLABLE const T *CudaTensorBase<T, N, Derived>::data() const {
 }
 
 template<typename T, size_t N, typename Derived>
-CUDA_CALLABLE const CudaStdArray<size_t, N> &CudaTensorBase<T, N, Derived>::size() const {
+CUDA_CALLABLE const CudaStdArray<size_t, N> &CudaTensorBase<T, N, Derived>::shape() const {
     return _shape;
 }
 
@@ -155,7 +155,7 @@ CUDA_CALLABLE CudaTensorBase<T, N, Derived>::CudaTensorBase() : _shape{} {}
 
 template<typename T, size_t N, typename Derived>
 CUDA_CALLABLE CudaTensorBase<T, N, Derived>::CudaTensorBase(const CudaTensorBase &other) {
-    setPtrAndSize(other._ptr, other._shape);
+    setPtrAndShape(other._ptr, other._shape);
 }
 
 template<typename T, size_t N, typename Derived>
@@ -165,41 +165,39 @@ CUDA_CALLABLE CudaTensorBase<T, N, Derived>::CudaTensorBase(CudaTensorBase &&oth
 
 template<typename T, size_t N, typename Derived>
 template<typename... Args>
-CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::setPtrAndSize(pointer ptr, size_t ni,
-                                                               Args... args) {
-    setPtrAndSize(ptr, CudaStdArray<size_t, N>{ni, args...});
+CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::setPtrAndShape(pointer ptr, size_t ni, Args... args) {
+    setPtrAndShape(ptr, CudaStdArray<size_t, N>{ni, args...});
 }
 
 template<typename T, size_t N, typename Derived>
-CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::setPtrAndSize(pointer ptr,
-                                                               CudaStdArray<size_t, N> size) {
+CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::setPtrAndShape(pointer ptr, CudaStdArray<size_t, N> shape) {
     _ptr = ptr;
-    _shape = size;
+    _shape = shape;
 }
 
 template<typename T, size_t N, typename Derived>
-CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::swapPtrAndSize(CudaTensorBase &other) {
+CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::swapPtrAndShape(CudaTensorBase &other) {
     cudaSwap(_ptr, other._ptr);
     cudaSwap(_shape, other._shape);
 }
 
 template<typename T, size_t N, typename Derived>
-CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::clearPtrAndSize() {
-    setPtrAndSize(nullptr, CudaStdArray<size_t, N>{});
+CUDA_CALLABLE void CudaTensorBase<T, N, Derived>::clearPtrAndShape() {
+    setPtrAndShape(nullptr, CudaStdArray<size_t, N>{});
 }
 
 template<typename T, size_t N, typename Derived>
 CUDA_CALLABLE CudaTensorBase<T, N, Derived> &CudaTensorBase<T, N, Derived>::operator=(
     const CudaTensorBase &other) {
-    setPtrAndSize(other._ptr, other._shape);
+    setPtrAndShape(other._ptr, other._shape);
     return *this;
 }
 
 template<typename T, size_t N, typename Derived>
 CUDA_CALLABLE CudaTensorBase<T, N, Derived> &CudaTensorBase<T, N, Derived>::operator=(
     CudaTensorBase &&other) {
-    setPtrAndSize(other._ptr, other._shape);
-    other.setPtrAndSize(nullptr, CudaStdArray<size_t, N>{});
+    setPtrAndShape(other._ptr, other._shape);
+    other.setPtrAndShape(nullptr, CudaStdArray<size_t, N>{});
     return *this;
 }
 
