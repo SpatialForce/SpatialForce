@@ -25,7 +25,7 @@ Stream::Stream(Stream &&stream) noexcept
     : owner_{stream.owner_},
       handle_{stream.handle_},
       device_{stream.device_},
-      context_{stream.context_}{
+      context_{stream.context_} {
     stream.owner_ = false;
     stream.handle_ = nullptr;
 }

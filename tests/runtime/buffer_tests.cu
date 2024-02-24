@@ -8,6 +8,7 @@
 #include "math/matrix.h"
 #include "runtime/cuda_buffer.h"
 #include "runtime/cuda_texture.h"
+#include "runtime/cuda_tensor.h"
 
 using namespace vox;
 

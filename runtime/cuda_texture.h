@@ -28,7 +28,7 @@ public:
 
     void set(const Derived &other);
 
-    cudaTextureObject_t textureObject() const;
+    [[nodiscard]] cudaTextureObject_t textureObject() const;
 
 protected:
     CudaStdArray<size_t, N> _shape;
@@ -43,7 +43,7 @@ protected:
 
     CudaTextureBase(const CudaTextureBase &other);
 
-    CudaTextureBase(CudaTextureBase &&other);
+    CudaTextureBase(CudaTextureBase &&other) noexcept;
 
     CudaTextureBase &operator=(const CudaTextureBase &other);
 
@@ -77,9 +77,9 @@ public:
 
     CudaTexture1(const CudaTexture1 &other);
 
-    CudaTexture1(CudaTexture1 &&other);
+    CudaTexture1(CudaTexture1 &&other) noexcept;
 
-    size_t shape() const;
+    [[nodiscard]] size_t shape() const;
 
     void resize(const CudaStdArray<size_t, 1> &size);
 
@@ -88,7 +88,7 @@ public:
 
     void set(const CudaTexture1 &other);
 
-    CudaTexture1 &operator=(CudaTexture1 &&other);
+    CudaTexture1 &operator=(CudaTexture1 &&other) noexcept;
 };
 
 template<typename T>
@@ -113,13 +113,13 @@ public:
 
     CudaTexture2(const CudaTexture2 &other);
 
-    CudaTexture2(CudaTexture2 &&other);
+    CudaTexture2(CudaTexture2 &&other) noexcept;
 
-    CudaStdArray<size_t, 2> shape() const;
+    [[nodiscard]] CudaStdArray<size_t, 2> shape() const;
 
-    size_t width() const;
+    [[nodiscard]] size_t width() const;
 
-    size_t height() const;
+    [[nodiscard]] size_t height() const;
 
     void resize(const CudaStdArray<size_t, 2> &size);
 
@@ -128,7 +128,7 @@ public:
 
     void set(const CudaTexture2 &other);
 
-    CudaTexture2 &operator=(CudaTexture2 &&other);
+    CudaTexture2 &operator=(CudaTexture2 &&other) noexcept;
 };
 
 template<typename T>
@@ -153,15 +153,15 @@ public:
 
     CudaTexture3(const CudaTexture3 &other);
 
-    CudaTexture3(CudaTexture3 &&other);
+    CudaTexture3(CudaTexture3 &&other) noexcept;
 
-    CudaStdArray<size_t, 3> shape() const;
+    [[nodiscard]] CudaStdArray<size_t, 3> shape() const;
 
-    size_t width() const;
+    [[nodiscard]] size_t width() const;
 
-    size_t height() const;
+    [[nodiscard]] size_t height() const;
 
-    size_t depth() const;
+    [[nodiscard]] size_t depth() const;
 
     void resize(const CudaStdArray<size_t, 3> &size);
 
@@ -170,7 +170,7 @@ public:
 
     void set(const CudaTexture3 &other);
 
-    CudaTexture3 &operator=(CudaTexture3 &&other);
+    CudaTexture3 &operator=(CudaTexture3 &&other) noexcept;
 };
 
 }// namespace vox

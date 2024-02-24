@@ -29,7 +29,7 @@ CudaTextureBase<T, N, Derived>::CudaTextureBase(const CudaTextureBase &other) {
 }
 
 template<typename T, size_t N, typename Derived>
-CudaTextureBase<T, N, Derived>::CudaTextureBase(CudaTextureBase &&other) {
+CudaTextureBase<T, N, Derived>::CudaTextureBase(CudaTextureBase &&other) noexcept {
     *this = std::move(other);
 }
 
@@ -123,7 +123,7 @@ template<typename T>
 CudaTexture1<T>::CudaTexture1(const CudaTexture1 &other) : Base(other) {}
 
 template<typename T>
-CudaTexture1<T>::CudaTexture1(CudaTexture1 &&other) : Base() {
+CudaTexture1<T>::CudaTexture1(CudaTexture1 &&other) noexcept : Base() {
     *this = std::move(other);
 }
 
@@ -133,7 +133,7 @@ size_t CudaTexture1<T>::shape() const {
 }
 
 template<typename T>
-CudaTexture1<T> &CudaTexture1<T>::operator=(CudaTexture1 &&other) {
+CudaTexture1<T> &CudaTexture1<T>::operator=(CudaTexture1 &&other) noexcept {
     clear();
     std::swap(_shape, other._shape);
     std::swap(_array, other._array);
@@ -209,7 +209,7 @@ template<typename T>
 CudaTexture2<T>::CudaTexture2(const CudaTexture2 &other) : Base(other) {}
 
 template<typename T>
-CudaTexture2<T>::CudaTexture2(CudaTexture2 &&other) : Base() {
+CudaTexture2<T>::CudaTexture2(CudaTexture2 &&other) noexcept : Base() {
     *this = std::move(other);
 }
 
@@ -230,7 +230,7 @@ size_t CudaTexture2<T>::height() const {
 }
 
 template<typename T>
-CudaTexture2<T> &CudaTexture2<T>::operator=(CudaTexture2 &&other) {
+CudaTexture2<T> &CudaTexture2<T>::operator=(CudaTexture2 &&other) noexcept {
     clear();
     std::swap(_shape, other._shape);
     std::swap(_array, other._array);
@@ -315,7 +315,7 @@ template<typename T>
 CudaTexture3<T>::CudaTexture3(const CudaTexture3 &other) : Base(other) {}
 
 template<typename T>
-CudaTexture3<T>::CudaTexture3(CudaTexture3 &&other) : Base() {
+CudaTexture3<T>::CudaTexture3(CudaTexture3 &&other) noexcept : Base() {
     *this = std::move(other);
 }
 
@@ -341,7 +341,7 @@ size_t CudaTexture3<T>::depth() const {
 }
 
 template<typename T>
-CudaTexture3<T> &CudaTexture3<T>::operator=(CudaTexture3 &&other) {
+CudaTexture3<T> &CudaTexture3<T>::operator=(CudaTexture3 &&other) noexcept {
     clear();
     std::swap(_shape, other._shape);
     std::swap(_array, other._array);

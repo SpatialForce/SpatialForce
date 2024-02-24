@@ -34,6 +34,19 @@ bool check_cu_result(CUresult result, const char *file, int line);
 #define CUDA_CHECK_LAST_ERROR(msg) \
     _CUDA_CHECK(cudaGetLastError(), msg, __FILE__, __LINE__)
 
+inline unsigned int cudaDivRoundUp(unsigned int a,
+                                   unsigned int b) {
+    return (a % b != 0) ? (a / b + 1) : (a / b);
+}
+
+inline void cudaComputeGridSize(unsigned int n,
+                                unsigned int blockSize,
+                                unsigned int &numBlocks,
+                                unsigned int &numThreads) {
+    numThreads = std::min(blockSize, n);
+    numBlocks = cudaDivRoundUp(n, numThreads);
+}
+
 //
 // Scoped CUDA context guard
 //
