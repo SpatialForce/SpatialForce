@@ -74,7 +74,7 @@ CudaTensorView<T, N>::at(size_t i) {
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(size_t i) const {
     return _ptr[i];
 }
@@ -88,7 +88,7 @@ CudaTensorView<T, N>::at(size_t i, Args... args) {
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(size_t i, Args... args) const {
     return at(index(i, args...));
 }
@@ -100,7 +100,7 @@ CudaTensorView<T, N>::at(const CudaStdArray<size_t, N> &idx) {
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(const CudaStdArray<size_t, N> &idx) const {
     return at(index(idx));
 }
@@ -112,7 +112,7 @@ CudaTensorView<T, N>::operator[](size_t i) {
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator[](size_t i) const {
     return at(i);
 }
@@ -126,7 +126,7 @@ CudaTensorView<T, N>::operator()(size_t i, Args... args) {
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator()(size_t i, Args... args) const {
     return at(i, args...);
 }
@@ -138,7 +138,7 @@ CudaTensorView<T, N>::operator()(const CudaStdArray<size_t, N> &idx) {
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator()(const CudaStdArray<size_t, N> &idx) const {
     return at(idx);
 }

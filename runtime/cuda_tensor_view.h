@@ -53,31 +53,31 @@ public:
 public:
     CUDA_CALLABLE_DEVICE Base::reference at(size_t i);
 
-    CUDA_CALLABLE_DEVICE Base::const_reference at(size_t i) const;
+    CUDA_CALLABLE_DEVICE Base::reference at(size_t i) const;
 
     template<typename... Args>
     CUDA_CALLABLE_DEVICE Base::reference at(size_t i, Args... args);
 
     template<typename... Args>
-    CUDA_CALLABLE_DEVICE Base::const_reference at(size_t i, Args... args) const;
+    CUDA_CALLABLE_DEVICE Base::reference at(size_t i, Args... args) const;
 
     CUDA_CALLABLE_DEVICE Base::reference at(const CudaStdArray<size_t, N> &idx);
 
-    CUDA_CALLABLE_DEVICE Base::const_reference at(const CudaStdArray<size_t, N> &idx) const;
+    CUDA_CALLABLE_DEVICE Base::reference at(const CudaStdArray<size_t, N> &idx) const;
 
     CUDA_CALLABLE_DEVICE Base::reference operator[](size_t i);
 
-    CUDA_CALLABLE_DEVICE Base::const_reference operator[](size_t i) const;
+    CUDA_CALLABLE_DEVICE Base::reference operator[](size_t i) const;
 
     template<typename... Args>
     CUDA_CALLABLE_DEVICE Base::reference operator()(size_t i, Args... args);
 
     template<typename... Args>
-    CUDA_CALLABLE_DEVICE Base::const_reference operator()(size_t i, Args... args) const;
+    CUDA_CALLABLE_DEVICE Base::reference operator()(size_t i, Args... args) const;
 
     CUDA_CALLABLE_DEVICE Base::reference operator()(const CudaStdArray<size_t, N> &idx);
 
-    CUDA_CALLABLE_DEVICE Base::const_reference
+    CUDA_CALLABLE_DEVICE Base::reference
     operator()(const CudaStdArray<size_t, N> &idx) const;
 };
 

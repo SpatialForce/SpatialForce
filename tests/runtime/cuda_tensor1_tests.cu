@@ -6,7 +6,7 @@
 
 #include "runtime/cuda_tensor.h"
 #include "runtime/cuda_tensor_view.h"
-
+#include "runtime/transform.h"
 #include <gtest/gtest.h>
 
 using namespace vox;
@@ -19,6 +19,13 @@ public:
 
     void TearDown() override {
         vox::deinit();
+    }
+
+    static void launch(CudaTensor1<int> &tensor) {
+        auto k = [tensorView = tensor.view()] CUDA_CALLABLE_DEVICE(int index) {
+            tensorView[index] = index;
+        };
+        transform(k, 10, device().stream);
     }
 };
 
@@ -176,5 +183,14 @@ TEST_F(CudaTensor1Test, View) {
     for (size_t i = 0; i < 15; ++i) {
         float val = arr[i];
         EXPECT_FLOAT_EQ(3.14f, val);
+    }
+}
+
+TEST_F(CudaTensor1Test, Launch) {
+    CudaTensor1<int> tensor(10);
+    CudaTensor1Test::launch(tensor);
+    for (size_t i = 0; i < 10; ++i) {
+        int val = tensor[i];
+        EXPECT_FLOAT_EQ(i, val);
     }
 }

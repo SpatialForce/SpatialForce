@@ -88,10 +88,11 @@ struct transform_f {
 
         range_t range = get_tile(cta, nt * vt, count);
 
-        strided_iterate<nt, vt, vt0>([=](int i, int j) {
-            f(range.begin + j, args...);
-        },
-                                     tid, range.count());
+        strided_iterate<nt, vt, vt0>(
+            [=](int i, int j) {
+                f(range.begin + j, args...);
+            },
+            tid, range.count());
     }
 };
 
@@ -107,5 +108,15 @@ template<size_t nt = 128, int vt = 1, typename func_t, typename... args_t>
 void transform(func_t f, size_t count, const Stream &stream, args_t... args) {
     transform<launch_params_t<nt, vt>>(f, count, stream, args...);
 }
+
+// nt controls the size of the CTA (thread block) in threads. vt is the number of values per thread (grain size).
+// vt0 is the number of unconditional loads of input made in cooperative parallel kernels
+// (usually set to vt for regularly parallel functions and vt - 1 for load-balancing search functions).
+// occ is the occupancy argument of the __launch_bounds__ kernel decorator.
+// It specifies the minimum CTAs launched concurrently on each SM. 0 is the default,
+// and allows the register allocator to optimize away spills by allocating many registers to hold live state.
+// Setting a specific value for this increases occupancy by limiting register usage,
+// but potentially causes spills to local memory. arch_xx_cta structs support all four arguments,
+// although nt is the only argument required.
 
 }// namespace vox
