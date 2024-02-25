@@ -88,17 +88,6 @@ TEST_F(CudaTensor2Test, Constructors) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arr2[i]);
         }
     }
-    {
-//        CudaTensor2<float> arr({{1.f, 2.f, 3.f, 4.f},
-//                                {5.f, 6.f, 7.f, 8.f},
-//                                {9.f, 10.f, 11.f, 12.f}});
-//        CudaTensorView2<float> arrVew(arr.data(), arr.shape());
-//        EXPECT_EQ(4u, arrVew.width());
-//        EXPECT_EQ(3u, arrVew.height());
-//        for (size_t i = 0; i < 12; ++i) {
-//            EXPECT_FLOAT_EQ((float)i + 1.f, arrVew[i]);
-//        }
-    }
 }
 
 TEST_F(CudaTensor2Test, At) {
@@ -340,49 +329,6 @@ TEST_F(CudaTensor2Test, Swap) {
         EXPECT_FLOAT_EQ((float)i + 1.f, arr2[i]);
     }
 }
-
-//TEST_F(CudaTensor2Test, View) {
-//    CudaTensor2<float> arr(
-//        {{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}});
-//
-//    auto view = arr.view();
-//
-//    EXPECT_EQ(4u, view.width());
-//    EXPECT_EQ(3u, view.height());
-//    for (size_t i = 0; i < 12; ++i) {
-//        EXPECT_FLOAT_EQ((float)i + 1.f, view[i]);
-//    }
-//    for (size_t j = 0; j < 3; ++j) {
-//        for (size_t i = 0; i < 4; ++i) {
-//            EXPECT_FLOAT_EQ(arr(i, j), view(i, j));
-//        }
-//    }
-//
-//    const auto &arrRef = arr;
-//    auto constView = arrRef.view();
-//
-//    for (size_t i = 0; i < 12; ++i) {
-//        EXPECT_FLOAT_EQ((float)i + 1.f, constView[i]);
-//    }
-//    for (size_t j = 0; j < 3; ++j) {
-//        for (size_t i = 0; i < 4; ++i) {
-//            EXPECT_FLOAT_EQ(arr(i, j), constView(i, j));
-//        }
-//    }
-//
-//    for (size_t j = 0; j < 3; ++j) {
-//        for (size_t i = 0; i < 4; ++i) {
-//            view(i, j) = float(i + 4 * j);
-//        }
-//    }
-//
-//    for (size_t j = 0; j < 3; ++j) {
-//        for (size_t i = 0; i < 4; ++i) {
-//            EXPECT_FLOAT_EQ(float(i + 4 * j), arr(i, j));
-//            EXPECT_FLOAT_EQ(float(i + 4 * j), constView(i, j));
-//        }
-//    }
-//}
 
 TEST_F(CudaTensor2Test, AssignmentOperator) {
     CudaTensor2<float> arr(

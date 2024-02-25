@@ -68,77 +68,77 @@ CUDA_CALLABLE CudaTensorView<T, N> &CudaTensorView<T, N>::operator=(
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(size_t i) {
     return _ptr[i];
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::at(size_t i) const {
     return _ptr[i];
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(size_t i, Args... args) {
     return at(index(i, args...));
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::at(size_t i, Args... args) const {
     return at(index(i, args...));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::at(const CudaStdArray<size_t, N> &idx) {
     return at(index(idx));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::at(const CudaStdArray<size_t, N> &idx) const {
     return at(index(idx));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator[](size_t i) {
     return at(i);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::operator[](size_t i) const {
     return at(i);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator()(size_t i, Args... args) {
     return at(i, args...);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::operator()(size_t i, Args... args) const {
     return at(i, args...);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::reference
 CudaTensorView<T, N>::operator()(const CudaStdArray<size_t, N> &idx) {
     return at(idx);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<T, N>::Base::const_reference
 CudaTensorView<T, N>::operator()(const CudaStdArray<size_t, N> &idx) const {
     return at(idx);
 }
@@ -222,77 +222,77 @@ CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::at(size_t i) {
     return _ptr[i];
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::at(size_t i) const {
     return _ptr[i];
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::at(size_t i, Args... args) {
     return at(index(i, args...));
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::at(size_t i, Args... args) const {
     return at(index(i, args...));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::at(const CudaStdArray<size_t, N> &idx) {
     return at(index(idx));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::at(const CudaStdArray<size_t, N> &idx) const {
     return at(index(idx));
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::operator[](size_t i) {
     return at(i);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::operator[](size_t i) const {
     return at(i);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::operator()(size_t i, Args... args) {
     return at(i, args...);
 }
 
 template<typename T, size_t N>
 template<typename... Args>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::operator()(size_t i, Args... args) const {
     return at(i, args...);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::reference
 CudaTensorView<const T, N>::operator()(const CudaStdArray<size_t, N> &idx) {
     return at(idx);
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE typename CudaTensorView<const T, N>::Base::const_reference
+CUDA_CALLABLE_DEVICE typename CudaTensorView<const T, N>::Base::const_reference
 CudaTensorView<const T, N>::operator()(const CudaStdArray<size_t, N> &idx) const {
     return at(idx);
 }

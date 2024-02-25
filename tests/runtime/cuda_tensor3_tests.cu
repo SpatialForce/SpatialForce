@@ -92,21 +92,6 @@ TEST_F(CudaTensor3Test, Constructors) {
             EXPECT_FLOAT_EQ((float)i + 1.f, arr2[i]);
         }
     }
-//    {
-//        CudaTensor3<float> arr({{{1.f, 2.f, 3.f, 4.f},
-//                                 {5.f, 6.f, 7.f, 8.f},
-//                                 {9.f, 10.f, 11.f, 12.f}},
-//                                {{13.f, 14.f, 15.f, 16.f},
-//                                 {17.f, 18.f, 19.f, 20.f},
-//                                 {21.f, 22.f, 23.f, 24.f}}});
-//        CudaTensorView3<float> arrVew(arr.data(), arr.shape());
-//        EXPECT_EQ(4u, arrVew.width());
-//        EXPECT_EQ(3u, arrVew.height());
-//        EXPECT_EQ(2u, arrVew.depth());
-//        for (size_t i = 0; i < 24; ++i) {
-//            EXPECT_FLOAT_EQ((float)i + 1.f, arrVew[i]);
-//        }
-//    }
 }
 
 TEST_F(CudaTensor3Test, Clear) {
@@ -176,17 +161,3 @@ TEST_F(CudaTensor3Test, Resize) {
         }
     }
 }
-
-//TEST_F(CudaTensor3Test, View) {
-//    CudaTensor3<float> arr(
-//        {{{1.f, 2.f, 3.f, 4.f}, {5.f, 6.f, 7.f, 8.f}, {9.f, 10.f, 11.f, 12.f}},
-//         {{13.f, 14.f, 15.f, 16.f},
-//          {17.f, 18.f, 19.f, 20.f},
-//          {21.f, 22.f, 23.f, 24.f}}});
-//    CudaTensorView3<float> arr2 = arr.view();
-//    EXPECT_EQ(4u, arr2.width());
-//    EXPECT_EQ(3u, arr2.height());
-//    for (size_t i = 0; i < 12; ++i) {
-//        EXPECT_FLOAT_EQ((float)i + 1.f, arr2[i]);
-//    }
-//}

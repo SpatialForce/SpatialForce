@@ -124,26 +124,6 @@ TEST_F(CudaTensor1Test, CopyFrom) {
     for (size_t i = 0; i < arr5.length(); ++i) {
         EXPECT_FLOAT_EQ(cudaArr[i], arr5[i]);
     }
-
-    // Copy from CudaTensorView
-    CudaTensor1<float> arr6;
-    CudaTensorView1<float> cudaArrView = arr6.view();
-    arr6.copyFrom(cudaArrView);
-
-    EXPECT_EQ(cudaArrView.length(), arr6.length());
-    for (size_t i = 0; i < arr6.length(); ++i) {
-        EXPECT_FLOAT_EQ(cudaArrView[i], arr6[i]);
-    }
-
-    // Copy from ConstCudaTensorView
-    CudaTensor1<float> arr7;
-    ConstCudaTensorView1<float> constCudaArrView = arr7.view();
-    arr7.copyFrom(constCudaArrView);
-
-    EXPECT_EQ(constCudaArrView.length(), arr7.length());
-    for (size_t i = 0; i < arr7.length(); ++i) {
-        EXPECT_FLOAT_EQ(constCudaArrView[i], arr7[i]);
-    }
 }
 
 TEST_F(CudaTensor1Test, Append) {
