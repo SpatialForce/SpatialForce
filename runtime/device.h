@@ -63,6 +63,8 @@ public:
 /// initialize the CUDA runtime.
 void init();
 
+void deinit();
+
 /// Returns the number of CUDA devices supported in this environment.
 size_t device_count();
 

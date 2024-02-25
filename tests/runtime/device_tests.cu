@@ -16,6 +16,10 @@ public:
         vox::init();
     }
 
+    void TearDown() override {
+        vox::deinit();
+    }
+
     static void launch() {
         // Print the local time from GPU threads.
         time_t cur_time;
@@ -30,7 +34,7 @@ public:
             // into GPU constant memory and made available to the kernel.
 
             // Adjust for daylight savings.
-            int hour = (t.tm_hour + (t.tm_isdst ? 0 : 11)) % 12;
+            int hour = (t.tm_hour + (t.tm_isdst ? 0 : 12)) % 12;
             if(!hour) hour = 12;
 
             // Use CUDA's printf. It won't be shown until the context.synchronize()

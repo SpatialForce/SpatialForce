@@ -16,6 +16,10 @@ public:
     void SetUp() override {
         vox::init();
     }
+
+    void TearDown() override {
+        vox::deinit();
+    }
 };
 
 TEST_F(CudaTensor2Test, Constructors) {

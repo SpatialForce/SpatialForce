@@ -17,6 +17,7 @@ void DeviceInfo::primary_context_retain() {
 }
 
 static std::vector<DeviceInfo> all_devices;
+static std::map<CUdevice, Device> cuda_device;
 
 void init() {
     cuInit(0);
@@ -54,6 +55,10 @@ void init() {
     }
 }
 
+void deinit() {
+    cuda_device.clear();
+}
+
 size_t device_count() {
     int deviceCount = 0;
     cuDeviceGetCount(&deviceCount);
@@ -61,8 +66,6 @@ size_t device_count() {
 }
 
 const Device &device(uint32_t index) {
-    static std::map<CUdevice, Device> cuda_device;
-
     auto handle = all_devices[index].handle;
     auto it = cuda_device.find(handle);
     if (it != cuda_device.end()) {
