@@ -41,7 +41,4 @@ TEST(Buffer, view) {
     auto host_device = HostDeviceVector<float>();
     host_device.host_buffer = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     host_device.sync_h2d();
-    auto view = host_device.view();
-
-    EXPECT_EQ(view.ndim, 1);
 }

@@ -6,17 +6,17 @@
 
 #pragma once
 
-#include "core/vec.h"
+#include "math/matrix.h"
 #include "grid_data.h"
 
 namespace vox::fields {
 template<typename TYPE, uint32_t order, uint32_t dos>
 struct grid_system_data_t {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<float, dim>;
-    using system_array_t = vec_t<float, dos>;
+    using point_t = Vector<float, dim>;
+    using system_array_t = Vector<float, dos>;
 
-    fixed_array_t<grid_data_t<TYPE, order>, dos> scalar_data_list;
+    CudaStdArray<grid_data_t<TYPE, order>, dos> scalar_data_list;
 
     // MARK:- Vector Data Manipulation
     //! number of vector data at given index.
@@ -66,10 +66,10 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE vec_t<vec_t<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx) {
-        vec_t<vec_t<float, dim>, dos> tmp;
+    CUDA_CALLABLE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx) {
+        Vector<Vector<float, dim>, dos> tmp;
         for (uint32_t j = 0; j < dos; j++) {
-            vec_t<float, dim> g = scalar_data_list[j].gradient(pt, var_idx);
+            Vector<float, dim> g = scalar_data_list[j].gradient(pt, var_idx);
             for (uint32_t k = 0; k < dim; ++k) {
                 tmp[j][k] = g[k];
             }
@@ -78,10 +78,10 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point in specific bry
-    CUDA_CALLABLE vec_t<vec_t<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx, uint32_t bry) {
-        vec_t<vec_t<float, dim>, dos> tmp;
+    CUDA_CALLABLE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx, uint32_t bry) {
+        Vector<Vector<float, dim>, dos> tmp;
         for (uint32_t j = 0; j < dos; j++) {
-            vec_t<float, dim> g = scalar_data_list[j].gradient(pt, var_idx, bry);
+            Vector<float, dim> g = scalar_data_list[j].gradient(pt, var_idx, bry);
             for (uint32_t k = 0; k < dim; ++k) {
                 tmp[j][k] = g[k];
             }

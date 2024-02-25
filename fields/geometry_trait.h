@@ -99,7 +99,7 @@ struct Triangle {
     using ref_point_t = Vector<float, tdim>;
     static constexpr uint32_t arr_len = 3;
 
-    CUDA_CALLABLE static constexpr float area(point_t a, point_t b, point_t c) {
+    CUDA_CALLABLE static float area(point_t a, point_t b, point_t c) {
         return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
     }
 

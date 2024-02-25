@@ -17,7 +17,7 @@ struct grid_data_base_t {
     static constexpr uint32_t dim = TYPE::dim;
     using point_t = Vector<float, dim>;
 
-    array_t<float> data;
+    CudaTensorView1<float> data;
 
     //! return value of specific point
     CUDA_CALLABLE float value(const point_t &pt, uint32_t idx) {
@@ -29,23 +29,23 @@ struct grid_data_base_t {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx) {
-        return vec_t<float, dim>{};
+    CUDA_CALLABLE Vector<float, dim> gradient(const point_t &pt, uint32_t idx) {
+        return Vector<float, dim>{};
     }
     //! return value of specific point in specific bry
-    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
-        return vec_t<float, dim>{};
+    CUDA_CALLABLE Vector<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
+        return Vector<float, dim>{};
     }
 };
 
 template<typename TYPE, int order>
 struct grid_data_t : public grid_data_base_t<TYPE> {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<float, dim>;
+    using point_t = Vector<float, dim>;
 
     typename poly_info_t<TYPE, order>::FuncValueFunctor func_value;
     typename poly_info_t<TYPE, order>::FuncGradientFunctor func_gradient;
-    array_t<typename poly_info_t<TYPE, order>::Vec> slope;
+    CudaTensorView1<typename poly_info_t<TYPE, order>::Vec> slope;
 
     //! return value of specific point
     CUDA_CALLABLE float value(const point_t &pt, uint32_t idx) {
@@ -57,11 +57,11 @@ struct grid_data_t : public grid_data_base_t<TYPE> {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx) {
+    CUDA_CALLABLE Vector<float, dim> gradient(const point_t &pt, uint32_t idx) {
         return func_gradient(idx, pt, slope[idx]);
     }
     //! return value of specific point in specific bry
-    CUDA_CALLABLE vec_t<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
+    CUDA_CALLABLE Vector<float, dim> gradient(const point_t &pt, uint32_t idx, uint32_t bry) {
         return func_gradient(idx, pt, slope[idx]);
     }
 };

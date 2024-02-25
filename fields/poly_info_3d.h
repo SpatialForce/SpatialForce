@@ -71,7 +71,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
         CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
             CudaStdArray<float, n_unknown> s;
-            for (uint32_t j = 0; j < patch.shape.size(); ++j) {
+            for (uint32_t j = 0; j < patch.width(); ++j) {
                 operator()(basisIdx, patch[j], s);
                 result[j] = s;
             }

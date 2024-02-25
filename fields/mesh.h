@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include "core/vec.h"
-#include "core/fixed_array.h"
+#include "math/matrix.h"
 #include "fields/geometry.h"
 
 namespace vox::fields {
@@ -20,12 +19,12 @@ struct mesh_t {
     static constexpr uint32_t dow = DOW;
 
     /// Point array of the mesh.
-    array_t<vec_t<float, dow>> pnt;
+    CudaTensorView1<Vector<float, dow>> pnt;
 
     /// Geometries arrays of the mesh.
     /// The geometries in \p n dimension are in the \p n-th entry of the array,
     /// which is still an array.
-    fixed_array_t<geometry_t, dim + 1> geo;
+    CudaStdArray<geometry_t, dim + 1> geo;
 
     /// Geometries array in certain dimension.
     [[nodiscard]] CUDA_CALLABLE const geometry_t &geometry(int d) const {

@@ -150,20 +150,20 @@ struct FoldWithAnd<T, Rows, Cols, BinaryOperation, 0> {
 #pragma region Matrix Class (Static)
 
 template<typename T, size_t Rows, size_t Cols>
-CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const_reference value) {
+CUDA_CALLABLE constexpr Matrix<T, Rows, Cols>::Matrix(const_reference value) {
     fill(value);
 }
 
 template<typename T, size_t Rows, size_t Cols>
 template<size_t R, size_t C, typename E>
-CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE constexpr Matrix<T, Rows, Cols>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == Rows && expression.cols() == Cols);
 
     copyFrom(expression);
 }
 
 template<typename T, size_t Rows, size_t Cols>
-CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> &lst) {
+CUDA_CALLABLE constexpr Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> &lst) {
     size_t i = 0;
     for (auto rows : lst) {
         assert(i < Rows);
@@ -178,7 +178,7 @@ CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const NestedInitializerListsT<T, 2> 
 }
 
 template<typename T, size_t Rows, size_t Cols>
-CUDA_CALLABLE Matrix<T, Rows, Cols>::Matrix(const_pointer ptr) {
+CUDA_CALLABLE constexpr Matrix<T, Rows, Cols>::Matrix(const_pointer ptr) {
     size_t cnt = 0;
     for (size_t i = 0; i < Rows; ++i) {
         for (size_t j = 0; j < Cols; ++j) {
@@ -279,14 +279,14 @@ operator[](size_t i) const {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-CUDA_CALLABLE Matrix<T, 1, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE constexpr Matrix<T, 1, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == 1 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
 }
 
 template<typename T>
-CUDA_CALLABLE Matrix<T, 1, 1>::Matrix(const std::initializer_list<T> &lst) {
+CUDA_CALLABLE constexpr Matrix<T, 1, 1>::Matrix(const std::initializer_list<T> &lst) {
     assert(lst.size() > 0);
 
     x = *lst.begin();
@@ -385,7 +385,7 @@ CUDA_CALLABLE constexpr Matrix<T, 1, 1> Matrix<T, 1, 1>::makeUnit(size_t) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-CUDA_CALLABLE Matrix<T, 2, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE constexpr Matrix<T, 2, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == 2 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
@@ -393,7 +393,7 @@ CUDA_CALLABLE Matrix<T, 2, 1>::Matrix(const MatrixExpression<T, R, C, E> &expres
 }
 
 template<typename T>
-CUDA_CALLABLE Matrix<T, 2, 1>::Matrix(const std::initializer_list<T> &lst) {
+CUDA_CALLABLE constexpr Matrix<T, 2, 1>::Matrix(const std::initializer_list<T> &lst) {
     assert(lst.size() > 1);
 
     auto iter = lst.begin();
@@ -501,7 +501,7 @@ CUDA_CALLABLE constexpr Matrix<T, 2, 1> Matrix<T, 2, 1>::makeUnit(size_t i) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-CUDA_CALLABLE Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == 3 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
@@ -510,7 +510,7 @@ CUDA_CALLABLE Matrix<T, 3, 1>::Matrix(const MatrixExpression<T, R, C, E> &expres
 }
 
 template<typename T>
-CUDA_CALLABLE Matrix<T, 3, 1>::Matrix(const std::initializer_list<T> &lst) {
+CUDA_CALLABLE constexpr Matrix<T, 3, 1>::Matrix(const std::initializer_list<T> &lst) {
     assert(lst.size() > 2);
 
     auto iter = lst.begin();
@@ -628,7 +628,7 @@ CUDA_CALLABLE constexpr Matrix<T, 3, 1> Matrix<T, 3, 1>::makeUnit(size_t i) {
 
 template<typename T>
 template<size_t R, size_t C, typename E>
-CUDA_CALLABLE Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expression) {
     assert(expression.rows() == 4 && expression.cols() == 1);
 
     x = expression.eval(0, 0);
@@ -638,7 +638,7 @@ CUDA_CALLABLE Matrix<T, 4, 1>::Matrix(const MatrixExpression<T, R, C, E> &expres
 }
 
 template<typename T>
-CUDA_CALLABLE Matrix<T, 4, 1>::Matrix(const std::initializer_list<T> &lst) {
+CUDA_CALLABLE constexpr Matrix<T, 4, 1>::Matrix(const std::initializer_list<T> &lst) {
     assert(lst.size() > 3);
 
     auto iter = lst.begin();

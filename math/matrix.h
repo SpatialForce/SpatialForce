@@ -42,18 +42,18 @@ public:
 
     CUDA_CALLABLE constexpr Matrix() : _elements{} {}
 
-    CUDA_CALLABLE Matrix(const_reference value);
+    CUDA_CALLABLE constexpr Matrix(const_reference value);
 
     template<typename... Args>
     CUDA_CALLABLE constexpr Matrix(const_reference first, Args... rest)
         : _elements{{first, static_cast<value_type>(rest)...}} {}
 
     template<size_t R, size_t C, typename E>
-    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE constexpr Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    CUDA_CALLABLE Matrix(const NestedInitializerListsT<T, 2> &lst);
+    CUDA_CALLABLE constexpr Matrix(const NestedInitializerListsT<T, 2> &lst);
 
-    CUDA_CALLABLE Matrix(const_pointer ptr);
+    CUDA_CALLABLE constexpr Matrix(const_pointer ptr);
 
     CUDA_CALLABLE constexpr Matrix(const Matrix &other) : _elements(other._elements) {}
 
@@ -115,9 +115,9 @@ public:
     CUDA_CALLABLE constexpr Matrix(const Matrix &other) : x(other.x) {}
 
     template<size_t R, size_t C, typename E>
-    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE constexpr Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE constexpr Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
@@ -183,9 +183,9 @@ public:
     CUDA_CALLABLE constexpr Matrix(const Matrix &other) : x(other.x), y(other.y) {}
 
     template<size_t R, size_t C, typename E>
-    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE constexpr Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE constexpr Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
@@ -259,9 +259,9 @@ public:
         : x(other.x), y(other.y), z(other.z) {}
 
     template<size_t R, size_t C, typename E>
-    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE constexpr Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE constexpr Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 
@@ -335,9 +335,9 @@ public:
         : x(other.x), y(other.y), z(other.z), w(other.w) {}
 
     template<size_t R, size_t C, typename E>
-    CUDA_CALLABLE Matrix(const MatrixExpression<T, R, C, E> &expression);
+    CUDA_CALLABLE constexpr Matrix(const MatrixExpression<T, R, C, E> &expression);
 
-    CUDA_CALLABLE Matrix(const std::initializer_list<T> &lst);
+    CUDA_CALLABLE constexpr Matrix(const std::initializer_list<T> &lst);
 
     // Simple setters/modifiers
 

@@ -29,12 +29,10 @@ public:
     // CTOR
     CUDA_CALLABLE CudaTensorView();
 
-    CUDA_CALLABLE CudaTensorView(T *ptr,
-                                 const CudaStdArray<size_t, N> &size_);
+    CUDA_CALLABLE CudaTensorView(T *ptr, const CudaStdArray<size_t, N> &size_);
 
     template<size_t M = N>
-    CUDA_CALLABLE CudaTensorView(
-        typename std::enable_if<(M == 1), T>::type *ptr, size_t size_);
+    CUDA_CALLABLE CudaTensorView(typename std::enable_if<(M == 1), T>::type *ptr, size_t size_);
 
     CudaTensorView(CudaTensor<T, N> &other);
 

@@ -28,41 +28,41 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE CudaTensorView1<int32_t> get_patch(uint32_t ele_idx) {
+    CUDA_CALLABLE ConstCudaTensorView1<int32_t> get_patch(uint32_t ele_idx) {
         if (ele_idx == 0) {
-            return {patch.data, int(patch_prefix_sum[0])};
+            return {patch.data(), size_t(patch_prefix_sum[0])};
         } else {
-            return {patch.data + patch_prefix_sum[ele_idx - 1], int(patch_prefix_sum[ele_idx] - patch_prefix_sum[ele_idx - 1])};
+            return {patch.data() + patch_prefix_sum[ele_idx - 1], size_t(patch_prefix_sum[ele_idx] - patch_prefix_sum[ele_idx - 1])};
         }
     }
 
     CUDA_CALLABLE int32_t *get_patch(uint32_t ele_idx, uint32_t j) {
         if (ele_idx == 0) {
-            return patch.data + j;
+            return patch.data() + j;
         } else {
-            return patch.data + patch_prefix_sum[ele_idx - 1] + j;
+            return patch.data() + patch_prefix_sum[ele_idx - 1] + j;
         }
     }
 
-    CUDA_CALLABLE CudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
+    CUDA_CALLABLE ConstCudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
         if (ele_idx == 0) {
-            return {patch_polys.data, int(patch_prefix_sum[0])};
+            return {patch_polys.data(), size_t(patch_prefix_sum[0])};
         } else {
-            return {patch_polys.data + patch_prefix_sum[ele_idx - 1],
-                    int(patch_prefix_sum[ele_idx] - patch_prefix_sum[ele_idx - 1])};
+            return {patch_polys.data() + patch_prefix_sum[ele_idx - 1],
+                    size_t(patch_prefix_sum[ele_idx] - patch_prefix_sum[ele_idx - 1])};
         }
     }
 
     CUDA_CALLABLE CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown> *get_poly_avgs(uint32_t ele_idx, uint32_t j) {
         if (ele_idx == 0) {
-            return patch_polys.data + j;
+            return patch_polys.data() + j;
         } else {
-            return patch_polys.data + patch_prefix_sum[ele_idx - 1] + j;
+            return patch_polys.data() + patch_prefix_sum[ele_idx - 1] + j;
         }
     }
 
     CUDA_CALLABLE typename poly_info_t<TYPE, ORDER>::Mat *get_g_inv(uint32_t ele_idx) {
-        return G_inv.data + ele_idx;
+        return G_inv.data() + ele_idx;
     }
 };
 

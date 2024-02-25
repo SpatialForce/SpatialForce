@@ -7,7 +7,6 @@
 #pragma once
 
 #include "device.h"
-#include "core/array.h"
 #include <vector>
 #include <array>
 
@@ -178,10 +177,6 @@ struct HostDeviceVector {
 
     auto end() {
         return host_buffer.end();
-    }
-
-    array_t<T> view() {
-        return {device_buffer.data(), (int)device_buffer.size()};
     }
 };
 

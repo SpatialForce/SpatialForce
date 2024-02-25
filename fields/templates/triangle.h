@@ -14,7 +14,7 @@ struct base_template_geometry_t<Triangle> {
     using point_t = Triangle::point_t;
 
     CUDA_CALLABLE static constexpr auto points() {
-        return fixed_array_t<point_t, 3>{point_t{0.0, 0.0}, point_t{1.0, 0.0}, point_t{0.0, 1.0}};
+        return CudaStdArray<point_t, 3>{point_t{0.0, 0.0}, point_t{1.0, 0.0}, point_t{0.0, 1.0}};
     }
 
     CUDA_CALLABLE static constexpr auto n_points() {
@@ -85,13 +85,13 @@ struct base_template_geometry_t<Triangle> {
     CUDA_CALLABLE static auto n_geometry_vertex(int n, int k) {
         switch (n) {
             case 0:
-                return geometry_dim0()[k].vtx.size;
+                return geometry_dim0()[k].vtx.size();
             case 1:
-                return geometry_dim1()[k].vtx.size;
+                return geometry_dim1()[k].vtx.size();
             case 2:
-                return geometry_dim2()[k].vtx.size;
+                return geometry_dim2()[k].vtx.size();
             default:
-                return 0u;
+                return size_t(0);
         }
     }
 
@@ -111,13 +111,13 @@ struct base_template_geometry_t<Triangle> {
     CUDA_CALLABLE static auto n_geometry_boundary(int n, int k) {
         switch (n) {
             case 0:
-                return geometry_dim0()[k].bnd.size;
+                return geometry_dim0()[k].bnd.size();
             case 1:
-                return geometry_dim1()[k].bnd.size;
+                return geometry_dim1()[k].bnd.size();
             case 2:
-                return geometry_dim2()[k].bnd.size;
+                return geometry_dim2()[k].bnd.size();
             default:
-                return 0u;
+                return size_t(0);
         }
     }
 

@@ -150,16 +150,14 @@ template<typename T, size_t N>
 CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView() : Base() {}
 
 template<typename T, size_t N>
-CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(const T *ptr,
-                                                         const CudaStdArray<size_t, N> &size_)
+CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(const T *ptr, const CudaStdArray<size_t, N> &size_)
     : CudaTensorView() {
-    Base::setPtrAndShape(MemoryHandle(ptr), size_);
+    Base::setPtrAndShape(ptr, size_);
 }
 
 template<typename T, size_t N>
 template<size_t M>
-CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(
-    const typename std::enable_if<(M == 1), T>::type *ptr, size_t size_)
+CUDA_CALLABLE CudaTensorView<const T, N>::CudaTensorView(const typename std::enable_if<(M == 1), T>::type *ptr, size_t size_)
     : CudaTensorView(ptr, CudaStdArray<size_t, N>{size_}) {}
 
 template<typename T, size_t N>

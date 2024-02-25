@@ -22,12 +22,12 @@ struct geometry_t {
     /// Boundary marker.
     CudaTensorView1<int32_t> bm{};
 
-    [[nodiscard]] inline CUDA_CALLABLE int32_t index(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE int32_t index(uint32_t idx) const {
         return ind[idx];
     }
 
     /// Number of vertices.
-    [[nodiscard]] inline CUDA_CALLABLE uint32_t n_vertex(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE uint32_t n_vertex(uint32_t idx) const {
         if (idx == 0) {
             return vtx_index[0];
         } else {
@@ -36,25 +36,25 @@ struct geometry_t {
     }
 
     /// The vertex index array.
-    [[nodiscard]] inline CUDA_CALLABLE CudaTensorView1<uint32_t> vertex(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE ConstCudaTensorView1<uint32_t> vertex(uint32_t idx) const {
         if (idx == 0) {
-            return {vtx.data, (int)vtx_index[0]};
+            return {vtx.data(), (size_t)vtx_index[0]};
         } else {
-            return {vtx.data + vtx_index[idx - 1], int(vtx_index[idx] - vtx_index[idx - 1])};
+            return {vtx.data() + vtx_index[idx - 1], size_t(vtx_index[idx] - vtx_index[idx - 1])};
         }
     }
 
     /// An entry of the vertex index array.
-    [[nodiscard]] inline CUDA_CALLABLE uint32_t vertex(uint32_t idx, uint32_t j) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE uint32_t vertex(uint32_t idx, uint32_t j) const {
         if (idx == 0) {
-            return *(vtx.data + j);
+            return *(vtx.data() + j);
         } else {
-            return *(vtx.data + vtx_index[idx - 1] + j);
+            return *(vtx.data() + vtx_index[idx - 1] + j);
         }
     }
 
     /// Number of boundary geometries.
-    [[nodiscard]] inline CUDA_CALLABLE uint32_t n_boundary(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE uint32_t n_boundary(uint32_t idx) const {
         if (idx == 0) {
             return bnd_index[0];
         } else {
@@ -63,25 +63,25 @@ struct geometry_t {
     }
 
     /// The boundary geometry index array.
-    [[nodiscard]] inline CUDA_CALLABLE CudaTensorView1<uint32_t> boundary(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE ConstCudaTensorView1<uint32_t> boundary(uint32_t idx) const {
         if (idx == 0) {
-            return {bnd.data, (int)bnd_index[0]};
+            return {bnd.data(), (size_t)bnd_index[0]};
         } else {
-            return {bnd.data + bnd_index[idx - 1], int(bnd_index[idx] - bnd_index[idx - 1])};
+            return {bnd.data() + bnd_index[idx - 1], size_t(bnd_index[idx] - bnd_index[idx - 1])};
         }
     }
 
     /// An entry of the boundary geometry index array.
-    [[nodiscard]] inline CUDA_CALLABLE uint32_t boundary(uint32_t idx, uint32_t j) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE uint32_t boundary(uint32_t idx, uint32_t j) const {
         if (idx == 0) {
-            return *(bnd.data + j);
+            return *(bnd.data() + j);
         } else {
-            return *(bnd.data + bnd_index[idx - 1] + j);
+            return *(bnd.data() + bnd_index[idx - 1] + j);
         }
     }
 
     /// Access to the boundary marker.
-    [[nodiscard]] inline CUDA_CALLABLE int32_t boundary_mark(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE_DEVICE int32_t boundary_mark(uint32_t idx) const {
         return bm[idx];
     }
 };

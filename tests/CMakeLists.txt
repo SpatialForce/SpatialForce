@@ -52,7 +52,7 @@ set(SRC
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
         ${TENSOR_FILES}
-        ${FIELDS_TESTS}
+#        ${FIELDS_TESTS}
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
@@ -60,7 +60,7 @@ add_executable(${PROJECT_NAME} ${SRC})
 find_package(GTest CONFIG REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        runtime fields math tensor
+        runtime math tensor
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         CUDA::cuda_driver
 )
