@@ -30,7 +30,7 @@ private:
     void sync_h2d();
 
     GridPtr2D grid;
-    HostDeviceVector<fixed_array_t<float, n_unknown>> poly_constants;
+    HostDeviceVector<CudaStdArray<float, n_unknown>> poly_constants;
 };
 
 }// namespace vox::fields

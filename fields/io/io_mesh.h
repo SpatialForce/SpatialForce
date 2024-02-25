@@ -7,7 +7,7 @@
 #pragma once
 
 #include <vector>
-#include "core/vec.h"
+#include "math/matrix.h"
 #include "fields/host/mesh_host.h"
 
 namespace vox::fields {
@@ -94,7 +94,7 @@ bool is_same(const GeometryBM &g0, const GeometryBM &g1);
 template<uint32_t DIM, uint32_t DOW = DIM>
 class IOMesh {
 public:
-    using point_t = vec_t<float, DOW>;
+    using point_t = Vector<float, DOW>;
     static constexpr uint32_t dim = DIM;
     static constexpr uint32_t dow = DOW;
 

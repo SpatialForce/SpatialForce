@@ -14,12 +14,12 @@ struct base_template_geometry_t<Interval> {
     using point_t = Interval::point_t;
 
     CUDA_CALLABLE static constexpr auto points() {
-        return fixed_array_t<point_t, 2>{point_t{0},
+        return CudaStdArray<point_t, 2>{point_t{0},
                                          point_t{1}};
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim0() {
-        return fixed_array_t<static_geometry_t<1>, 2>{
+        return CudaStdArray<static_geometry_t<1>, 2>{
             static_geometry_t<1>{
                 .ind = 0,
                 .vtx = {0},
@@ -33,7 +33,7 @@ struct base_template_geometry_t<Interval> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim1() {
-        return fixed_array_t<static_geometry_t<2>, 1>{
+        return CudaStdArray<static_geometry_t<2>, 1>{
             static_geometry_t<2>{
                 .ind = 0,
                 .vtx = {0, 1},

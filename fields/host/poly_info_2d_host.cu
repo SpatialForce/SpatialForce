@@ -19,22 +19,22 @@ struct BuildBasisFuncFunctor {
 
     inline CUDA_CALLABLE
     BuildBasisFuncFunctor(const grid_t<Triangle> &grid,
-                          array_t<fixed_array_t<float, PolyInfo<Triangle, order>::n_unknown>> poly_constants)
+                          CudaTensorView1<CudaStdArray<float, PolyInfo<Triangle, order>::n_unknown>> poly_constants)
         : grid(grid) {
         output = poly_constants;
     }
 
     struct IntegratorFunctor {
-        CUDA_CALLABLE IntegratorFunctor(int j, int k, int ele_idx, array_t<point_t> bary_center)
+        CUDA_CALLABLE IntegratorFunctor(int j, int k, int ele_idx, CudaTensorView1<point_t> bary_center)
             : j(j), k(k), ele_idx(ele_idx), bary_center(bary_center) {}
 
         using RETURN_TYPE = float;
-        CUDA_CALLABLE float operator()(vec_t<float, 2> pt) {
+        CUDA_CALLABLE float operator()(Vector<float, 2> pt) {
             Grid2D::point_t bc = bary_center(ele_idx);
             return pow(pt[0] - bc[0], j) * pow(pt[1] - bc[1], k);
         }
 
-        array_t<point_t> bary_center;
+        CudaTensorView1<point_t> bary_center;
         int j{};
         int k{};
         int ele_idx{};
@@ -57,9 +57,9 @@ struct BuildBasisFuncFunctor {
     }
 
 private:
-    array_t<float> area_of_ele;
-    array_t<point_t> bary_center;
-    array_t<fixed_array_t<float, PolyInfo<Triangle, order>::n_unknown>> output;
+    CudaTensorView1<float> area_of_ele;
+    CudaTensorView1<point_t> bary_center;
+    CudaTensorView1<CudaStdArray<float, PolyInfo<Triangle, order>::n_unknown>> output;
     grid_t<Triangle> grid;
 };
 }// namespace

@@ -14,7 +14,7 @@ struct base_template_geometry_t<Tetrahedron> {
     using point_t = Tetrahedron::point_t;
 
     CUDA_CALLABLE static constexpr auto points() {
-        return fixed_array_t<point_t, 4>{
+        return CudaStdArray<point_t, 4>{
             point_t{0.0, 0.0, 0.0},
             point_t{1.0, 0.0, 0.0},
             point_t{0.0, 1.0, 0.0},
@@ -22,7 +22,7 @@ struct base_template_geometry_t<Tetrahedron> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim0() {
-        return fixed_array_t<static_geometry_t<1>, 4>{
+        return CudaStdArray<static_geometry_t<1>, 4>{
             static_geometry_t<1>{
                 .ind = 0,
                 .vtx = {0},
@@ -46,7 +46,7 @@ struct base_template_geometry_t<Tetrahedron> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim1() {
-        return fixed_array_t<static_geometry_t<2>, 6>{
+        return CudaStdArray<static_geometry_t<2>, 6>{
             static_geometry_t<2>{
                 .ind = 0,
                 .vtx = {0, 1},
@@ -81,7 +81,7 @@ struct base_template_geometry_t<Tetrahedron> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim2() {
-        return fixed_array_t<static_geometry_t<3>, 4>{
+        return CudaStdArray<static_geometry_t<3>, 4>{
             static_geometry_t<3>{
                 .ind = 0,
                 .vtx = {1, 2, 3},
@@ -106,7 +106,7 @@ struct base_template_geometry_t<Tetrahedron> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim3() {
-        return fixed_array_t<static_geometry_t<4>, 1>{
+        return CudaStdArray<static_geometry_t<4>, 1>{
             static_geometry_t<4>{
                 .ind = 0,
                 .vtx = {0, 1, 2, 3},

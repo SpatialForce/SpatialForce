@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include "core/vec.h"
-#include "core/fixed_array.h"
+#include "math/matrix.h"
 #include "fields/geometry.h"
 #include "geometry_trait.h"
 #include "template_geometry.h"
@@ -18,17 +17,17 @@ namespace vox::fields {
 template<typename TYPE>
 struct grid_base_t {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<float, dim>;
+    using point_t = Vector<float, dim>;
 
-    array_t<point_t> bary_center;
-    array_t<float> volume;
-    array_t<float> size;
+    CudaTensorView1<point_t> bary_center;
+    CudaTensorView1<float> volume;
+    CudaTensorView1<float> size;
 
-    array_t<fixed_array_t<int32_t, 2>> neighbour;
-    array_t<fixed_array_t<int32_t, 2>> period_bry;
-    array_t<point_t> boundary_center;
-    array_t<float> bry_size;
-    array_t<int32_t> boundary_mark;
+    CudaTensorView1<CudaStdArray<int32_t, 2>> neighbour;
+    CudaTensorView1<CudaStdArray<int32_t, 2>> period_bry;
+    CudaTensorView1<point_t> boundary_center;
+    CudaTensorView1<float> bry_size;
+    CudaTensorView1<int32_t> boundary_mark;
 };
 
 template<typename TYPE>

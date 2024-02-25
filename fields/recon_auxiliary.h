@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "core/mat.h"
+#include "math/matrix.h"
 #include "poly_info_1d.h"
 #include "poly_info_2d.h"
 #include "poly_info_3d.h"
@@ -15,10 +15,10 @@
 namespace vox::fields {
 template<typename TYPE, uint32_t ORDER>
 struct recon_auxiliary_t {
-    array_t<uint32_t> patch_prefix_sum;
-    array_t<int32_t> patch;
-    array_t<fixed_array_t<float, poly_info_t<TYPE, ORDER>::n_unknown>> patch_polys;
-    array_t<typename poly_info_t<TYPE, ORDER>::Mat> G_inv;
+    CudaTensorView1<uint32_t> patch_prefix_sum;
+    CudaTensorView1<int32_t> patch;
+    CudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> patch_polys;
+    CudaTensorView1<typename poly_info_t<TYPE, ORDER>::Mat> G_inv;
 
     CUDA_CALLABLE uint32_t n_patch(uint32_t ele_idx) {
         if (ele_idx == 0) {
@@ -28,7 +28,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE array_t<int32_t> get_patch(uint32_t ele_idx) {
+    CUDA_CALLABLE CudaTensorView1<int32_t> get_patch(uint32_t ele_idx) {
         if (ele_idx == 0) {
             return {patch.data, int(patch_prefix_sum[0])};
         } else {
@@ -44,7 +44,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE array_t<fixed_array_t<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
+    CUDA_CALLABLE CudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
         if (ele_idx == 0) {
             return {patch_polys.data, int(patch_prefix_sum[0])};
         } else {
@@ -53,7 +53,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE fixed_array_t<float, poly_info_t<TYPE, ORDER>::n_unknown> *get_poly_avgs(uint32_t ele_idx, uint32_t j) {
+    CUDA_CALLABLE CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown> *get_poly_avgs(uint32_t ele_idx, uint32_t j) {
         if (ele_idx == 0) {
             return patch_polys.data + j;
         } else {

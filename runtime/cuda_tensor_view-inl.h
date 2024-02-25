@@ -200,22 +200,19 @@ CUDA_CALLABLE void CudaTensorView<const T, N>::set(const CudaTensorView &other) 
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
-    const CudaTensorView<T, N> &other) {
+CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(const CudaTensorView<T, N> &other) {
     set(other);
     return *this;
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
-    const CudaTensorView &other) {
+CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(const CudaTensorView &other) {
     set(other);
     return *this;
 }
 
 template<typename T, size_t N>
-CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(
-    CudaTensorView &&other) noexcept {
+CUDA_CALLABLE CudaTensorView<const T, N> &CudaTensorView<const T, N>::operator=(CudaTensorView &&other) noexcept {
     Base::setPtrAndShape(other.data(), other.shape());
     other.setPtrAndShape(nullptr, CudaStdArray<size_t, N>{});
     return *this;

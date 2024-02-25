@@ -19,7 +19,7 @@ class Mesh {
 public:
     static constexpr uint32_t dim = DIM;
     static constexpr uint32_t dow = DOW;
-    using point_t = vec_t<float, dow>;
+    using point_t = Vector<float, dow>;
 
     mesh_t<dim, dow> view() {
         mesh_t<dim, dow> handle;

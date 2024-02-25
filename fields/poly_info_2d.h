@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "core/mat.h"
+#include "math/matrix.h"
 #include "poly_info.h"
 #include "grid.h"
 
@@ -17,11 +17,11 @@ struct poly_info_t<Triangle, ORDER> {
     static constexpr uint32_t dim = Triangle::dim;
     static constexpr uint32_t order = ORDER;
     static constexpr uint32_t n_unknown = (order + 2) * (order + 1) / 2 - 1;
-    array_t<fixed_array_t<float, n_unknown>> poly_constants;
+    CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     using grid_t = grid_t<Triangle>;
     using point_t = grid_t::point_t;
-    using Mat = mat_t<float, n_unknown, n_unknown>;
-    using Vec = mat_t<float, n_unknown, 1>;
+    using Mat = Matrix<float, n_unknown, n_unknown>;
+    using Vec = Matrix<float, n_unknown, 1>;
 
     struct AverageBasisFuncFunctor {
         CUDA_CALLABLE AverageBasisFuncFunctor(grid_t grid, poly_info_t<Triangle, order> poly)
@@ -46,7 +46,7 @@ struct poly_info_t<Triangle, ORDER> {
         /// @param basisIdx the loc of basis function
         /// @param quadIdx the loc of quadrature area
         /// @param result result
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, int32_t quadIdx, fixed_array_t<float, n_unknown> &result) {
+        CUDA_CALLABLE void operator()(uint32_t basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
             point_t bc = grid.bary_center(basisIdx);
             int index = 0;
             float J0 = 0;
@@ -63,9 +63,9 @@ struct poly_info_t<Triangle, ORDER> {
             }
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, array_t<int32_t> patch,
-                                      array_t<fixed_array_t<float, n_unknown>> result) {
-            fixed_array_t<float, n_unknown> s;
+        CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
+                                      CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
+            CudaStdArray<float, n_unknown> s;
             for (uint32_t j = 0; j < patch.shape.size(); ++j) {
                 operator()(basisIdx, patch[j], s);
                 result[j] = s;
@@ -74,7 +74,7 @@ struct poly_info_t<Triangle, ORDER> {
 
     private:
         grid_t grid;
-        array_t<fixed_array_t<float, n_unknown>> poly_constants;
+        CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     };
 
     struct UpdateLSMatrixFunctor {
@@ -82,13 +82,13 @@ struct poly_info_t<Triangle, ORDER> {
             : averageBasisFunc(grid, poly) {
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, const array_t<int32_t> &patch,
-                                      array_t<fixed_array_t<float, n_unknown>> poly_avgs, Mat *G) {
+        CUDA_CALLABLE void operator()(uint32_t basisIdx, const CudaTensorView1<int32_t> &patch,
+                                      CudaTensorView1<CudaStdArray<float, n_unknown>> poly_avgs, Mat *G) {
             averageBasisFunc(basisIdx, patch, poly_avgs);
 
             G[0].fill(0.f);
             for (uint32_t j = 0; j < patch.shape.size(); ++j) {
-                fixed_array_t<float, n_unknown> poly_avg = poly_avgs[j];
+                CudaStdArray<float, n_unknown> poly_avg = poly_avgs[j];
                 for (int t1 = 0; t1 < n_unknown; ++t1) {
                     for (int t2 = 0; t2 < n_unknown; ++t2) {
                         G[0](t1, t2) += poly_avg[t1] * poly_avg[t2];
@@ -103,7 +103,7 @@ struct poly_info_t<Triangle, ORDER> {
 
     struct FuncValueFunctor {
         CUDA_CALLABLE float operator()(size_t idx, const point_t &coord, const float &avg, const Vec &para) {
-            fixed_array_t<float, n_unknown> aa;
+            CudaStdArray<float, n_unknown> aa;
             basis_function_value(idx, coord, aa);
 
             float temp = 0.0;
@@ -116,7 +116,7 @@ struct poly_info_t<Triangle, ORDER> {
         }
 
         CUDA_CALLABLE void basis_function_value(size_t idx, const point_t &coord,
-                                                fixed_array_t<float, n_unknown> &result) {
+                                                CudaStdArray<float, n_unknown> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
             int index = 0;
@@ -132,20 +132,20 @@ struct poly_info_t<Triangle, ORDER> {
                 }
         }
 
-        array_t<point_t> bary_center;
-        array_t<float> bary_size;
+        CudaTensorView1<point_t> bary_center;
+        CudaTensorView1<float> bary_size;
 
-        array_t<fixed_array_t<float, n_unknown>> poly_constants;
+        CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     };
 
     struct FuncGradientFunctor {
-        CUDA_CALLABLE vec_t<float, dim> operator()(size_t idx, const point_t &coord,
-                                                   const Vec &para) {
-            fixed_array_t<fixed_array_t<float, n_unknown>, dim> aa;
+        CUDA_CALLABLE Vector<float, dim> operator()(size_t idx, const point_t &coord,
+                                                    const Vec &para) {
+            CudaStdArray<CudaStdArray<float, n_unknown>, dim> aa;
             basis_function_gradient(idx, coord, aa);
 
             float temp = 0.0;
-            vec_t<float, dim> result;
+            Vector<float, dim> result;
             for (uint32_t i = 0; i < dim; ++i) {
                 for (int t = 0; t < n_unknown; ++t) {
                     temp = para[t] * aa[i][t];
@@ -157,7 +157,7 @@ struct poly_info_t<Triangle, ORDER> {
         }
 
         CUDA_CALLABLE void basis_function_gradient(size_t idx, const point_t &coord,
-                                                   fixed_array_t<fixed_array_t<float, n_unknown>, dim> &result) {
+                                                   CudaStdArray<CudaStdArray<float, n_unknown>, dim> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
 
@@ -196,8 +196,8 @@ struct poly_info_t<Triangle, ORDER> {
             }
         }
 
-        array_t<point_t> bary_center;
-        array_t<float> bary_size;
+        CudaTensorView1<point_t> bary_center;
+        CudaTensorView1<float> bary_size;
     };
 };
 

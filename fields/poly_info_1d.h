@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "core/mat.h"
+#include "math/matrix.h"
 #include "poly_info.h"
 #include "grid.h"
 
@@ -17,11 +17,11 @@ struct poly_info_t<Interval, ORDER> {
     static constexpr uint32_t dim = Interval::dim;
     static constexpr uint32_t order = ORDER;
     static constexpr uint32_t n_unknown = order;
-    array_t<fixed_array_t<float, n_unknown>> poly_constants;
+    CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     using grid_t = grid_t<Interval>;
     using point_t = grid_t::point_t;
-    using Mat = mat_t<float, n_unknown, n_unknown>;
-    using Vec = mat_t<float, n_unknown, 1>;
+    using Mat = Matrix<float, n_unknown, n_unknown>;
+    using Vec = Matrix<float, n_unknown, 1>;
 
     struct AverageBasisFuncFunctor {
         CUDA_CALLABLE AverageBasisFuncFunctor(const grid_t &grid, const poly_info_t<Interval, order> poly) {
@@ -30,7 +30,7 @@ struct poly_info_t<Interval, ORDER> {
             poly_constants = poly.poly_constants;
         }
 
-        CUDA_CALLABLE void operator()(int basisIdx, int32_t quadIdx, fixed_array_t<float, n_unknown> &result) {
+        CUDA_CALLABLE void operator()(int basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
             auto center = bary_center(basisIdx);
             auto pl = point(geo_view.vertex(quadIdx, 0));
             auto pr = point(geo_view.vertex(quadIdx, 1));
@@ -47,9 +47,9 @@ struct poly_info_t<Interval, ORDER> {
             }
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, array_t<int32_t> patch,
-                                      array_t<fixed_array_t<float, n_unknown>> result) {
-            fixed_array_t<float, n_unknown> s;
+        CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
+                                      CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
+            CudaStdArray<float, n_unknown> s;
             for (int j = 0; j < patch.shape.size(); ++j) {
                 operator()(basisIdx, patch[j], s);
                 result[j] = s;
@@ -57,26 +57,26 @@ struct poly_info_t<Interval, ORDER> {
         }
 
     private:
-        array_t<point_t> point;
+        CudaTensorView1<point_t> point;
         geometry_t geo_view;
 
-        array_t<point_t> bary_center;
-        array_t<float> bary_size;
+        CudaTensorView1<point_t> bary_center;
+        CudaTensorView1<float> bary_size;
 
-        array_t<fixed_array_t<float, n_unknown>> poly_constants;
+        CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     };
 
     struct UpdateLSMatrixFunctor {
         CUDA_CALLABLE UpdateLSMatrixFunctor(const grid_t &grid, const poly_info_t<Interval, order> poly)
             : averageBasisFunc(grid, poly) {}
 
-        CUDA_CALLABLE void operator()(size_t basisIdx, const array_t<int32_t> &patch,
-                                      array_t<fixed_array_t<float, n_unknown>> poly_avgs, Mat *G) {
+        CUDA_CALLABLE void operator()(size_t basisIdx, const CudaTensorView1<int32_t> &patch,
+                                      CudaTensorView1<CudaStdArray<float, n_unknown>> poly_avgs, Mat *G) {
             averageBasisFunc(basisIdx, patch, poly_avgs);
 
             G[0].fill(0.f);
             for (size_t j = 0; j < patch.shape.size(); ++j) {
-                fixed_array_t<float, n_unknown> poly_avg = poly_avgs[j];
+                CudaStdArray<float, n_unknown> poly_avg = poly_avgs[j];
                 for (int t1 = 0; t1 < n_unknown; ++t1) {
                     for (int t2 = 0; t2 < n_unknown; ++t2) {
                         G[0](t1, t2) += poly_avg[t1] * poly_avg[t2];
@@ -91,7 +91,7 @@ struct poly_info_t<Interval, ORDER> {
 
     struct FuncValueFunctor {
         CUDA_CALLABLE void basis_function_value(int idx, const point_t &coord,
-                                                fixed_array_t<float, n_unknown> &result) {
+                                                CudaStdArray<float, n_unknown> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
             for (int m = 1; m <= order; ++m) {
@@ -101,7 +101,7 @@ struct poly_info_t<Interval, ORDER> {
         }
 
         CUDA_CALLABLE float operator()(int idx, const point_t &coord, float avg, const Vec &para) {
-            fixed_array_t<float, n_unknown> aa;
+            CudaStdArray<float, n_unknown> aa;
             basis_function_value(idx, coord, aa);
 
             float temp = 0.0;
@@ -113,14 +113,14 @@ struct poly_info_t<Interval, ORDER> {
             return result;
         }
 
-        array_t<point_t> bary_center;
-        array_t<float> bary_size;
-        array_t<fixed_array_t<float, n_unknown>> poly_constants;
+        CudaTensorView1<point_t> bary_center;
+        CudaTensorView1<float> bary_size;
+        CudaTensorView1<CudaStdArray<float, n_unknown>> poly_constants;
     };
 
     struct FuncGradientFunctor {
         CUDA_CALLABLE void basis_function_gradient(int idx, const point_t &coord,
-                                                   fixed_array_t<fixed_array_t<float, n_unknown>, 1> &result) {
+                                                   CudaStdArray<CudaStdArray<float, n_unknown>, 1> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
             for (int m = 1; m <= order; ++m) {
@@ -129,12 +129,12 @@ struct poly_info_t<Interval, ORDER> {
             }
         }
 
-        CUDA_CALLABLE vec_t<float, dim> operator()(int idx, const point_t &coord, const Vec &para) {
-            fixed_array_t<fixed_array_t<float, n_unknown>, 1> aa;
+        CUDA_CALLABLE Vector<float, dim> operator()(int idx, const point_t &coord, const Vec &para) {
+            CudaStdArray<CudaStdArray<float, n_unknown>, 1> aa;
             basis_function_gradient(idx, coord, aa);
 
             float temp = 0.0;
-            vec_t<float, dim> result;
+            Vector<float, dim> result;
             for (int i = 0; i < dim; ++i) {
                 for (int t = 0; t < n_unknown; ++t) {
                     temp = para[t] * aa[i][t];
@@ -145,8 +145,8 @@ struct poly_info_t<Interval, ORDER> {
             return result;
         }
 
-        array_t<point_t> bary_center;
-        array_t<float> bary_size;
+        CudaTensorView1<point_t> bary_center;
+        CudaTensorView1<float> bary_size;
     };
 };
 

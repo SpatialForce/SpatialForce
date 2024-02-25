@@ -25,9 +25,9 @@ struct quadrature_info_t {
     /// Algebraic accuracy.
     int32_t alg_acc{};
     /// The coordinate of quadrature point.
-    fixed_array_t<vec_t<float, dim>, size> pnts;
+    CudaStdArray<Vector<float, dim>, size> pnts;
     /// Quadrature weight on the point.
-    fixed_array_t<float, size> weights;
+    CudaStdArray<float, size> weights;
 };
 
 }// namespace vox::fields

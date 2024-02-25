@@ -22,7 +22,7 @@ struct base_template_geometry_t<Triangle> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim0() {
-        return fixed_array_t<static_geometry_t<1>, 3>{
+        return CudaStdArray<static_geometry_t<1>, 3>{
             static_geometry_t<1>{
                 .ind = 0,
                 .vtx = {0},
@@ -41,7 +41,7 @@ struct base_template_geometry_t<Triangle> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim1() {
-        return fixed_array_t<static_geometry_t<2>, 3>{
+        return CudaStdArray<static_geometry_t<2>, 3>{
             static_geometry_t<2>{
                 .ind = 0,
                 .vtx = {1, 2},
@@ -61,7 +61,7 @@ struct base_template_geometry_t<Triangle> {
     }
 
     CUDA_CALLABLE static constexpr auto geometry_dim2() {
-        return fixed_array_t<static_geometry_t<3>, 1>{
+        return CudaStdArray<static_geometry_t<3>, 1>{
             {
                 .ind = 0,
                 .vtx = {0, 1, 2},

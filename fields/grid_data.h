@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "core/vec.h"
+#include "math/matrix.h"
 #include "poly_info_1d.h"
 #include "poly_info_2d.h"
 #include "poly_info_3d.h"
@@ -15,7 +15,7 @@ namespace vox::fields {
 template<typename TYPE>
 struct grid_data_base_t {
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<float, dim>;
+    using point_t = Vector<float, dim>;
 
     array_t<float> data;
 

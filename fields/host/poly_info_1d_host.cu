@@ -13,7 +13,7 @@ namespace {
 template<int order>
 struct BuildBasisFuncFunctor {
     inline CUDA_CALLABLE BuildBasisFuncFunctor(const grid_t<Interval> &grid,
-                                               array_t<fixed_array_t<float, PolyInfo<Interval, order>::n_unknown>> poly_constants) {
+                                               CudaTensorView1<CudaStdArray<float, PolyInfo<Interval, order>::n_unknown>> poly_constants) {
         size = grid.size;
         output = poly_constants;
     }
@@ -31,8 +31,8 @@ struct BuildBasisFuncFunctor {
     }
 
 private:
-    array_t<float> size;
-    array_t<fixed_array_t<float, PolyInfo<Interval, order>::n_unknown>> output;
+    CudaTensorView1<float> size;
+    CudaTensorView1<CudaStdArray<float, PolyInfo<Interval, order>::n_unknown>> output;
 };
 }// namespace
 

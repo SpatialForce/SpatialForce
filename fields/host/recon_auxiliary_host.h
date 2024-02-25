@@ -41,7 +41,7 @@ private:
 
     HostDeviceVector<uint32_t> patch_prefix_sum;
     HostDeviceVector<int32_t> patch;
-    HostDeviceVector<fixed_array_t<float, poly_info_t<TYPE, Order>::n_unknown>> patch_polys;
+    HostDeviceVector<CudaStdArray<float, poly_info_t<TYPE, Order>::n_unknown>> patch_polys;
     HostDeviceVector<typename poly_info_t<TYPE, Order>::Mat> G_inv;
 };
 

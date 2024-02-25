@@ -6,22 +6,21 @@
 
 #pragma once
 
-#include "core/array.h"
-#include "core/fixed_array.h"
+#include "runtime/cuda_tensor_view.h"
 
 namespace vox::fields {
 /// the data to describe a geometry.
 struct geometry_t {
     /// Index of the geometry.
-    array_t<int32_t> ind{};
+    CudaTensorView1<int32_t> ind{};
     /// Index of vertices.
-    array_t<uint32_t> vtx_index;
-    array_t<uint32_t> vtx;
+    CudaTensorView1<uint32_t> vtx_index;
+    CudaTensorView1<uint32_t> vtx;
     /// Index of boundary geometries.
-    array_t<uint32_t> bnd_index;
-    array_t<uint32_t> bnd;
+    CudaTensorView1<uint32_t> bnd_index;
+    CudaTensorView1<uint32_t> bnd;
     /// Boundary marker.
-    array_t<int32_t> bm{};
+    CudaTensorView1<int32_t> bm{};
 
     [[nodiscard]] inline CUDA_CALLABLE int32_t index(uint32_t idx) const {
         return ind[idx];
@@ -37,7 +36,7 @@ struct geometry_t {
     }
 
     /// The vertex index array.
-    [[nodiscard]] inline CUDA_CALLABLE array_t<uint32_t> vertex(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE CudaTensorView1<uint32_t> vertex(uint32_t idx) const {
         if (idx == 0) {
             return {vtx.data, (int)vtx_index[0]};
         } else {
@@ -64,7 +63,7 @@ struct geometry_t {
     }
 
     /// The boundary geometry index array.
-    [[nodiscard]] inline CUDA_CALLABLE array_t<uint32_t> boundary(uint32_t idx) const {
+    [[nodiscard]] inline CUDA_CALLABLE CudaTensorView1<uint32_t> boundary(uint32_t idx) const {
         if (idx == 0) {
             return {bnd.data, (int)bnd_index[0]};
         } else {
@@ -93,9 +92,9 @@ struct static_geometry_t {
     /// Index of the geometry.
     int32_t ind{};
     /// Index of vertices.
-    fixed_array_t<uint32_t, size> vtx{};
+    CudaStdArray<uint32_t, size> vtx{};
     /// Index of boundary geometries.
-    fixed_array_t<uint32_t, size> bnd{};
+    CudaStdArray<uint32_t, size> bnd{};
 };
 
 }// namespace vox::fields

@@ -17,7 +17,7 @@ template<typename TYPE>
 class Grid {
 public:
     static constexpr uint32_t dim = TYPE::dim;
-    using point_t = vec_t<float, dim>;
+    using point_t = Vector<float, dim>;
 
     mesh_t<dim, dim> mesh_view() {
         return mesh.view();
@@ -59,8 +59,8 @@ private:
     HostDeviceVector<float> volume;
     HostDeviceVector<float> size;
 
-    HostDeviceVector<fixed_array_t<int32_t, 2>> neighbour;
-    HostDeviceVector<fixed_array_t<int32_t, 2>> period_bry;
+    HostDeviceVector<CudaStdArray<int32_t, 2>> neighbour;
+    HostDeviceVector<CudaStdArray<int32_t, 2>> period_bry;
     HostDeviceVector<point_t> boundary_center;
     HostDeviceVector<float> bry_size;
     HostDeviceVector<int32_t> boundary_mark;
