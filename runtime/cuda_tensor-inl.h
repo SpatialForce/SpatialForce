@@ -312,8 +312,8 @@ template<typename OtherDerived, size_t M>
 std::enable_if_t<(M == 1), void> CudaTensor<T, N>::append(
     const CudaTensorBase<T, N, OtherDerived> &extra) {
     CudaTensor newArray(length() + extra.length());
-    cudaCopy(data(), length(), newArray.data());
-    cudaCopy(extra.data(), extra.length(), newArray.data() + _shape[0]);
+    _data.cudaCopy(data(), length(), newArray.data());
+    _data.cudaCopy(extra.data(), extra.length(), newArray.data() + _shape[0]);
     swap(newArray);
 }
 

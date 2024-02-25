@@ -146,43 +146,43 @@ TEST_F(CudaTensor1Test, CopyFrom) {
     }
 }
 
-//TEST(CudaTensor1, Append) {
-//    // Cuda + scalar
-//    {
-//        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
-//        arr1.append(4.0f);
-//        arr1.append(5.0f);
-//        EXPECT_EQ(5u, arr1.length());
-//        for (size_t i = 0; i < arr1.length(); ++i) {
-//            float a = arr1[i];
-//            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
-//        }
-//    }
-//
-//    // Cuda + Cuda
-//    {
-//        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
-//        CudaTensor1<float> arr2({4.0f, 5.0f});
-//        arr1.append(arr2);
-//        EXPECT_EQ(5u, arr1.length());
-//        for (size_t i = 0; i < arr1.length(); ++i) {
-//            float a = arr1[i];
-//            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
-//        }
-//    }
-//
-//    // Cuda + Cpu
-//    {
-//        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
-//        Tensor1<float> arr2({4.0f, 5.0f});
-//        arr1.append(arr2);
-//        EXPECT_EQ(5u, arr1.length());
-//        for (size_t i = 0; i < arr1.length(); ++i) {
-//            float a = arr1[i];
-//            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
-//        }
-//    }
-//}
+TEST_F(CudaTensor1Test, Append) {
+    // Cuda + scalar
+    {
+        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
+        arr1.append(4.0f);
+        arr1.append(5.0f);
+        EXPECT_EQ(5u, arr1.length());
+        for (size_t i = 0; i < arr1.length(); ++i) {
+            float a = arr1[i];
+            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
+        }
+    }
+
+    // Cuda + Cuda
+    {
+        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
+        CudaTensor1<float> arr2({4.0f, 5.0f});
+        arr1.append(arr2);
+        EXPECT_EQ(5u, arr1.length());
+        for (size_t i = 0; i < arr1.length(); ++i) {
+            float a = arr1[i];
+            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
+        }
+    }
+
+    // Cuda + Cpu
+    {
+        CudaTensor1<float> arr1({1.0f, 2.0f, 3.0f});
+        Tensor1<float> arr2({4.0f, 5.0f});
+        arr1.append(arr2);
+        EXPECT_EQ(5u, arr1.length());
+        for (size_t i = 0; i < arr1.length(); ++i) {
+            float a = arr1[i];
+            EXPECT_FLOAT_EQ(1.0f + i, arr1[i]);
+        }
+    }
+}
 
 TEST_F(CudaTensor1Test, View) {
     CudaTensor1<float> arr(15, 3.14f);
