@@ -20,26 +20,26 @@ struct grid_system_data_t {
 
     // MARK:- Vector Data Manipulation
     //! number of vector data at given index.
-    CUDA_CALLABLE uint32_t number_of_vector_data() const {
+    CUDA_CALLABLE_DEVICE uint32_t number_of_vector_data() const {
         return scalar_data_list[0].data.shape.size();
     }
 
     //! Set the scalar data at given index.
-    CUDA_CALLABLE void set_vector_data(uint32_t var_idx, const system_array_t &data) {
+    CUDA_CALLABLE_DEVICE void set_vector_data(uint32_t var_idx, const system_array_t &data) {
         for (uint32_t i = 0; i < dos; i++) {
             scalar_data_list[i].data[var_idx] = data[i];
         }
     }
 
     //! Add the scalar data at given index.
-    CUDA_CALLABLE void add_vector_data(uint32_t var_idx, const system_array_t &data) {
+    CUDA_CALLABLE_DEVICE void add_vector_data(uint32_t var_idx, const system_array_t &data) {
         for (uint32_t i = 0; i < dos; i++) {
             scalar_data_list[i].data[var_idx] = scalar_data_list[i].data[var_idx] + data[i];
         }
     }
 
     //! return value of specific index
-    CUDA_CALLABLE system_array_t value(uint32_t var_idx) {
+    CUDA_CALLABLE_DEVICE system_array_t value(uint32_t var_idx) {
         system_array_t tmp;
         for (uint32_t i = 0; i < dos; i++) {
             tmp[i] = scalar_data_list[i].value(var_idx);
@@ -48,7 +48,7 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE system_array_t value(const point_t &pt, uint32_t var_idx) {
+    CUDA_CALLABLE_DEVICE system_array_t value(const point_t &pt, uint32_t var_idx) {
         system_array_t tmp;
         for (uint32_t i = 0; i < dos; i++) {
             tmp[i] = scalar_data_list[i].value(pt, var_idx);
@@ -57,7 +57,7 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point in specific bry
-    CUDA_CALLABLE system_array_t value(const point_t &pt, uint32_t var_idx, uint32_t bry) {
+    CUDA_CALLABLE_DEVICE system_array_t value(const point_t &pt, uint32_t var_idx, uint32_t bry) {
         system_array_t tmp;
         for (uint32_t i = 0; i < dos; i++) {
             tmp[i] = scalar_data_list[i].value(pt, var_idx, bry);
@@ -66,7 +66,7 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point
-    CUDA_CALLABLE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx) {
+    CUDA_CALLABLE_DEVICE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx) {
         Vector<Vector<float, dim>, dos> tmp;
         for (uint32_t j = 0; j < dos; j++) {
             Vector<float, dim> g = scalar_data_list[j].gradient(pt, var_idx);
@@ -78,7 +78,7 @@ struct grid_system_data_t {
     }
 
     //! return value of specific point in specific bry
-    CUDA_CALLABLE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx, uint32_t bry) {
+    CUDA_CALLABLE_DEVICE Vector<Vector<float, dim>, dos> gradient(const point_t &pt, uint32_t var_idx, uint32_t bry) {
         Vector<Vector<float, dim>, dos> tmp;
         for (uint32_t j = 0; j < dos; j++) {
             Vector<float, dim> g = scalar_data_list[j].gradient(pt, var_idx, bry);

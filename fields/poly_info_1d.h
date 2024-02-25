@@ -30,7 +30,7 @@ struct poly_info_t<Interval, ORDER> {
             poly_constants = poly.poly_constants;
         }
 
-        CUDA_CALLABLE void operator()(int basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
+        CUDA_CALLABLE_DEVICE void operator()(int basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
             auto center = bary_center(basisIdx);
             auto pl = point(geo_view.vertex(quadIdx, 0));
             auto pr = point(geo_view.vertex(quadIdx, 1));
@@ -47,7 +47,7 @@ struct poly_info_t<Interval, ORDER> {
             }
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
             CudaStdArray<float, n_unknown> s;
             for (int j = 0; j < patch.width(); ++j) {
@@ -70,7 +70,7 @@ struct poly_info_t<Interval, ORDER> {
         CUDA_CALLABLE UpdateLSMatrixFunctor(const grid_t &grid, const poly_info_t<Interval, order> poly)
             : averageBasisFunc(grid, poly) {}
 
-        CUDA_CALLABLE void operator()(size_t basisIdx, const CudaTensorView1<int32_t> &patch,
+        CUDA_CALLABLE_DEVICE void operator()(size_t basisIdx, const CudaTensorView1<int32_t> &patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> poly_avgs, Mat *G) {
             averageBasisFunc(basisIdx, patch, poly_avgs);
 
@@ -100,7 +100,7 @@ struct poly_info_t<Interval, ORDER> {
             }
         }
 
-        CUDA_CALLABLE float operator()(int idx, const point_t &coord, float avg, const Vec &para) {
+        CUDA_CALLABLE_DEVICE float operator()(int idx, const point_t &coord, float avg, const Vec &para) {
             CudaStdArray<float, n_unknown> aa;
             basis_function_value(idx, coord, aa);
 
@@ -129,7 +129,7 @@ struct poly_info_t<Interval, ORDER> {
             }
         }
 
-        CUDA_CALLABLE Vector<float, dim> operator()(int idx, const point_t &coord, const Vec &para) {
+        CUDA_CALLABLE_DEVICE Vector<float, dim> operator()(int idx, const point_t &coord, const Vec &para) {
             CudaStdArray<CudaStdArray<float, n_unknown>, 1> aa;
             basis_function_gradient(idx, coord, aa);
 

@@ -7,7 +7,7 @@
 #pragma once
 
 #include <vector>
-#include "runtime/cuda_buffer.h"
+#include "runtime/cuda_tensor.h"
 #include "../geometry.h"
 
 namespace vox::fields {
@@ -34,14 +34,14 @@ public:
 
 public:
     /// Index of the geometry.
-    HostDeviceVector<int32_t> ind;
+    CudaTensor1<int32_t> ind;
     /// Index of vertices.
-    HostDeviceVector<uint32_t> vtx_index;
-    HostDeviceVector<uint32_t> vtx;
+    CudaTensor1<uint32_t> vtx_index;
+    CudaTensor1<uint32_t> vtx;
     /// Index of boundary geometries.
-    HostDeviceVector<uint32_t> bnd_index;
-    HostDeviceVector<uint32_t> bnd;
+    CudaTensor1<uint32_t> bnd_index;
+    CudaTensor1<uint32_t> bnd;
     /// Boundary marker.
-    HostDeviceVector<int32_t> bm;
+    CudaTensor1<int32_t> bm;
 };
 }// namespace vox::fields

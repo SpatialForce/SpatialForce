@@ -13,6 +13,8 @@
 
 using namespace vox;
 
+static constexpr double kEps = 1e-10;
+
 TEST(NearestTensorSampler1, Sample) {
     {
         Tensor1<double> grid({1.0, 2.0, 3.0, 4.0});

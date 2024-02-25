@@ -31,11 +31,11 @@ struct poly_info_t<Tetrahedron, ORDER> {
         }
 
         struct IntegratorFunctor {
-            CUDA_CALLABLE IntegratorFunctor(int i, int j, int k, point_t bc)
+            CUDA_CALLABLE_DEVICE IntegratorFunctor(int i, int j, int k, point_t bc)
                 : i(i), j(j), k(k), bc(bc) {}
 
             using RETURN_TYPE = float;
-            CUDA_CALLABLE float operator()(point_t pt) {
+            CUDA_CALLABLE_DEVICE float operator()(point_t pt) {
                 return pow(pt[0] - bc[0], i) * pow(pt[1] - bc[1], j) * pow(pt[2] - bc[2], k);
             }
 
@@ -49,7 +49,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
         /// @param basisIdx the loc of basis function
         /// @param quadIdx the loc of quadrature area
         /// @param result result
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
             point_t bc = grid.bary_center(basisIdx);
             int index = 0;
             float J0 = 0;
@@ -68,7 +68,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
             }
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
             CudaStdArray<float, n_unknown> s;
             for (uint32_t j = 0; j < patch.width(); ++j) {
@@ -86,12 +86,12 @@ struct poly_info_t<Tetrahedron, ORDER> {
         CUDA_CALLABLE UpdateLSMatrixFunctor(grid_t grid, poly_info_t<Tetrahedron, order> poly)
             : averageBasisFunc(grid, poly) {}
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, const CudaTensorView1<int32_t> &patch,
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, const CudaTensorView1<int32_t> &patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> poly_avgs, Mat *G) {
             averageBasisFunc(basisIdx, patch, poly_avgs);
 
             G[0].fill(0.f);
-            for (uint32_t j = 0; j < patch.shape.size(); ++j) {
+            for (uint32_t j = 0; j < patch.width(); ++j) {
                 CudaStdArray<float, n_unknown> poly_avg = poly_avgs[j];
                 for (int t1 = 0; t1 < n_unknown; ++t1) {
                     for (int t2 = 0; t2 < n_unknown; ++t2) {
@@ -106,7 +106,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
     };
 
     struct FuncValueFunctor {
-        CUDA_CALLABLE float operator()(uint32_t idx, const point_t &coord, const float &avg, const Vec &para) {
+        CUDA_CALLABLE_DEVICE float operator()(uint32_t idx, const point_t &coord, const float &avg, const Vec &para) {
             CudaStdArray<float, n_unknown> aa;
             basis_function_value(idx, coord, aa);
 
@@ -119,7 +119,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
             return result;
         }
 
-        CUDA_CALLABLE void basis_function_value(uint32_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE void basis_function_value(uint32_t idx, const point_t &coord,
                                                 CudaStdArray<float, n_unknown> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
@@ -146,7 +146,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
     };
 
     struct FuncGradientFunctor {
-        CUDA_CALLABLE Vector<float, dim> operator()(uint32_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE Vector<float, dim> operator()(uint32_t idx, const point_t &coord,
                                                    const Vec &para) {
             CudaStdArray<CudaStdArray<float, n_unknown>, dim> aa;
             basis_function_gradient(idx, coord, aa);
@@ -163,7 +163,7 @@ struct poly_info_t<Tetrahedron, ORDER> {
             return result;
         }
 
-        CUDA_CALLABLE void basis_function_gradient(uint32_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE void basis_function_gradient(uint32_t idx, const point_t &coord,
                                                    CudaStdArray<CudaStdArray<float, n_unknown>, dim> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);

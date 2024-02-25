@@ -27,22 +27,22 @@ struct mesh_t {
     CudaStdArray<geometry_t, dim + 1> geo;
 
     /// Geometries array in certain dimension.
-    [[nodiscard]] CUDA_CALLABLE const geometry_t &geometry(int d) const {
+    [[nodiscard]] CUDA_CALLABLE_DEVICE const geometry_t &geometry(int d) const {
         return geo[d];
     }
 
     /// Geometries array in certain dimension.
-    CUDA_CALLABLE geometry_t &geometry(int d) {
+    CUDA_CALLABLE_DEVICE geometry_t &geometry(int d) {
         return geo[d];
     }
 
     /// Boundary marker of certain geometry in certain dimension.
-    [[nodiscard]] CUDA_CALLABLE auto boundary_mark(int d, int index) const {
+    [[nodiscard]] CUDA_CALLABLE_DEVICE auto boundary_mark(int d, int index) const {
         return geo[d].boundary_mark(index);
     }
 
     /// Boundary marker of certain geometry in certain dimension.
-    CUDA_CALLABLE auto &boundary_mark(int d, int index) {
+    CUDA_CALLABLE_DEVICE auto &boundary_mark(int d, int index) {
         return geo[d].boundary_mark(index);
     }
 };

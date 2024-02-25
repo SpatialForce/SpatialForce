@@ -33,7 +33,7 @@ struct poly_info_t<Triangle, ORDER> {
                 : j(j), k(k), bc(bc) {}
 
             using RETURN_TYPE = float;
-            CUDA_CALLABLE float operator()(point_t pt) {
+            CUDA_CALLABLE_DEVICE float operator()(point_t pt) {
                 return pow(pt[0] - bc[0], j) * pow(pt[1] - bc[1], k);
             }
 
@@ -46,7 +46,7 @@ struct poly_info_t<Triangle, ORDER> {
         /// @param basisIdx the loc of basis function
         /// @param quadIdx the loc of quadrature area
         /// @param result result
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, int32_t quadIdx, CudaStdArray<float, n_unknown> &result) {
             point_t bc = grid.bary_center(basisIdx);
             int index = 0;
             float J0 = 0;
@@ -63,7 +63,7 @@ struct poly_info_t<Triangle, ORDER> {
             }
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, CudaTensorView1<int32_t> patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> result) {
             CudaStdArray<float, n_unknown> s;
             for (uint32_t j = 0; j < patch.width(); ++j) {
@@ -82,7 +82,7 @@ struct poly_info_t<Triangle, ORDER> {
             : averageBasisFunc(grid, poly) {
         }
 
-        CUDA_CALLABLE void operator()(uint32_t basisIdx, const CudaTensorView1<int32_t> &patch,
+        CUDA_CALLABLE_DEVICE void operator()(uint32_t basisIdx, const CudaTensorView1<int32_t> &patch,
                                       CudaTensorView1<CudaStdArray<float, n_unknown>> poly_avgs, Mat *G) {
             averageBasisFunc(basisIdx, patch, poly_avgs);
 
@@ -102,7 +102,7 @@ struct poly_info_t<Triangle, ORDER> {
     };
 
     struct FuncValueFunctor {
-        CUDA_CALLABLE float operator()(size_t idx, const point_t &coord, const float &avg, const Vec &para) {
+        CUDA_CALLABLE_DEVICE float operator()(size_t idx, const point_t &coord, const float &avg, const Vec &para) {
             CudaStdArray<float, n_unknown> aa;
             basis_function_value(idx, coord, aa);
 
@@ -115,7 +115,7 @@ struct poly_info_t<Triangle, ORDER> {
             return result;
         }
 
-        CUDA_CALLABLE void basis_function_value(size_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE void basis_function_value(size_t idx, const point_t &coord,
                                                 CudaStdArray<float, n_unknown> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);
@@ -139,7 +139,7 @@ struct poly_info_t<Triangle, ORDER> {
     };
 
     struct FuncGradientFunctor {
-        CUDA_CALLABLE Vector<float, dim> operator()(size_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE Vector<float, dim> operator()(size_t idx, const point_t &coord,
                                                     const Vec &para) {
             CudaStdArray<CudaStdArray<float, n_unknown>, dim> aa;
             basis_function_gradient(idx, coord, aa);
@@ -156,7 +156,7 @@ struct poly_info_t<Triangle, ORDER> {
             return result;
         }
 
-        CUDA_CALLABLE void basis_function_gradient(size_t idx, const point_t &coord,
+        CUDA_CALLABLE_DEVICE void basis_function_gradient(size_t idx, const point_t &coord,
                                                    CudaStdArray<CudaStdArray<float, n_unknown>, dim> &result) {
             point_t cr = coord;
             cr -= bary_center(idx);

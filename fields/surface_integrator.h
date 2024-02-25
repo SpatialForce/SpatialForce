@@ -19,7 +19,7 @@ struct SurfaceIntegrator {
     mesh_t<tdim, tdim> mesh;
 
     template<typename FUNCTOR>
-    CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
+    CUDA_CALLABLE_DEVICE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
         constexpr uint32_t arr_len = CoordTransform::arr_len;
         Vector<float, tdim> arr[arr_len];
         for (uint32_t i = 0; i < arr_len; i++) {
@@ -48,7 +48,7 @@ struct SurfaceIntegrator<Interval, ACCURACY> {
     CudaTensorView1<Vector<float, 1>> pnt;
 
     template<typename FUNCTOR>
-    CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t i, FUNCTOR functor) {
+    CUDA_CALLABLE_DEVICE FUNCTOR::RETURN_TYPE operator()(uint32_t i, FUNCTOR functor) {
         return functor(pnt[i]);
     }
 };

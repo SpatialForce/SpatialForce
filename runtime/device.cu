@@ -8,6 +8,10 @@
 #include <map>
 
 namespace vox {
+// Dummy kernel for retrieving PTX version.
+template<int dummy_arg>
+__global__ void dummy_k() {}
+
 void DeviceInfo::primary_context_retain() {
     check_cu(cuDevicePrimaryCtxRetain(&primary_context, handle));
 }
@@ -24,6 +28,11 @@ void init() {
         for (int i = 0; i < deviceCount; i++) {
             CUdevice device;
             if (check_cu(cuDeviceGet(&device, i))) {
+                cudaGetDeviceProperties(&all_devices[i].props, i);
+                cudaFuncAttributes attr{};
+                check_cuda(cudaFuncGetAttributes(&attr, dummy_k<0>));
+                all_devices[i].ptx_version = attr.ptxVersion;
+
                 // query device info
                 all_devices[i].handle = device;
                 all_devices[i].ordinal = i;

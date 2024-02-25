@@ -20,7 +20,7 @@ struct recon_auxiliary_t {
     CudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> patch_polys;
     CudaTensorView1<typename poly_info_t<TYPE, ORDER>::Mat> G_inv;
 
-    CUDA_CALLABLE uint32_t n_patch(uint32_t ele_idx) {
+    CUDA_CALLABLE_DEVICE uint32_t n_patch(uint32_t ele_idx) {
         if (ele_idx == 0) {
             return patch_prefix_sum[0];
         } else {
@@ -28,7 +28,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE ConstCudaTensorView1<int32_t> get_patch(uint32_t ele_idx) {
+    CUDA_CALLABLE_DEVICE ConstCudaTensorView1<int32_t> get_patch(uint32_t ele_idx) {
         if (ele_idx == 0) {
             return {patch.data(), size_t(patch_prefix_sum[0])};
         } else {
@@ -36,7 +36,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE int32_t *get_patch(uint32_t ele_idx, uint32_t j) {
+    CUDA_CALLABLE_DEVICE int32_t *get_patch(uint32_t ele_idx, uint32_t j) {
         if (ele_idx == 0) {
             return patch.data() + j;
         } else {
@@ -44,7 +44,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE ConstCudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
+    CUDA_CALLABLE_DEVICE ConstCudaTensorView1<CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown>> get_poly_avgs(uint32_t ele_idx) {
         if (ele_idx == 0) {
             return {patch_polys.data(), size_t(patch_prefix_sum[0])};
         } else {
@@ -53,7 +53,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown> *get_poly_avgs(uint32_t ele_idx, uint32_t j) {
+    CUDA_CALLABLE_DEVICE CudaStdArray<float, poly_info_t<TYPE, ORDER>::n_unknown> *get_poly_avgs(uint32_t ele_idx, uint32_t j) {
         if (ele_idx == 0) {
             return patch_polys.data() + j;
         } else {
@@ -61,7 +61,7 @@ struct recon_auxiliary_t {
         }
     }
 
-    CUDA_CALLABLE typename poly_info_t<TYPE, ORDER>::Mat *get_g_inv(uint32_t ele_idx) {
+    CUDA_CALLABLE_DEVICE typename poly_info_t<TYPE, ORDER>::Mat *get_g_inv(uint32_t ele_idx) {
         return G_inv.data() + ele_idx;
     }
 };

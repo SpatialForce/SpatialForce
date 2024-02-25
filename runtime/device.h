@@ -15,6 +15,8 @@ namespace vox {
 struct DeviceInfo {
     static constexpr int kNameLen = 128;
 
+    int ptx_version{};
+    cudaDeviceProp props{};
     CUdevice handle = -1;
     CUuuid uuid = {0};
     int ordinal = -1;

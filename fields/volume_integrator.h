@@ -19,7 +19,7 @@ struct VolumeIntegrator {
     mesh_t<dim, dim> mesh;
 
     template<typename FUNCTOR>
-    CUDA_CALLABLE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
+    CUDA_CALLABLE_DEVICE FUNCTOR::RETURN_TYPE operator()(uint32_t index, FUNCTOR functor) {
         constexpr uint32_t arr_len = CoordTransform::arr_len;
         Vector<float, dim> arr[arr_len];
         for (uint32_t i = 0; i < arr_len; i++) {
