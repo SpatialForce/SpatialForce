@@ -15,11 +15,13 @@ template<typename T, size_t N>
 class CudaTensor final : public CudaTensorBase<T, N, CudaTensor<T, N>> {
     using Base = CudaTensorBase<T, N, CudaTensor<T, N>>;
     using Base::_shape;
+    using Base::_ptr;
+    using Base::index;
     using Base::setPtrAndShape;
     using Base::swapPtrAndShape;
+    using host_reference = typename CudaBuffer<T>::Reference;
 
 public:
-    using Base::at;
     using Base::clearPtrAndShape;
     using Base::data;
     using Base::length;
@@ -81,17 +83,17 @@ public:
     template<typename... Args>
     void resize(size_t nx, Args... args);
 
-//    template<size_t M = N>
-//    std::enable_if_t<(M == 1), void> append(const T &val);
-//
-//    template<typename A, size_t M = N>
-//    std::enable_if_t<(M == 1), void> append(const std::vector<T, A> &extra);
-//
-//    template<typename OtherDerived, size_t M = N>
-//    std::enable_if_t<(M == 1), void> append(const TensorBase<T, N, OtherDerived> &extra);
-//
-//    template<typename OtherDerived, size_t M = N>
-//    std::enable_if_t<(M == 1), void> append(const CudaTensorBase<T, N, OtherDerived> &extra);
+    template<size_t M = N>
+    std::enable_if_t<(M == 1), void> append(const T &val);
+
+    template<typename A, size_t M = N>
+    std::enable_if_t<(M == 1), void> append(const std::vector<T, A> &extra);
+
+    template<typename OtherDerived, size_t M = N>
+    std::enable_if_t<(M == 1), void> append(const TensorBase<T, N, OtherDerived> &extra);
+
+    template<typename OtherDerived, size_t M = N>
+    std::enable_if_t<(M == 1), void> append(const CudaTensorBase<T, N, OtherDerived> &extra);
 
     void clear();
 
@@ -121,6 +123,36 @@ public:
     CudaTensor &operator=(const CudaTensor &other);
 
     CudaTensor &operator=(CudaTensor &&other) noexcept;
+
+public:
+    host_reference at(size_t i);
+
+    Base::value_type at(size_t i) const;
+
+    template<typename... Args>
+    host_reference at(size_t i, Args... args);
+
+    template<typename... Args>
+    Base::value_type at(size_t i, Args... args) const;
+
+    host_reference at(const CudaStdArray<size_t, N> &idx);
+
+    Base::value_type at(const CudaStdArray<size_t, N> &idx) const;
+
+    host_reference operator[](size_t i);
+
+    Base::value_type operator[](size_t i) const;
+
+    template<typename... Args>
+    host_reference operator()(size_t i, Args... args);
+
+    template<typename... Args>
+    Base::value_type operator()(size_t i, Args... args) const;
+
+    host_reference operator()(const CudaStdArray<size_t, N> &idx);
+
+    Base::value_type
+    operator()(const CudaStdArray<size_t, N> &idx) const;
 
 private:
     CudaBuffer<T> _data;

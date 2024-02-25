@@ -48,34 +48,6 @@ public:
 
     CUDA_CALLABLE size_t length() const;
 
-    CUDA_CALLABLE reference at(size_t i);
-
-    CUDA_CALLABLE const_reference at(size_t i) const;
-
-    template<typename... Args>
-    CUDA_CALLABLE reference at(size_t i, Args... args);
-
-    template<typename... Args>
-    CUDA_CALLABLE const_reference at(size_t i, Args... args) const;
-
-    CUDA_CALLABLE reference at(const CudaStdArray<size_t, N> &idx);
-
-    CUDA_CALLABLE const_reference at(const CudaStdArray<size_t, N> &idx) const;
-
-    CUDA_CALLABLE reference operator[](size_t i);
-
-    CUDA_CALLABLE const_reference operator[](size_t i) const;
-
-    template<typename... Args>
-    CUDA_CALLABLE reference operator()(size_t i, Args... args);
-
-    template<typename... Args>
-    CUDA_CALLABLE const_reference operator()(size_t i, Args... args) const;
-
-    CUDA_CALLABLE reference operator()(const CudaStdArray<size_t, N> &idx);
-
-    CUDA_CALLABLE const_reference operator()(const CudaStdArray<size_t, N> &idx) const;
-
 protected:
     pointer _ptr = nullptr;
     CudaStdArray<size_t, N> _shape;

@@ -19,7 +19,8 @@ template<typename T, size_t N>
 class CudaTensorView final : public CudaTensorBase<T, N, CudaTensorView<T, N>> {
     using Base = CudaTensorBase<T, N, CudaTensorView<T, N>>;
     using Base::_shape;
-    using Base::at;
+    using Base::_ptr;
+    using Base::index;
     using Base::setPtrAndShape;
 
 public:
@@ -50,6 +51,36 @@ public:
     CUDA_CALLABLE CudaTensorView &operator=(const CudaTensorView &other);
 
     CUDA_CALLABLE CudaTensorView &operator=(CudaTensorView &&other) noexcept;
+
+public:
+    CUDA_CALLABLE Base::reference at(size_t i);
+
+    CUDA_CALLABLE Base::const_reference at(size_t i) const;
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::reference at(size_t i, Args... args);
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::const_reference at(size_t i, Args... args) const;
+
+    CUDA_CALLABLE Base::reference at(const CudaStdArray<size_t, N> &idx);
+
+    CUDA_CALLABLE Base::const_reference at(const CudaStdArray<size_t, N> &idx) const;
+
+    CUDA_CALLABLE Base::reference operator[](size_t i);
+
+    CUDA_CALLABLE Base::const_reference operator[](size_t i) const;
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::reference operator()(size_t i, Args... args);
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::const_reference operator()(size_t i, Args... args) const;
+
+    CUDA_CALLABLE Base::reference operator()(const CudaStdArray<size_t, N> &idx);
+
+    CUDA_CALLABLE Base::const_reference
+    operator()(const CudaStdArray<size_t, N> &idx) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +91,8 @@ class CudaTensorView<const T, N> final
     : public CudaTensorBase<const T, N, CudaTensorView<const T, N>> {
     using Base = CudaTensorBase<const T, N, CudaTensorView<const T, N>>;
     using Base::_shape;
+    using Base::_ptr;
+    using Base::index;
     using Base::setPtrAndShape;
 
 public:
@@ -94,6 +127,36 @@ public:
     CUDA_CALLABLE CudaTensorView &operator=(const CudaTensorView &other);
 
     CUDA_CALLABLE CudaTensorView &operator=(CudaTensorView &&other) noexcept;
+
+public:
+    CUDA_CALLABLE Base::reference at(size_t i);
+
+    CUDA_CALLABLE Base::const_reference at(size_t i) const;
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::reference at(size_t i, Args... args);
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::const_reference at(size_t i, Args... args) const;
+
+    CUDA_CALLABLE Base::reference at(const CudaStdArray<size_t, N> &idx);
+
+    CUDA_CALLABLE Base::const_reference at(const CudaStdArray<size_t, N> &idx) const;
+
+    CUDA_CALLABLE Base::reference operator[](size_t i);
+
+    CUDA_CALLABLE Base::const_reference operator[](size_t i) const;
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::reference operator()(size_t i, Args... args);
+
+    template<typename... Args>
+    CUDA_CALLABLE Base::const_reference operator()(size_t i, Args... args) const;
+
+    CUDA_CALLABLE Base::reference operator()(const CudaStdArray<size_t, N> &idx);
+
+    CUDA_CALLABLE Base::const_reference
+    operator()(const CudaStdArray<size_t, N> &idx) const;
 };
 
 template<class T>

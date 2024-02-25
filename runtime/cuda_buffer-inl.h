@@ -8,13 +8,33 @@
 
 namespace vox {
 template<typename T>
+__global__ void cudaFillKernel(T *dst, size_t n, T val) {
+    size_t i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n) {
+        dst[i] = val;
+    }
+}
+
+template<typename T>
+void cudaFill(T *dst, size_t n, const T &val) {
+    if (n == 0) {
+        return;
+    }
+
+    unsigned int numBlocks, numThreads;
+    cudaComputeGridSize((unsigned int)n, 256, numBlocks, numThreads);
+    cudaFillKernel<<<numBlocks, numThreads>>>(dst, n, val);
+    CUDA_CHECK_LAST_ERROR("Failed executing cudaFillKernel");
+}
+
+template<typename T>
 CudaBuffer<T>::CudaBuffer(const Device &device) : _device{device} {}
 
 template<typename T>
 CudaBuffer<T>::CudaBuffer(size_t n, const value_type &initVal,
                           const Device &device) : _device{device} {
     resizeUninitialized(n);
-    cudaFill(_handle, n, initVal);
+    cudaFill(_ptr, n, initVal);
 }
 
 template<typename T>
@@ -22,15 +42,13 @@ template<typename A>
 CudaBuffer<T>::CudaBuffer(const std::vector<T, A> &other,
                           const Device &device)
     : CudaBuffer(other.size(), value_type{}, device) {
-    ContextGuard guard(device.primary_context());
-    check_cuda(cudaMemcpyAsync(_handle, other.data(), byte_size(), cudaMemcpyHostToDevice, device.stream.handle()));
+    cudaCopyHostToDevice(other.data(), _size, _ptr);
 }
 
 template<typename T>
 CudaBuffer<T>::CudaBuffer(const CudaBuffer &other)
     : CudaBuffer(other.size(), value_type{}, other.device()) {
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(_handle, other.data(), byte_size(), cudaMemcpyHostToDevice, _device.stream.handle()));
+    cudaCopyDeviceToDevice(other._ptr, _size, _ptr);
 }
 
 template<typename T>
@@ -46,12 +64,12 @@ CudaBuffer<T>::~CudaBuffer() {
 
 template<typename T>
 CudaBuffer<T>::pointer CudaBuffer<T>::data() {
-    return _handle;
+    return _ptr;
 }
 
 template<typename T>
 CudaBuffer<T>::const_pointer CudaBuffer<T>::data() const {
-    return _handle;
+    return _ptr;
 }
 
 template<typename T>
@@ -60,83 +78,103 @@ size_t CudaBuffer<T>::size() const {
 }
 
 template<typename T>
+typename CudaBuffer<T>::Reference CudaBuffer<T>::at(size_t i) {
+    Reference r(_ptr + i);
+    return r;
+}
+
+template<typename T>
+T CudaBuffer<T>::at(size_t i) const {
+    T tmp;
+    cudaCopyDeviceToHost(_ptr + i, 1, &tmp);
+    return tmp;
+}
+
+template<typename T>
 void CudaBuffer<T>::clear() {
-    if (_handle != nullptr) {
+    if (_ptr != nullptr) {
         ContextGuard guard(_device.primary_context());
-        check_cuda(cudaFree(_handle));
+        check_cuda(cudaFree(_ptr));
     }
-    _handle = nullptr;
+    _ptr = nullptr;
     _size = 0;
-    _byte_size = 0;
 }
 
 template<typename T>
 void CudaBuffer<T>::fill(const value_type &val) {
-    cudaFill(_handle, _size, val);
+    cudaFill(_ptr, _size, val);
 }
 
 template<typename T>
 void CudaBuffer<T>::resize(size_t n, const value_type &initVal) {
     CudaBuffer newBuffer(n, initVal, device());
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(newBuffer._handle, _handle, std::min(n, _size) * sizeof(T), cudaMemcpyDeviceToDevice, _device.stream.handle()));
+    cudaCopy(_ptr, std::min(n, _size), newBuffer._ptr);
     swap(newBuffer);
 }
 
 template<typename T>
 void CudaBuffer<T>::resizeUninitialized(size_t n) {
-    if (_handle) {
-        clear();
-    }
-    _alloc(n);
+    clear();
+    _size = n;
+    ContextGuard guard(_device.primary_context());
+    check_cuda(cudaMalloc(&_ptr, sizeof(T) * n));
 }
 
 template<typename T>
 void CudaBuffer<T>::swap(CudaBuffer &other) {
-    std::swap(_handle, other._handle);
+    std::swap(_ptr, other._ptr);
     std::swap(_size, other._size);
-    std::swap(_byte_size, other._byte_size);
 }
 
 template<typename T>
-void CudaBuffer<T>::copyFromHost(const T *other) {
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(_handle, other, byte_size(), cudaMemcpyHostToDevice, _device.stream.handle()));
+void CudaBuffer<T>::push_back(const value_type &val) {
+    CudaBuffer newBuffer;
+    newBuffer.resizeUninitialized(_size + 1);
+    cudaCopy(_ptr, _size, newBuffer._ptr);
+    cudaCopyHostToDevice(&val, 1, newBuffer._ptr + _size);
+    swap(newBuffer);
 }
 
 template<typename T>
-void CudaBuffer<T>::copyFromDevice(const T *other) {
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(_handle, other, byte_size(), cudaMemcpyDeviceToDevice, _device.stream.handle()));
+void CudaBuffer<T>::append(const value_type &val) {
+    push_back(val);
 }
 
 template<typename T>
-void CudaBuffer<T>::copyToHost(T *other) {
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(other, _handle, byte_size(), cudaMemcpyDeviceToHost, _device.stream.handle()));
-}
-
-template<typename T>
-void CudaBuffer<T>::copyToDevice(T *other) {
-    ContextGuard guard(_device.primary_context());
-    check_cuda(cudaMemcpyAsync(other, _handle, byte_size(), cudaMemcpyDeviceToDevice, _device.stream.handle()));
+void CudaBuffer<T>::append(const CudaBuffer &other) {
+    CudaBuffer newBuffer;
+    newBuffer.resizeUninitialized(_size + other._size);
+    cudaCopy(_ptr, _size, newBuffer._ptr);
+    cudaCopy(other._ptr, other._size, newBuffer._ptr + _size);
+    swap(newBuffer);
 }
 
 template<typename T>
 void CudaBuffer<T>::copyFrom(const CudaBuffer &other) {
-    copyFromDevice(other.data());
+    if (_size == other.size()) {
+        cudaCopyDeviceToDevice(other.data(), _size, _ptr);
+    } else {
+        CudaBuffer newBuffer(other);
+        swap(newBuffer);
+    }
 }
 
 template<typename T>
 template<typename A>
 void CudaBuffer<T>::copyFrom(const std::vector<T, A> &other) {
-    copyFromHost(other.data());
+    if (_size == other.size()) {
+        cudaCopyHostToDevice(other.data(), _size, _ptr);
+    } else {
+        CudaBuffer newBuffer(other);
+        swap(newBuffer);
+    }
 }
 
 template<typename T>
 template<typename A>
 void CudaBuffer<T>::copyTo(std::vector<T, A> &other) {
-    copyToHost(other.data());
+    other.resize(_size);
+    cudaCopyDeviceToHost(_ptr, _size, other.data());
 }
 
 template<typename T>
@@ -160,8 +198,13 @@ CudaBuffer<T> &CudaBuffer<T>::operator=(CudaBuffer &&other) noexcept {
 }
 
 template<typename T>
-inline size_t CudaBuffer<T>::byte_size() const {
-    return _byte_size;
+typename CudaBuffer<T>::Reference CudaBuffer<T>::operator[](size_t i) {
+    return at(i);
+}
+
+template<typename T>
+T CudaBuffer<T>::operator[](size_t i) const {
+    return at(i);
 }
 
 template<typename T>

@@ -12,28 +12,6 @@
 #include <array>
 
 namespace vox {
-#ifdef __CUDACC__
-template<typename T>
-__global__ void cudaFillKernel(T *dst, size_t n, T val) {
-    size_t i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < n) {
-        dst[i] = val;
-    }
-}
-
-template<typename T>
-void cudaFill(T *dst, size_t n, const T &val) {
-    if (n == 0) {
-        return;
-    }
-
-    unsigned int numBlocks, numThreads;
-    cudaComputeGridSize((unsigned int)n, 256, numBlocks, numThreads);
-    cudaFillKernel<<<numBlocks, numThreads>>>(dst, n, val);
-    CUDA_CHECK_LAST_ERROR("Failed executing cudaFillKernel");
-}
-#endif// __CUDACC__
-
 template<typename T>
 class CudaBuffer {
 public:
@@ -42,6 +20,31 @@ public:
     using const_reference = const T &;
     using pointer = value_type *;
     using const_pointer = const value_type *;
+
+    class Reference {
+    public:
+        Reference(pointer p, const Device &device)
+            : _ptr(p), _device{device} {}
+
+        Reference(const Reference &other)
+            : _ptr(other._ptr), _device{other._device} {}
+
+        Reference &operator=(const value_type &val) {
+            ContextGuard guard(_device.primary_context());
+            check_cuda(cudaMemcpy(_ptr, &val, sizeof(value_type), cudaMemcpyHostToDevice));
+            return *this;
+        }
+
+        operator value_type() const {
+            std::remove_const_t<value_type> tmp{};
+            ContextGuard guard(_device.primary_context());
+            check_cuda(cudaMemcpy(&tmp, _ptr, sizeof(value_type), cudaMemcpyDeviceToHost));
+            return tmp;
+        }
+    private:
+        const Device &_device;
+        pointer _ptr;
+    };
 
     explicit CudaBuffer(const Device &device = vox::device(0));
 
@@ -64,6 +67,10 @@ public:
 
     [[nodiscard]] size_t size() const;
 
+    Reference at(size_t i);
+
+    T at(size_t i) const;
+
     void clear();
 
     void fill(const value_type &val);
@@ -74,13 +81,29 @@ public:
 
     void swap(CudaBuffer &other);
 
-    void copyFromHost(const T *other);
+    void push_back(const value_type &val);
 
-    void copyFromDevice(const T *other);
+    void append(const value_type &val);
 
-    void copyToHost(T *other);
+    void append(const CudaBuffer &other);
 
-    void copyToDevice(T *other);
+    void cudaCopy(const T *src, size_t n, T *dst,
+                  cudaMemcpyKind kind = cudaMemcpyDeviceToDevice) {
+        ContextGuard guard(_device.primary_context());
+        CUDA_CHECK(cudaMemcpy(dst, src, n * sizeof(T), kind));
+    }
+
+    void cudaCopyDeviceToDevice(const T *src, size_t n, T *dst) {
+        cudaCopy(src, n, dst, cudaMemcpyDeviceToDevice);
+    }
+
+    void cudaCopyHostToDevice(const T *src, size_t n, T *dst) {
+        cudaCopy(src, n, dst, cudaMemcpyHostToDevice);
+    }
+
+    void cudaCopyDeviceToHost(const T *src, size_t n, T *dst) {
+        cudaCopy(src, n, dst, cudaMemcpyDeviceToHost);
+    }
 
     void copyFrom(const CudaBuffer &other);
 
@@ -97,22 +120,16 @@ public:
 
     CudaBuffer &operator=(CudaBuffer &&other) noexcept;
 
-    [[nodiscard]] inline size_t byte_size() const;
+    Reference operator[](size_t i);
+
+    T operator[](size_t i) const;
 
     [[nodiscard]] inline const Device &device() const;
 
 private:
-    void _alloc(size_t size) {
-        _size = size;
-        ContextGuard guard(_device.primary_context());
-        _byte_size = sizeof(T) * size;
-        check_cuda(cudaMalloc(&_handle, _byte_size));
-    }
-
-    size_t _size{};
-    size_t _byte_size{};
     const Device &_device;
-    pointer _handle{nullptr};
+    size_t _size{};
+    pointer _ptr{nullptr};
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------------
