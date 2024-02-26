@@ -17,6 +17,8 @@ set(COMMON_FILES
         bounding_box.h
         transform.h
         transform.cu
+        spatial_vector.h
+        spatial_matrix.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

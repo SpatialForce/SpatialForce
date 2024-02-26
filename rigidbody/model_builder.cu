@@ -61,7 +61,42 @@ void ModelBuilder::add_articulation() {
 
 void ModelBuilder::add_builder() {}
 
-void ModelBuilder::add_body() {}
+size_t ModelBuilder::add_body(const Transform3 &origin,
+                              float armature,
+                              const Vector3F &com,
+                              const Matrix3x3F &I_m,
+                              float m,
+                              std::optional<std::string_view> name) {
+    auto body_id = body_mass.width();
+
+    // body data
+    auto inertia = I_m + Matrix3x3F::makeConstant(armature);
+    body_inertia.append(inertia);
+    body_mass.append(m);
+    body_com.append(com);
+
+    if (m > 0.0) {
+        body_inv_mass.append(1.f / m);
+    } else {
+        body_inv_mass.append(0.0);
+    }
+
+    if (inertia.determinant() < kEpsilonF) {
+        body_inv_inertia.append(inertia);
+    } else {
+        body_inv_inertia.append(inertia.inverse());
+    }
+    body_q.append(origin);
+    body_qd.append(SpatialVectorF());
+
+    if (name.has_value()) {
+        body_name.append(name.value());
+    } else {
+        body_name.append("body {body_id}");
+    }
+    body_shapes[body_id] = {};
+    return body_id;
+}
 
 void ModelBuilder::add_joint() {}
 

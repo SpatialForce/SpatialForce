@@ -7,8 +7,11 @@
 #pragma once
 
 #include "tensor/tensor.h"
+#include "math/transform.h"
+#include "math/spatial_matrix.h"
 #include <unordered_set>
 #include <unordered_map>
+#include <optional>
 
 namespace vox {
 // A helper class for building simulation models at runtime.
@@ -127,15 +130,15 @@ public:
 
     // rigid bodies
     Tensor1<float> body_mass;
-    Tensor1<float> body_inertia;
+    Tensor1<Matrix3x3F> body_inertia;
     Tensor1<float> body_inv_mass;
-    Tensor1<float> body_inv_inertia;
-    Tensor1<float> body_com;
-    Tensor1<float> body_q;
-    Tensor1<float> body_qd;
-    Tensor1<float> body_name;
+    Tensor1<Matrix3x3F> body_inv_inertia;
+    Tensor1<Vector3F> body_com;
+    Tensor1<Transform3> body_q;
+    Tensor1<SpatialVectorF> body_qd;
+    Tensor1<std::string_view> body_name;
     // mapping from body to shapes
-    Tensor1<float> body_shapes;
+    std::unordered_map<size_t, float> body_shapes;
 
     // rigid joints
     Tensor1<float> joint;
@@ -246,7 +249,23 @@ public:
 
     void add_builder();
 
-    void add_body();
+    /// Adds a rigid body to the model.
+    /// \param origin the location of the body in the world frame
+    /// \param armature Artificial inertia added to the body
+    /// \param com The center of mass of the body w.r.t its origin
+    /// \param I_m The 3x3 inertia tensor of the body (specified relative to the center of mass)
+    /// \param m Mass of the body
+    /// \param name Name of the body (optional)
+    ///
+    /// \return The index of the body in the model
+    ///
+    /// \remark If the mass (m) is zero then the body is treated as kinematic with no dynamics
+    size_t add_body(const Transform3& origin = Transform3(),
+                  float armature = 0.0,
+                  const Vector3F& com = Vector3F(),
+                  const Matrix3x3F& I_m = Matrix3x3F(),
+                  float m = 0.0,
+                  std::optional<std::string_view> name = std::nullopt);
 
     void add_joint();
 
