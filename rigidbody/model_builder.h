@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <array>
-#include <vector>
+#include "tensor/tensor.h"
 #include <unordered_set>
 #include <unordered_map>
 
@@ -55,140 +54,139 @@ public:
     static constexpr float default_geo_thickness = 1e-5;
 
     int num_envs = 0;
-    //
+
     // particles
-    std::vector<float> particle_q;
-    std::vector<float> particle_qd;
-    std::vector<float> particle_mass;
-    std::vector<float> particle_radius;
-    std::vector<float> particle_flags;
+    Tensor1<float> particle_q;
+    Tensor1<float> particle_qd;
+    Tensor1<float> particle_mass;
+    Tensor1<float> particle_radius;
+    Tensor1<float> particle_flags;
     float particle_max_velocity = 1e5;
 
-    //
     // shapes (each shape has an entry in these arrays)
     // transform from shape to body
-    std::vector<float> shape_transform;
+    Tensor1<float> shape_transform;
     // maps from shape index to body index
-    std::vector<float> shape_body;
-    std::vector<float> shape_geo_type;
-    std::vector<float> shape_geo_scale;
-    std::vector<float> shape_geo_src;
-    std::vector<float> shape_geo_is_solid;
-    std::vector<float> shape_geo_thickness;
-    std::vector<float> shape_material_ke;
-    std::vector<float> shape_material_kd;
-    std::vector<float> shape_material_kf;
-    std::vector<float> shape_material_mu;
-    std::vector<float> shape_material_restitution;
+    Tensor1<float> shape_body;
+    Tensor1<float> shape_geo_type;
+    Tensor1<float> shape_geo_scale;
+    Tensor1<float> shape_geo_src;
+    Tensor1<float> shape_geo_is_solid;
+    Tensor1<float> shape_geo_thickness;
+    Tensor1<float> shape_material_ke;
+    Tensor1<float> shape_material_kd;
+    Tensor1<float> shape_material_kf;
+    Tensor1<float> shape_material_mu;
+    Tensor1<float> shape_material_restitution;
     // collision groups within collisions are handled
-    std::vector<float> shape_collision_group;
-    std::vector<float> shape_collision_group_map;
+    Tensor1<float> shape_collision_group;
+    Tensor1<float> shape_collision_group_map;
     int last_collision_group = 0;
     // radius to use for broadphase collision checking
-    std::vector<float> shape_collision_radius;
+    Tensor1<float> shape_collision_radius;
     // whether the shape collides with the ground
-    std::vector<float> shape_ground_collision;
-    //
+    Tensor1<float> shape_ground_collision;
+
     // filtering to ignore certain collision pairs
     std::unordered_set<int> shape_collision_filter_pairs{};
-    //
+
     // geometry
-    std::vector<float> geo_meshes;
-    std::vector<float> geo_sdfs;
-    //
+    Tensor1<float> geo_meshes;
+    Tensor1<float> geo_sdfs;
+
     // springs
-    std::vector<float> spring_indices;
-    std::vector<float> spring_rest_length;
-    std::vector<float> spring_stiffness;
-    std::vector<float> spring_damping;
-    std::vector<float> spring_control;
-    //
+    Tensor1<float> spring_indices;
+    Tensor1<float> spring_rest_length;
+    Tensor1<float> spring_stiffness;
+    Tensor1<float> spring_damping;
+    Tensor1<float> spring_control;
+
     // triangles
-    std::vector<float> tri_indices;
-    std::vector<float> tri_poses;
-    std::vector<float> tri_activations;
-    std::vector<float> tri_materials;
-    //
+    Tensor1<float> tri_indices;
+    Tensor1<float> tri_poses;
+    Tensor1<float> tri_activations;
+    Tensor1<float> tri_materials;
+
     // edges (bending)
-    std::vector<float> edge_indices;
-    std::vector<float> edge_rest_angle;
-    std::vector<float> edge_bending_properties;
-    //
+    Tensor1<float> edge_indices;
+    Tensor1<float> edge_rest_angle;
+    Tensor1<float> edge_bending_properties;
+
     // tetrahedra
-    std::vector<float> tet_indices;
-    std::vector<float> tet_poses;
-    std::vector<float> tet_activations;
-    std::vector<float> tet_materials;
-    //
+    Tensor1<float> tet_indices;
+    Tensor1<float> tet_poses;
+    Tensor1<float> tet_activations;
+    Tensor1<float> tet_materials;
+
     // muscles
-    std::vector<float> muscle_start;
-    std::vector<float> muscle_params;
-    std::vector<float> muscle_activation;
-    std::vector<float> muscle_bodies;
-    std::vector<float> muscle_points;
-    //
+    Tensor1<float> muscle_start;
+    Tensor1<float> muscle_params;
+    Tensor1<float> muscle_activation;
+    Tensor1<float> muscle_bodies;
+    Tensor1<float> muscle_points;
+
     // rigid bodies
-    std::vector<float> body_mass;
-    std::vector<float> body_inertia;
-    std::vector<float> body_inv_mass;
-    std::vector<float> body_inv_inertia;
-    std::vector<float> body_com;
-    std::vector<float> body_q;
-    std::vector<float> body_qd;
-    std::vector<float> body_name;
+    Tensor1<float> body_mass;
+    Tensor1<float> body_inertia;
+    Tensor1<float> body_inv_mass;
+    Tensor1<float> body_inv_inertia;
+    Tensor1<float> body_com;
+    Tensor1<float> body_q;
+    Tensor1<float> body_qd;
+    Tensor1<float> body_name;
     // mapping from body to shapes
-    std::vector<float> body_shapes;
-    //
+    Tensor1<float> body_shapes;
+
     // rigid joints
-    std::vector<float> joint;
+    Tensor1<float> joint;
     // index of the parent body  (constant)
-    std::vector<float> joint_parent;
+    Tensor1<float> joint_parent;
     // mapping from joint to parent bodies
-    std::vector<float> joint_parents;
+    Tensor1<float> joint_parents;
     // index of the child body (constant)
-    std::vector<float> joint_child;
+    Tensor1<float> joint_child;
     // joint axis in child joint frame (constant)
-    std::vector<float> joint_axis;
+    Tensor1<float> joint_axis;
     // frame of joint in parent (constant)
-    std::vector<float> joint_X_p;
+    Tensor1<float> joint_X_p;
     // frame of child com (in child coordinates)  (constant)
-    std::vector<float> joint_X_c;
-    std::vector<float> joint_q;
-    std::vector<float> joint_qd;
-    //
-    std::vector<float> joint_type;
-    std::vector<float> joint_name;
-    std::vector<float> joint_armature;
-    std::vector<float> joint_target;
-    std::vector<float> joint_target_ke;
-    std::vector<float> joint_target_kd;
-    std::vector<float> joint_axis_mode;
-    std::vector<float> joint_limit_lower;
-    std::vector<float> joint_limit_upper;
-    std::vector<float> joint_limit_ke;
-    std::vector<float> joint_limit_kd;
-    std::vector<float> joint_act;
-    //
-    std::vector<float> joint_twist_lower;
-    std::vector<float> joint_twist_upper;
-    //
-    std::vector<float> joint_linear_compliance;
-    std::vector<float> joint_angular_compliance;
-    std::vector<float> joint_enabled;
-    //
-    std::vector<float> joint_q_start;
-    std::vector<float> joint_qd_start;
-    std::vector<float> joint_axis_start;
-    std::vector<float> joint_axis_dim;
-    std::vector<float> articulation_start;
-    //
+    Tensor1<float> joint_X_c;
+    Tensor1<float> joint_q;
+    Tensor1<float> joint_qd;
+
+    Tensor1<float> joint_type;
+    Tensor1<float> joint_name;
+    Tensor1<float> joint_armature;
+    Tensor1<float> joint_target;
+    Tensor1<float> joint_target_ke;
+    Tensor1<float> joint_target_kd;
+    Tensor1<float> joint_axis_mode;
+    Tensor1<float> joint_limit_lower;
+    Tensor1<float> joint_limit_upper;
+    Tensor1<float> joint_limit_ke;
+    Tensor1<float> joint_limit_kd;
+    Tensor1<float> joint_act;
+
+    Tensor1<float> joint_twist_lower;
+    Tensor1<float> joint_twist_upper;
+
+    Tensor1<float> joint_linear_compliance;
+    Tensor1<float> joint_angular_compliance;
+    Tensor1<float> joint_enabled;
+
+    Tensor1<size_t> joint_q_start;
+    Tensor1<size_t> joint_qd_start;
+    Tensor1<size_t> joint_axis_start;
+    Tensor1<float> joint_axis_dim;
+    Tensor1<size_t> articulation_start;
+
     int joint_dof_count = 0;
     int joint_coord_count = 0;
     int joint_axis_total_count = 0;
-    //
-    std::array<float, 3> up_vector;
-    std::array<float, 3> up_axis;
-    std::array<float, 3> gravity;
+
+    Vector3F up_vector;
+    Vector3F up_axis;
+    float gravity;
     // indicates whether a ground plane has been created
     bool _ground_created{false};
     // constructor parameters for ground plane shape
@@ -206,7 +204,7 @@ public:
 
     // Maximum number of soft contacts that can be registered
     int soft_contact_max = 64 * 1024;
-    //
+
     // contacts to be generated within the given distance margin to be generated at
     // every simulation substep (can be 0 if only one PBD solver iteration is used)
     float rigid_contact_margin = 0.1;
@@ -214,33 +212,35 @@ public:
     float rigid_contact_torsional_friction = 0.5;
     // rolling friction coefficient (only considered by XPBD so far)
     float rigid_contact_rolling_friction = 0.001;
-    //
+
     // number of rigid contact points to allocate in the model during self.finalize() per environment
     // if setting is None, the number of worst-case number of contacts will be calculated in self.finalize()
-    int num_rigid_contacts_per_env;
+    int num_rigid_contacts_per_env{};
 
 public:
-    void shape_count();
+    explicit ModelBuilder(const Vector3F &up_vector = {0.0, 1.0, 0.0}, float gravity = -9.80665);
 
-    void body_count();
+    size_t shape_count();
 
-    void joint_count();
+    size_t body_count();
 
-    void joint_axis_count();
+    size_t joint_count();
 
-    void particle_count();
+    size_t joint_axis_count();
 
-    void tri_count();
+    size_t particle_count();
 
-    void tet_count();
+    size_t tri_count();
 
-    void edge_count();
+    size_t tet_count();
 
-    void spring_count();
+    size_t edge_count();
 
-    void muscle_count();
+    size_t spring_count();
 
-    void articulation_count();
+    size_t muscle_count();
+
+    size_t articulation_count();
 
     void add_articulation();
 
@@ -322,6 +322,12 @@ public:
 
     void _create_ground_plane();
 
-    void finalize();
+    /// Convert this builder object to a concrete model for simulation.
+    ///
+    /// After building simulation elements this method should be called to transfer
+    /// all data to device memory ready for simulation.
+    /// \param index The simulation device to use
+    /// \return A model object.
+    void finalize(uint32_t index = 0);
 };
 }// namespace vox

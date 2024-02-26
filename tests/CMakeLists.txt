@@ -26,6 +26,13 @@ set(MATH_TESTS
         math/matrix4x4_tests.cu
         math/matrix_tests.cu
         math/quaternion_tests.cu
+        math/bounding_box2_tests.cu
+        math/bounding_box3_tests.cu
+        math/bounding_box_tests.cu
+        math/ray2_tests.cu
+        math/ray3_tests.cu
+        math/transform2_tests.cu
+        math/transform3_tests.cu
 )
 
 set(TENSOR_FILES
@@ -71,4 +78,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
         --extended-lambda
+        --expt-relaxed-constexpr
         >)

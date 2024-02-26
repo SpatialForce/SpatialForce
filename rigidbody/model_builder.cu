@@ -7,29 +7,57 @@
 #include "model_builder.h"
 
 namespace vox {
-void ModelBuilder::shape_count() {}
+ModelBuilder::ModelBuilder(const Vector3F &up_vector, float gravity)
+    : up_vector{up_vector}, gravity{gravity} {
+}
 
-void ModelBuilder::body_count() {}
+size_t ModelBuilder::shape_count() {
+    return shape_geo_type.width();
+}
 
-void ModelBuilder::joint_count() {}
+size_t ModelBuilder::body_count() {
+    return body_q.width();
+}
 
-void ModelBuilder::joint_axis_count() {}
+size_t ModelBuilder::joint_count() {
+    return joint_type.width();
+}
 
-void ModelBuilder::particle_count() {}
+size_t ModelBuilder::joint_axis_count() {
+    return joint_axis.width();
+}
 
-void ModelBuilder::tri_count() {}
+size_t ModelBuilder::particle_count() {
+    return particle_q.width();
+}
 
-void ModelBuilder::tet_count() {}
+size_t ModelBuilder::tri_count() {
+    return tri_poses.width();
+}
 
-void ModelBuilder::edge_count() {}
+size_t ModelBuilder::tet_count() {
+    return tet_poses.width();
+}
 
-void ModelBuilder::spring_count() {}
+size_t ModelBuilder::edge_count() {
+    return edge_rest_angle.width();
+}
 
-void ModelBuilder::muscle_count() {}
+size_t ModelBuilder::spring_count() {
+    return spring_rest_length.width();
+}
 
-void ModelBuilder::articulation_count() {}
+size_t ModelBuilder::muscle_count() {
+    return muscle_start.width();
+}
 
-void ModelBuilder::add_articulation() {}
+size_t ModelBuilder::articulation_count() {
+    return articulation_start.width();
+}
+
+void ModelBuilder::add_articulation() {
+    articulation_start.append(joint_count());
+}
 
 void ModelBuilder::add_builder() {}
 
@@ -109,5 +137,5 @@ void ModelBuilder::set_ground_plane() {}
 
 void ModelBuilder::_create_ground_plane() {}
 
-void ModelBuilder::finalize() {}
+void ModelBuilder::finalize(uint32_t index) {}
 }// namespace vox

@@ -13,6 +13,10 @@ set(COMMON_FILES
         matrix_dense_base.h
         matrix_expression.h
         quaternion.h
+        ray.h
+        bounding_box.h
+        transform.h
+        transform.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})
@@ -21,9 +25,13 @@ set(PROJECT_FILES
         ${COMMON_FILES}
 )
 
-add_library(${PROJECT_NAME} INTERFACE ${PROJECT_FILES})
+add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR} .
         ../)
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
+        --expt-relaxed-constexpr
+        >)

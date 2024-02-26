@@ -7,7 +7,7 @@
 #pragma once
 
 #include "math/matrix.h"
-
+#include "cuda_gtest_plugin.h"
 #include <gtest/gtest.h>
 
 #define EXPECT_VECTOR2_EQ(expected, actual) \
