@@ -15,38 +15,38 @@ using namespace vox;
 CUDA_TEST(Transform2, Constructors) {
     Transform2 t1;
 
-    EXPECT_EQ(Vector2D(), t1.translation());
+    EXPECT_EQ(Vector2F(), t1.translation());
     EXPECT_EQ(0.0, t1.orientation().rotation());
 
     Transform2 t2({2.0, -5.0}, kQuarterPiD);
 
-    EXPECT_EQ(Vector2D(2.0, -5.0), t2.translation());
-    EXPECT_EQ(kQuarterPiD, t2.orientation().rotation());
+    EXPECT_EQ(Vector2F(2.0, -5.0), t2.translation());
+    EXPECT_NEAR(kQuarterPiD, t2.orientation().rotation(), 1.0e-7);
 }
 
 CUDA_TEST(Transform2, Transform) {
     Transform2 t({2.0, -5.0}, kHalfPiD);
 
     auto r1 = t.toWorld({4.0, 1.0});
-    EXPECT_DOUBLE_EQ(1.0, r1.x);
-    EXPECT_DOUBLE_EQ(-1.0, r1.y);
+    EXPECT_NEAR(1.0, r1.x, 1.0e-5);
+    EXPECT_NEAR(-1.0, r1.y, 1.0e-5);
 
     auto r2 = t.toLocal(r1);
-    EXPECT_DOUBLE_EQ(4.0, r2.x);
-    EXPECT_DOUBLE_EQ(1.0, r2.y);
+    EXPECT_NEAR(4.0, r2.x, 1.0e-5);
+    EXPECT_NEAR(1.0, r2.y, 1.0e-5);
 
     auto r3 = t.toWorldDirection({4.0, 1.0});
-    EXPECT_DOUBLE_EQ(-1.0, r3.x);
-    EXPECT_DOUBLE_EQ(4.0, r3.y);
+    EXPECT_NEAR(-1.0, r3.x, 1.0e-5);
+    EXPECT_NEAR(4.0, r3.y, 1.0e-5);
 
     auto r4 = t.toLocalDirection(r3);
-    EXPECT_DOUBLE_EQ(4.0, r4.x);
-    EXPECT_DOUBLE_EQ(1.0, r4.y);
+    EXPECT_NEAR(4.0, r4.x, 1.0e-5);
+    EXPECT_NEAR(1.0, r4.y, 1.0e-5);
 
-    BoundingBox2D bbox({-2, -1}, {2, 1});
+    BoundingBox2F bbox({-2, -1}, {2, 1});
     auto r5 = t.toWorld(bbox);
-    EXPECT_BOUNDING_BOX2_EQ(BoundingBox2D({1, -7}, {3, -3}), r5);
+    EXPECT_BOUNDING_BOX2_NEAR(BoundingBox2F({1, -7}, {3, -3}), r5, 1.0e-5);
 
     auto r6 = t.toLocal(r5);
-    EXPECT_BOUNDING_BOX2_EQ(bbox, r6);
+    EXPECT_BOUNDING_BOX2_NEAR(bbox, r6, 1.0e-5);
 }

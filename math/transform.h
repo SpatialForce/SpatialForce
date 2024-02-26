@@ -20,42 +20,42 @@ template<>
 class Orientation<2> {
 public:
     CUDA_CALLABLE Orientation();
-    CUDA_CALLABLE Orientation(double angleInRadian);
+    CUDA_CALLABLE Orientation(float angleInRadian);
 
-    CUDA_CALLABLE double rotation() const;
-    CUDA_CALLABLE void setRotation(double angleInRadian);
+    CUDA_CALLABLE float rotation() const;
+    CUDA_CALLABLE void setRotation(float angleInRadian);
 
     //! Rotates a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector2D toLocal(const Vector2D &pointInWorld) const;
+    CUDA_CALLABLE Vector2F toLocal(const Vector2F &pointInWorld) const;
 
     //! Rotates a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector2D toWorld(const Vector2D &pointInLocal) const;
+    CUDA_CALLABLE Vector2F toWorld(const Vector2F &pointInLocal) const;
 
 private:
-    double _angle = 0.0;
-    double _cosAngle = 1.0;
-    double _sinAngle = 0.0;
+    float _angle = 0.0;
+    float _cosAngle = 1.0;
+    float _sinAngle = 0.0;
 };
 
 template<>
 class Orientation<3> {
 public:
     CUDA_CALLABLE Orientation();
-    CUDA_CALLABLE Orientation(const QuaternionD &quat);
+    CUDA_CALLABLE Orientation(const QuaternionF &quat);
 
-    CUDA_CALLABLE const QuaternionD &rotation() const;
-    CUDA_CALLABLE void setRotation(const QuaternionD &quat);
+    CUDA_CALLABLE const QuaternionF &rotation() const;
+    CUDA_CALLABLE void setRotation(const QuaternionF &quat);
 
     //! Rotates a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector3D toLocal(const Vector3D &pointInWorld) const;
+    CUDA_CALLABLE Vector3F toLocal(const Vector3F &pointInWorld) const;
 
     //! Rotates a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector3D toWorld(const Vector3D &pointInLocal) const;
+    CUDA_CALLABLE Vector3F toWorld(const Vector3F &pointInLocal) const;
 
 private:
-    QuaternionD _quat;
-    Matrix3x3D _rotationMat3 = Matrix3x3D::makeIdentity();
-    Matrix3x3D _inverseRotationMat3 = Matrix3x3D::makeIdentity();
+    QuaternionF _quat;
+    Matrix3x3F _rotationMat3 = Matrix3x3F::makeIdentity();
+    Matrix3x3F _inverseRotationMat3 = Matrix3x3F::makeIdentity();
 };
 
 using Orientation2 = Orientation<2>;
@@ -71,14 +71,14 @@ public:
     CUDA_CALLABLE Transform();
 
     //! Constructs a transform with translation and orientation.
-    CUDA_CALLABLE Transform(const Vector<double, N> &translation,
+    CUDA_CALLABLE Transform(const Vector<float, N> &translation,
                             const Orientation<N> &orientation);
 
     //! Returns the translation.
-    CUDA_CALLABLE const Vector<double, N> &translation() const;
+    CUDA_CALLABLE const Vector<float, N> &translation() const;
 
     //! Sets the traslation.
-    CUDA_CALLABLE void setTranslation(const Vector<double, N> &translation);
+    CUDA_CALLABLE void setTranslation(const Vector<float, N> &translation);
 
     //! Returns the orientation.
     CUDA_CALLABLE const Orientation<N> &orientation() const;
@@ -87,31 +87,31 @@ public:
     CUDA_CALLABLE void setOrientation(const Orientation<N> &orientation);
 
     //! Transforms a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector<double, N> toLocal(const Vector<double, N> &pointInWorld) const;
+    CUDA_CALLABLE Vector<float, N> toLocal(const Vector<float, N> &pointInWorld) const;
 
     //! Transforms a direction in world coordinate to the local frame.
-    CUDA_CALLABLE Vector<double, N> toLocalDirection(const Vector<double, N> &dirInWorld) const;
+    CUDA_CALLABLE Vector<float, N> toLocalDirection(const Vector<float, N> &dirInWorld) const;
 
     //! Transforms a ray in world coordinate to the local frame.
-    CUDA_CALLABLE Ray<double, N> toLocal(const Ray<double, N> &rayInWorld) const;
+    CUDA_CALLABLE Ray<float, N> toLocal(const Ray<float, N> &rayInWorld) const;
 
     //! Transforms a bounding box in world coordinate to the local frame.
-    CUDA_CALLABLE BoundingBox<double, N> toLocal(const BoundingBox<double, N> &bboxInWorld) const;
+    CUDA_CALLABLE BoundingBox<float, N> toLocal(const BoundingBox<float, N> &bboxInWorld) const;
 
     //! Transforms a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector<double, N> toWorld(const Vector<double, N> &pointInLocal) const;
+    CUDA_CALLABLE Vector<float, N> toWorld(const Vector<float, N> &pointInLocal) const;
 
     //! Transforms a direction in local space to the world coordinate.
-    CUDA_CALLABLE Vector<double, N> toWorldDirection(const Vector<double, N> &dirInLocal) const;
+    CUDA_CALLABLE Vector<float, N> toWorldDirection(const Vector<float, N> &dirInLocal) const;
 
     //! Transforms a ray in local space to the world coordinate.
-    CUDA_CALLABLE Ray<double, N> toWorld(const Ray<double, N> &rayInLocal) const;
+    CUDA_CALLABLE Ray<float, N> toWorld(const Ray<float, N> &rayInLocal) const;
 
     //! Transforms a bounding box in local space to the world coordinate.
-    CUDA_CALLABLE BoundingBox<double, N> toWorld(const BoundingBox<double, N> &bboxInLocal) const;
+    CUDA_CALLABLE BoundingBox<float, N> toWorld(const BoundingBox<float, N> &bboxInLocal) const;
 
 private:
-    Vector<double, N> _translation;
+    Vector<float, N> _translation;
     Orientation<N> _orientation;
 };
 

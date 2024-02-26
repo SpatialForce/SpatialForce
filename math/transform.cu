@@ -12,27 +12,27 @@ namespace vox {
 
 CUDA_CALLABLE Orientation<2>::Orientation() : Orientation(0.0) {}
 
-CUDA_CALLABLE Orientation<2>::Orientation(double angleInRadian) {
+CUDA_CALLABLE Orientation<2>::Orientation(float angleInRadian) {
     setRotation(angleInRadian);
 }
 
-CUDA_CALLABLE double Orientation<2>::rotation() const { return _angle; }
+CUDA_CALLABLE float Orientation<2>::rotation() const { return _angle; }
 
-CUDA_CALLABLE void Orientation<2>::setRotation(double angleInRadian) {
+CUDA_CALLABLE void Orientation<2>::setRotation(float angleInRadian) {
     _angle = angleInRadian;
-    _cosAngle = std::cos(angleInRadian);
-    _sinAngle = std::sin(angleInRadian);
+    _cosAngle = ::cosf(angleInRadian);
+    _sinAngle = ::sinf(angleInRadian);
 }
 
-CUDA_CALLABLE Vector2D Orientation<2>::toLocal(const Vector2D &pointInWorld) const {
+CUDA_CALLABLE Vector2F Orientation<2>::toLocal(const Vector2F &pointInWorld) const {
     // Convert to the local frame
-    return Vector2D(_cosAngle * pointInWorld.x + _sinAngle * pointInWorld.y,
+    return Vector2F(_cosAngle * pointInWorld.x + _sinAngle * pointInWorld.y,
                     -_sinAngle * pointInWorld.x + _cosAngle * pointInWorld.y);
 }
 
-CUDA_CALLABLE Vector2D Orientation<2>::toWorld(const Vector2D &pointInLocal) const {
+CUDA_CALLABLE Vector2F Orientation<2>::toWorld(const Vector2F &pointInLocal) const {
     // Convert to the world frame
-    return Vector2D(_cosAngle * pointInLocal.x - _sinAngle * pointInLocal.y,
+    return Vector2F(_cosAngle * pointInLocal.x - _sinAngle * pointInLocal.y,
                     _sinAngle * pointInLocal.x + _cosAngle * pointInLocal.y);
 }
 
@@ -40,21 +40,21 @@ CUDA_CALLABLE Vector2D Orientation<2>::toWorld(const Vector2D &pointInLocal) con
 
 CUDA_CALLABLE Orientation<3>::Orientation() = default;
 
-CUDA_CALLABLE Orientation<3>::Orientation(const QuaternionD &quat) { setRotation(quat); }
+CUDA_CALLABLE Orientation<3>::Orientation(const QuaternionF &quat) { setRotation(quat); }
 
-CUDA_CALLABLE const QuaternionD &Orientation<3>::rotation() const { return _quat; }
+CUDA_CALLABLE const QuaternionF &Orientation<3>::rotation() const { return _quat; }
 
-CUDA_CALLABLE void Orientation<3>::setRotation(const QuaternionD &quat) {
+CUDA_CALLABLE void Orientation<3>::setRotation(const QuaternionF &quat) {
     _quat = quat;
     _rotationMat3 = quat.matrix3();
     _inverseRotationMat3 = quat.inverse().matrix3();
 }
 
-CUDA_CALLABLE Vector3D Orientation<3>::toLocal(const Vector3D &pointInWorld) const {
+CUDA_CALLABLE Vector3F Orientation<3>::toLocal(const Vector3F &pointInWorld) const {
     return _inverseRotationMat3 * pointInWorld;
 }
 
-CUDA_CALLABLE Vector3D Orientation<3>::toWorld(const Vector3D &pointInLocal) const {
+CUDA_CALLABLE Vector3F Orientation<3>::toWorld(const Vector3F &pointInLocal) const {
     return _rotationMat3 * pointInLocal;
 }
 
@@ -64,19 +64,19 @@ template<size_t N>
 CUDA_CALLABLE Transform<N>::Transform() = default;
 
 template<size_t N>
-CUDA_CALLABLE Transform<N>::Transform(const Vector<double, N> &translation,
+CUDA_CALLABLE Transform<N>::Transform(const Vector<float, N> &translation,
                                       const Orientation<N> &orientation) {
     setTranslation(translation);
     setOrientation(orientation);
 }
 
 template<size_t N>
-CUDA_CALLABLE const Vector<double, N> &Transform<N>::translation() const {
+CUDA_CALLABLE const Vector<float, N> &Transform<N>::translation() const {
     return _translation;
 }
 
 template<size_t N>
-CUDA_CALLABLE void Transform<N>::setTranslation(const Vector<double, N> &translation) {
+CUDA_CALLABLE void Transform<N>::setTranslation(const Vector<float, N> &translation) {
     _translation = translation;
 }
 
@@ -91,26 +91,26 @@ CUDA_CALLABLE void Transform<N>::setOrientation(const Orientation<N> &orientatio
 }
 
 template<size_t N>
-CUDA_CALLABLE Vector<double, N> Transform<N>::toLocal(const Vector<double, N> &pointInWorld) const {
+CUDA_CALLABLE Vector<float, N> Transform<N>::toLocal(const Vector<float, N> &pointInWorld) const {
     return _orientation.toLocal(pointInWorld - _translation);
 }
 
 template<size_t N>
-CUDA_CALLABLE Vector<double, N> Transform<N>::toLocalDirection(
-    const Vector<double, N> &dirInWorld) const {
+CUDA_CALLABLE Vector<float, N> Transform<N>::toLocalDirection(
+    const Vector<float, N> &dirInWorld) const {
     return _orientation.toLocal(dirInWorld);
 }
 
 template<size_t N>
-CUDA_CALLABLE Ray<double, N> Transform<N>::toLocal(const Ray<double, N> &rayInWorld) const {
-    return Ray<double, N>(toLocal(rayInWorld.origin),
-                          toLocalDirection(rayInWorld.direction));
+CUDA_CALLABLE Ray<float, N> Transform<N>::toLocal(const Ray<float, N> &rayInWorld) const {
+    return Ray<float, N>(toLocal(rayInWorld.origin),
+                         toLocalDirection(rayInWorld.direction));
 }
 
 template<size_t N>
-CUDA_CALLABLE BoundingBox<double, N> Transform<N>::toLocal(
-    const BoundingBox<double, N> &bboxInWorld) const {
-    BoundingBox<double, N> bboxInLocal;
+CUDA_CALLABLE BoundingBox<float, N> Transform<N>::toLocal(
+    const BoundingBox<float, N> &bboxInWorld) const {
+    BoundingBox<float, N> bboxInLocal;
     int numCorners = 2 << N;
     for (int i = 0; i < numCorners; ++i) {
         auto cornerInLocal = toLocal(bboxInWorld.corner(i));
@@ -121,25 +121,25 @@ CUDA_CALLABLE BoundingBox<double, N> Transform<N>::toLocal(
 }
 
 template<size_t N>
-CUDA_CALLABLE Vector<double, N> Transform<N>::toWorld(const Vector<double, N> &pointInLocal) const {
+CUDA_CALLABLE Vector<float, N> Transform<N>::toWorld(const Vector<float, N> &pointInLocal) const {
     return _orientation.toWorld(pointInLocal) + _translation;
 }
 
 template<size_t N>
-CUDA_CALLABLE Vector<double, N> Transform<N>::toWorldDirection(
-    const Vector<double, N> &dirInLocal) const {
+CUDA_CALLABLE Vector<float, N> Transform<N>::toWorldDirection(
+    const Vector<float, N> &dirInLocal) const {
     return _orientation.toWorld(dirInLocal);
 }
 
 template<size_t N>
-CUDA_CALLABLE Ray<double, N> Transform<N>::toWorld(const Ray<double, N> &rayInLocal) const {
-    return Ray<double, N>(toWorld(rayInLocal.origin),
-                          toWorldDirection(rayInLocal.direction));
+CUDA_CALLABLE Ray<float, N> Transform<N>::toWorld(const Ray<float, N> &rayInLocal) const {
+    return Ray<float, N>(toWorld(rayInLocal.origin),
+                         toWorldDirection(rayInLocal.direction));
 }
 
 template<size_t N>
-CUDA_CALLABLE BoundingBox<double, N> Transform<N>::toWorld(const BoundingBox<double, N> &bboxInLocal) const {
-    BoundingBox<double, N> bboxInWorld;
+CUDA_CALLABLE BoundingBox<float, N> Transform<N>::toWorld(const BoundingBox<float, N> &bboxInLocal) const {
+    BoundingBox<float, N> bboxInWorld;
     int numCorners = 2 << N;
     for (int i = 0; i < numCorners; ++i) {
         auto cornerInWorld = toWorld(bboxInLocal.corner(i));

@@ -34,4 +34,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
         --expt-relaxed-constexpr
+        --device-c
         >)
