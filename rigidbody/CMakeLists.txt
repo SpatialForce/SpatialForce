@@ -17,6 +17,8 @@ set(COMMON_FILES
         muscle.cu
         model_builder.h
         model_builder.cu
+        particles.h
+        particles.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

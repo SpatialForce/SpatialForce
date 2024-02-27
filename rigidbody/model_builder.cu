@@ -21,26 +21,6 @@ size_t ModelBuilder::body_count() {
     return body_q.width();
 }
 
-size_t ModelBuilder::particle_count() {
-    return particle_q.width();
-}
-
-size_t ModelBuilder::tri_count() {
-    return tri_poses.width();
-}
-
-size_t ModelBuilder::tet_count() {
-    return tet_poses.width();
-}
-
-size_t ModelBuilder::edge_count() {
-    return edge_rest_angle.width();
-}
-
-size_t ModelBuilder::spring_count() {
-    return spring_rest_length.width();
-}
-
 void ModelBuilder::add_builder() {}
 
 size_t ModelBuilder::add_body(const TransformF &origin,
@@ -551,211 +531,6 @@ size_t ModelBuilder::_add_shape(int body,
     return shape;
 }
 
-size_t ModelBuilder::add_particle(const Vector3F &pos,
-                                  const Vector3F &vel,
-                                  float mass,
-                                  float radius,
-                                  PARTICLE_FLAG flags) {
-    particle_q.append(pos);
-    particle_qd.append(vel);
-    particle_mass.append(mass);
-    particle_radius.append(radius);
-    particle_flags.append(int(flags));
-
-    return particle_q.width() - 1;
-}
-
-void ModelBuilder::add_spring(int i, int j, float ke, float kd, float control) {
-    spring_indices.append(i);
-    spring_indices.append(j);
-    spring_stiffness.append(ke);
-    spring_damping.append(kd);
-    spring_control.append(control);
-
-    // compute rest length
-    auto p = particle_q[i];
-    auto q = particle_q[j];
-
-    auto delta = p - q;
-    auto l = delta.length();
-
-    spring_rest_length.append(l);
-}
-
-float ModelBuilder::add_triangle(int i,
-                                 int j,
-                                 int k,
-                                 float tri_ke,
-                                 float tri_ka,
-                                 float tri_kd,
-                                 float tri_drag,
-                                 float tri_lift) {
-    // compute basis for 2D rest pose
-    Vector3F p = particle_q[i];
-    Vector3F q = particle_q[j];
-    Vector3F r = particle_q[k];
-
-    Vector3F qp = q - p;
-    Vector3F rp = r - p;
-
-    // construct basis aligned with the triangle
-    Vector3F n = qp.cross(rp).normalized();
-    Vector3F e1 = qp.normalized();
-    Vector3F e2 = n.cross(e1).normalized();
-
-    auto R = Matrix<float, 3, 2>({{e1.x, e1.y, e1.z}, {e2.x, e2.y, e2.z}});
-    auto M = Matrix<float, 3, 2>({{qp.x, qp.y, qp.z}, {rp.x, rp.y, rp.z}});
-    Matrix3x3F D = R * M.transposed();
-
-    float area = D.determinant() / 2.f;
-
-    if (area <= 0.0) {
-        // print("inverted or degenerate triangle element");
-        return 0.0;
-    } else {
-        auto inv_D = D.inverse();
-
-        tri_indices.append({i, j, k});
-        tri_poses.append(inv_D);
-        tri_activations.append(0.0);
-        tri_materials.append({tri_ke, tri_ka, tri_kd, tri_drag, tri_lift});
-        return area;
-    }
-}
-
-std::vector<float> ModelBuilder::add_triangles(std::initializer_list<int> i,
-                                               std::initializer_list<int> j,
-                                               std::initializer_list<int> k,
-                                               std::initializer_list<float> tri_ke,
-                                               std::initializer_list<float> tri_ka,
-                                               std::initializer_list<float> tri_kd,
-                                               std::initializer_list<float> tri_drag,
-                                               std::initializer_list<float> tri_lift) {
-    return {};
-}
-
-float ModelBuilder::add_tetrahedron(int i, int j, int k, int l, float k_mu, float k_lambda, float k_damp) {
-    return 0;
-}
-
-void ModelBuilder::add_edge(int i,
-                            int j,
-                            int k,
-                            int l,
-                            std::optional<float> rest,
-                            float edge_ke,
-                            float edge_kd) {
-}
-
-void ModelBuilder::add_edges(const std::vector<int> &i,
-                             const std::vector<int> &j,
-                             const std::vector<int> &k,
-                             const std::vector<int> &l,
-                             const std::optional<std::vector<float>> &rest,
-                             const std::optional<std::vector<float>> &edge_ke,
-                             const std::optional<std::vector<float>> &edge_kd) {
-}
-
-void ModelBuilder::add_cloth_grid(const Vector3F &pos,
-                                  const QuaternionF &rot,
-                                  const Vector3F &vel,
-                                  int dim_x,
-                                  int dim_y,
-                                  float cell_x,
-                                  float cell_y,
-                                  float mass,
-                                  bool reverse_winding,
-                                  bool fix_left,
-                                  bool fix_right,
-                                  bool fix_top,
-                                  bool fix_bottom,
-                                  float tri_ke,
-                                  float tri_ka,
-                                  float tri_kd,
-                                  float tri_drag,
-                                  float tri_lift,
-                                  float edge_ke,
-                                  float edge_kd,
-                                  bool add_springs,
-                                  float spring_ke,
-                                  float spring_kd) {
-}
-
-void ModelBuilder::add_cloth_mesh(const Vector3F &pos,
-                                  const QuaternionF &rot,
-                                  float scale,
-                                  const Vector3F &vel,
-                                  const std::vector<Vector3F> &vertices,
-                                  const std::vector<int> &indices,
-                                  float density,
-                                  float tri_ke,
-                                  float tri_ka,
-                                  float tri_kd,
-                                  float tri_drag,
-                                  float tri_lift,
-                                  float edge_ke,
-                                  float edge_kd,
-                                  bool add_springs,
-                                  float spring_ke,
-                                  float spring_kd) {
-}
-
-void ModelBuilder::add_particle_grid(const Vector3F &pos,
-                                     const QuaternionF &rot,
-                                     const Vector3F &vel,
-                                     int dim_x,
-                                     int dim_y,
-                                     int dim_z,
-                                     float cell_x,
-                                     float cell_y,
-                                     float cell_z,
-                                     float mass,
-                                     float jitter,
-                                     float radius_mean,
-                                     float radius_std) {
-}
-
-void ModelBuilder::add_soft_grid(const Vector3F &pos,
-                                 const QuaternionF &rot,
-                                 const Vector3F &vel,
-                                 int dim_x,
-                                 int dim_y,
-                                 int dim_z,
-                                 float cell_x,
-                                 float cell_y,
-                                 float cell_z,
-                                 float density,
-                                 float k_mu,
-                                 float k_lambda,
-                                 float k_damp,
-                                 bool fix_left,
-                                 bool fix_right,
-                                 bool fix_top,
-                                 bool fix_bottom,
-                                 float tri_ke,
-                                 float tri_ka,
-                                 float tri_kd,
-                                 float tri_drag,
-                                 float tri_lift) {
-}
-
-void ModelBuilder::add_soft_mesh(const Vector3F &pos,
-                                 const QuaternionF &rot,
-                                 float scale,
-                                 const Vector3F &vel,
-                                 const std::vector<Vector3F> &vertices,
-                                 const std::vector<int> &indices,
-                                 float density,
-                                 float k_mu,
-                                 float k_lambda,
-                                 float k_damp,
-                                 float tri_ke,
-                                 float tri_ka,
-                                 float tri_kd,
-                                 float tri_drag,
-                                 float tri_lift) {
-}
-
 void ModelBuilder::_update_body_mass(int i, float m,
                                      const Matrix3x3F &I,
                                      const Vector3F &p,
@@ -801,9 +576,28 @@ void ModelBuilder::set_ground_plane(const Vector3F &normal,
                                     float kf,
                                     float mu,
                                     float restitution) {
+    _ground_params = {
+        .plane = Vector4F(normal.x, normal.y, normal.z, offset),
+        .width = 0.0,
+        .length = 0.0,
+        .ke = ke,
+        .kd = kd,
+        .kf = kf,
+        .mu = mu,
+        .restitution = restitution};
 }
 
-void ModelBuilder::_create_ground_plane() {}
+void ModelBuilder::_create_ground_plane() {
+    auto ground_id = add_shape_plane(_ground_params.plane, std::nullopt, std::nullopt,
+                                     _ground_params.width, _ground_params.length, -1,
+                                     _ground_params.ke, _ground_params.kd, _ground_params.kf, _ground_params.mu,
+                                     _ground_params.restitution);
+    _ground_created = true;
+    // disable ground collisions as they will be treated separately
+    for (size_t i = 0; i < shape_count() - 1; i++) {
+        shape_collision_filter_pairs.emplace(i, ground_id);
+    }
+}
 
 void ModelBuilder::finalize(uint32_t index) {}
 }// namespace vox
