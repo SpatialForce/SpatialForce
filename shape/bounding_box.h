@@ -7,10 +7,9 @@
 #pragma once
 
 #include "bounding_box.h"
-#include "../math/matrix.h"
+#include "math/matrix.h"
 #include "ray.h"
-
-#include "../../../../../usr/include/c++/11/limits"
+#include <limits>
 
 namespace vox {
 

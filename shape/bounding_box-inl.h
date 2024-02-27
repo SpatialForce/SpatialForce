@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include "../../../../../usr/include/c++/11/algorithm"
-#include "../../../../../usr/include/c++/11/limits"
+#include <algorithm>
 
 namespace vox {
 
