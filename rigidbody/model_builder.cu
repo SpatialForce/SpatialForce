@@ -40,10 +40,6 @@ size_t ModelBuilder::spring_count() {
     return spring_rest_length.width();
 }
 
-size_t ModelBuilder::muscle_count() {
-    return muscle_start.width();
-}
-
 void ModelBuilder::add_builder() {}
 
 size_t ModelBuilder::add_body(const TransformF &origin,
@@ -82,8 +78,6 @@ size_t ModelBuilder::add_body(const TransformF &origin,
     body_shapes[body_id] = {};
     return body_id;
 }
-
-void ModelBuilder::add_muscle() {}
 
 void ModelBuilder::add_shape_plane() {}
 

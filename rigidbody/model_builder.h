@@ -10,6 +10,7 @@
 #include "math/transform.h"
 #include "math/spatial_matrix.h"
 #include "joint.h"
+#include "muscle.h"
 #include <set>
 #include <unordered_map>
 #include <optional>
@@ -54,8 +55,6 @@ public:
     static constexpr float default_geo_thickness = 1e-5;
 
     int num_envs = 0;
-
-    JointModelBuilder joint_builder;
 
     // particles
     Tensor1<float> particle_q;
@@ -121,11 +120,7 @@ public:
     Tensor1<float> tet_materials;
 
     // muscles
-    Tensor1<float> muscle_start;
-    Tensor1<float> muscle_params;
-    Tensor1<float> muscle_activation;
-    Tensor1<float> muscle_bodies;
-    Tensor1<float> muscle_points;
+    MuscleModelBuilder muscle_builder;
 
     // rigid bodies
     Tensor1<float> body_mass;
@@ -138,6 +133,9 @@ public:
     Tensor1<std::string_view> body_name;
     // mapping from body to shapes
     std::unordered_map<size_t, Tensor1<size_t>> body_shapes;
+
+    // rigid joints
+    JointModelBuilder joint_builder;
 
     Vector3F up_vector;
     Vector3F up_axis;
@@ -189,8 +187,6 @@ public:
 
     size_t spring_count();
 
-    size_t muscle_count();
-
     void add_builder();
 
     /// Adds a rigid body to the model.
@@ -210,10 +206,6 @@ public:
                     const Matrix3x3F &I_m = Matrix3x3F(),
                     float m = 0.0,
                     std::optional<std::string_view> name = std::nullopt);
-
-
-
-    void add_muscle();
 
     void add_shape_plane();
 

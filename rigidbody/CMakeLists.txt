@@ -11,6 +11,8 @@ project(rigidbody LANGUAGES C CXX CUDA)
 set(COMMON_FILES
         joint.h
         joint.cu
+        muscle.h
+        muscle.cu
         model_builder.h
         model_builder.cu
 )
