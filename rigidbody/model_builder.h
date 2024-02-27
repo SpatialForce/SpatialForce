@@ -16,6 +16,18 @@
 #include <optional>
 
 namespace vox {
+enum class GeometryType {
+    GEO_SPHERE,
+    GEO_BOX,
+    GEO_CAPSULE,
+    GEO_CYLINDER,
+    GEO_CONE,
+    GEO_MESH,
+    GEO_SDF,
+    GEO_PLANE,
+    GEO_NONE
+};
+
 // A helper class for building simulation models at runtime.
 //
 //    Use the ModelBuilder to construct a simulation scene. The ModelBuilder
@@ -66,12 +78,12 @@ public:
 
     // shapes (each shape has an entry in these arrays)
     // transform from shape to body
-    Tensor1<float> shape_transform;
+    Tensor1<TransformF> shape_transform;
     // maps from shape index to body index
-    Tensor1<float> shape_body;
-    Tensor1<float> shape_geo_type;
+    Tensor1<int> shape_body;
+    Tensor1<GeometryType> shape_geo_type;
     Tensor1<float> shape_geo_scale;
-    Tensor1<float> shape_geo_src;
+    Tensor1<std::optional<int>> shape_geo_src;
     Tensor1<float> shape_geo_is_solid;
     Tensor1<float> shape_geo_thickness;
     Tensor1<float> shape_material_ke;
@@ -80,8 +92,8 @@ public:
     Tensor1<float> shape_material_mu;
     Tensor1<float> shape_material_restitution;
     // collision groups within collisions are handled
-    Tensor1<float> shape_collision_group;
-    Tensor1<float> shape_collision_group_map;
+    Tensor1<int> shape_collision_group;
+    std::unordered_map<int, Tensor1<size_t>> shape_collision_group_map;
     int last_collision_group = 0;
     // radius to use for broadphase collision checking
     Tensor1<float> shape_collision_radius;
@@ -207,7 +219,36 @@ public:
                     float m = 0.0,
                     std::optional<std::string_view> name = std::nullopt);
 
-    void add_shape_plane();
+    /// Adds a plane collision shape.
+    //        If pos and rot are defined, the plane is assumed to have its normal as (0, 1, 0).
+    //        Otherwise, the plane equation defined through the `plane` argument is used.
+    /// \param plane The plane equation in form a*x + b*y + c*z + d = 0
+    /// \param pos The position of the plane in world coordinates
+    /// \param rot The rotation of the plane in world coordinates
+    /// \param width The extent along x of the plane (infinite if 0)
+    /// \param length The extent along z of the plane (infinite if 0)
+    /// \param body The body index to attach the shape to (-1 by default to keep the plane static)
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param thickness The thickness of the plane (0 by default) for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_plane(const Vector4F &plane = Vector4F(0.0, 1.0, 0.0, 0.0),
+                           const std::optional<Vector3F> &pos = std::nullopt,
+                           const std::optional<QuaternionF> &rot = std::nullopt,
+                           float width = 10.0,
+                           float length = 10.0,
+                           int body = -1,
+                           float ke = default_shape_ke,
+                           float kd = default_shape_kd,
+                           float kf = default_shape_kf,
+                           float mu = default_shape_mu,
+                           float restitution = default_shape_restitution,
+                           float thickness = 0.0,
+                           bool has_ground_collision = false);
 
     void add_shape_sphere();
 
@@ -223,9 +264,26 @@ public:
 
     void add_shape_sdf();
 
-    void _shape_radius();
+    /// Calculates the radius of a sphere that encloses the shape, used for broadphase collision detection.
+    static float _shape_radius(GeometryType type, const Vector3F &scale, std::optional<int> src);
 
-    void _add_shape();
+    size_t _add_shape(int body,
+                      const Vector3F &pos,
+                      const QuaternionF &rot,
+                      GeometryType type,
+                      const Vector3F &scale,
+                      std::optional<int> src,
+                      float density,
+                      float ke,
+                      float kd,
+                      float kf,
+                      float mu,
+                      float restitution,
+                      float thickness = default_geo_thickness,
+                      bool is_solid = true,
+                      int collision_group = -1,
+                      bool collision_filter_parent = true,
+                      bool has_ground_collision = true);
 
     void add_particle();
 
@@ -251,7 +309,7 @@ public:
 
     void add_soft_mesh();
 
-    void _update_body_mass();
+    void _update_body_mass(int i, float m, const Matrix3x3F& I, const Vector3F& p, const QuaternionF& q);
 
     void set_ground_plane();
 
