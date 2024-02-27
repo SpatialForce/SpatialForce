@@ -61,7 +61,7 @@ void ModelBuilder::add_articulation() {
 
 void ModelBuilder::add_builder() {}
 
-size_t ModelBuilder::add_body(const Transform3 &origin,
+size_t ModelBuilder::add_body(const TransformF &origin,
                               float armature,
                               const Vector3F &com,
                               const Matrix3x3F &I_m,
@@ -124,8 +124,8 @@ size_t ModelBuilder::add_joint(JointType type,
                                std::initializer_list<JointAxis> linear_axes,
                                std::initializer_list<JointAxis> angular_axes,
                                std::optional<std::string_view> name,
-                               const Transform3 &parent_xform,
-                               const Transform3 &child_xform,
+                               const TransformF &parent_xform,
+                               const TransformF &child_xform,
                                float linear_compliance,
                                float angular_compliance,
                                bool collision_filter_parent,
@@ -218,7 +218,26 @@ size_t ModelBuilder::add_joint(JointType type,
     return joint_count() - 1;
 }
 
-void ModelBuilder::add_joint_revolute() {}
+size_t ModelBuilder::add_joint_revolute(int parent,
+                                        int child,
+                                        const TransformF& parent_xform,
+                                        const TransformF& child_xform,
+                                        const Vector3F& axis,
+                                        float target,
+                                        float target_ke,
+                                        float target_kd,
+                                        JointMode mode,
+                                        float limit_lower,
+                                        float limit_upper,
+                                        float limit_ke,
+                                        float limit_kd,
+                                        float linear_compliance,
+                                        float angular_compliance,
+                                        std::optional<std::string_view> name,
+                                        bool collision_filter_parent,
+                                        bool enabled) {
+    return 0;
+}
 
 void ModelBuilder::add_joint_prismatic() {}
 

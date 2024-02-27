@@ -6,116 +6,100 @@
 
 #pragma once
 
-#include "bounding_box.h"
-#include "matrix.h"
 #include "quaternion.h"
-#include "ray.h"
 
 namespace vox {
+template<typename Type>
+struct Transform {
+    Vector<Type, 3> p;
+    Quaternion<Type> q;
 
-template<size_t N>
-class Orientation {};
+    CUDA_CALLABLE inline Transform(Vector<Type, 3> p = Vector<Type, 3>(), Quaternion<Type> q = Quaternion<Type>()) : p(p), q(q) {}
 
-template<>
-class Orientation<2> {
-public:
-    CUDA_CALLABLE Orientation();
-    CUDA_CALLABLE Orientation(float angleInRadian);
+    CUDA_CALLABLE inline Type operator[](int index) const {
+        assert(index < 7);
 
-    CUDA_CALLABLE float rotation() const;
-    CUDA_CALLABLE void setRotation(float angleInRadian);
+        return p.c[index];
+    }
 
-    //! Rotates a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector2F toLocal(const Vector2F &pointInWorld) const;
+    CUDA_CALLABLE inline Type &operator[](int index) {
+        assert(index < 7);
 
-    //! Rotates a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector2F toWorld(const Vector2F &pointInLocal) const;
+        return p.c[index];
+    }
 
-private:
-    float _angle = 0.0;
-    float _cosAngle = 1.0;
-    float _sinAngle = 0.0;
+    CUDA_CALLABLE inline Transform<Type> mul(const Transform<Type> &b) {
+        return {q * b.p + p, q * b.q};
+    }
+
+    CUDA_CALLABLE inline Transform<Type> inverse() {
+        auto q_inv = q.inverse();
+        return transform_t<Type>(-q_inv * p, q_inv);
+    }
+
+    CUDA_CALLABLE inline Vector<Type, 3> transform_vector(const Vector<Type, 3> &x) {
+        return q * x;
+    }
+
+    CUDA_CALLABLE inline Vector<Type, 3> transform_point(const Vector<Type, 3> &x) {
+        return p + q * x;
+    }
 };
 
-template<>
-class Orientation<3> {
-public:
-    CUDA_CALLABLE Orientation();
-    CUDA_CALLABLE Orientation(const QuaternionF &quat);
+template<typename Type>
+inline CUDA_CALLABLE bool operator==(const Transform<Type> &a, const Transform<Type> &b) {
+    return a.p == b.p && a.q == b.q;
+}
 
-    CUDA_CALLABLE const QuaternionF &rotation() const;
-    CUDA_CALLABLE void setRotation(const QuaternionF &quat);
+// not totally sure why you'd want to do this seeing as adding/subtracting two rotation
+// quats doesn't seem to do anything meaningful
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> add(const Transform<Type> &a, const Transform<Type> &b) {
+    return {a.p + b.p, a.q + b.q};
+}
 
-    //! Rotates a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector3F toLocal(const Vector3F &pointInWorld) const;
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> sub(const Transform<Type> &a, const Transform<Type> &b) {
+    return {a.p - b.p, a.q - b.q};
+}
 
-    //! Rotates a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector3F toWorld(const Vector3F &pointInLocal) const;
+// also not sure why you'd want to do this seeing as the quat would end up unnormalized
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> mul(const Transform<Type> &a, Type s) {
+    return {a.p * s, a.q * s};
+}
 
-private:
-    QuaternionF _quat;
-    Matrix3x3F _rotationMat3 = Matrix3x3F::makeIdentity();
-    Matrix3x3F _inverseRotationMat3 = Matrix3x3F::makeIdentity();
-};
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> mul(Type s, const Transform<Type> &a) {
+    return mul(a, s);
+}
 
-using Orientation2 = Orientation<2>;
-using Orientation3 = Orientation<3>;
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> mul(const Transform<Type> &a, const Transform<Type> &b) {
+    return a.mul(b);
+}
 
-//!
-//! \brief Represents N-D rigid body transform.
-//!
-template<size_t N>
-class Transform {
-public:
-    //! Constructs identity transform.
-    CUDA_CALLABLE Transform();
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> operator*(const Transform<Type> &a, Type s) {
+    return mul(a, s);
+}
 
-    //! Constructs a transform with translation and orientation.
-    CUDA_CALLABLE Transform(const Vector<float, N> &translation,
-                            const Orientation<N> &orientation);
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> operator*(Type s, const Transform<Type> &a) {
+    return mul(a, s);
+}
 
-    //! Returns the translation.
-    CUDA_CALLABLE const Vector<float, N> &translation() const;
+template<typename Type>
+inline CUDA_CALLABLE Type extract(const Transform<Type> &t, int i) {
+    return t[i];
+}
 
-    //! Sets the traslation.
-    CUDA_CALLABLE void setTranslation(const Vector<float, N> &translation);
+template<typename Type>
+CUDA_CALLABLE inline Transform<Type> lerp(const Transform<Type> &a, const Transform<Type> &b, Type t) {
+    return a * (Type(1) - t) + b * t;
+}
 
-    //! Returns the orientation.
-    CUDA_CALLABLE const Orientation<N> &orientation() const;
-
-    //! Sets the orientation.
-    CUDA_CALLABLE void setOrientation(const Orientation<N> &orientation);
-
-    //! Transforms a point in world coordinate to the local frame.
-    CUDA_CALLABLE Vector<float, N> toLocal(const Vector<float, N> &pointInWorld) const;
-
-    //! Transforms a direction in world coordinate to the local frame.
-    CUDA_CALLABLE Vector<float, N> toLocalDirection(const Vector<float, N> &dirInWorld) const;
-
-    //! Transforms a ray in world coordinate to the local frame.
-    CUDA_CALLABLE Ray<float, N> toLocal(const Ray<float, N> &rayInWorld) const;
-
-    //! Transforms a bounding box in world coordinate to the local frame.
-    CUDA_CALLABLE BoundingBox<float, N> toLocal(const BoundingBox<float, N> &bboxInWorld) const;
-
-    //! Transforms a point in local space to the world coordinate.
-    CUDA_CALLABLE Vector<float, N> toWorld(const Vector<float, N> &pointInLocal) const;
-
-    //! Transforms a direction in local space to the world coordinate.
-    CUDA_CALLABLE Vector<float, N> toWorldDirection(const Vector<float, N> &dirInLocal) const;
-
-    //! Transforms a ray in local space to the world coordinate.
-    CUDA_CALLABLE Ray<float, N> toWorld(const Ray<float, N> &rayInLocal) const;
-
-    //! Transforms a bounding box in local space to the world coordinate.
-    CUDA_CALLABLE BoundingBox<float, N> toWorld(const BoundingBox<float, N> &bboxInLocal) const;
-
-private:
-    Vector<float, N> _translation;
-    Orientation<N> _orientation;
-};
-
-using Transform2 = Transform<2>;
-using Transform3 = Transform<3>;
+using TransformF = Transform<float>;
+using TransformD = Transform<double>;
 
 }// namespace vox

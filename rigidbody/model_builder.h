@@ -135,7 +135,7 @@ public:
     Tensor1<float> body_inv_mass;
     Tensor1<Matrix3x3F> body_inv_inertia;
     Tensor1<Vector3F> body_com;
-    Tensor1<Transform3> body_q;
+    Tensor1<TransformF> body_q;
     Tensor1<SpatialVectorF> body_qd;
     Tensor1<std::string_view> body_name;
     // mapping from body to shapes
@@ -152,9 +152,9 @@ public:
     // joint axis in child joint frame (constant)
     Tensor1<Vector3F> joint_axis;
     // frame of joint in parent (constant)
-    Tensor1<Transform3> joint_X_p;
+    Tensor1<TransformF> joint_X_p;
     // frame of child com (in child coordinates)  (constant)
-    Tensor1<Transform3> joint_X_c;
+    Tensor1<TransformF> joint_X_c;
     Tensor1<float> joint_q;
     Tensor1<float> joint_qd;
 
@@ -261,7 +261,7 @@ public:
     /// \return The index of the body in the model
     ///
     /// \remark If the mass (m) is zero then the body is treated as kinematic with no dynamics
-    size_t add_body(const Transform3 &origin = Transform3(),
+    size_t add_body(const TransformF &origin = TransformF(),
                     float armature = 0.0,
                     const Vector3F &com = Vector3F(),
                     const Matrix3x3F &I_m = Matrix3x3F(),
@@ -283,19 +283,56 @@ public:
     /// \param enabled Whether the joint is enabled
     /// \return The index of the added joint
     size_t add_joint(JointType type,
-                   int parent,
-                   int child,
-                   std::initializer_list<JointAxis> linear_axes = {},
-                   std::initializer_list<JointAxis> angular_axes = {},
-                   std::optional<std::string_view> name = std::nullopt,
-                   const Transform3& parent_xform = Transform3(),
-                   const Transform3& child_xform = Transform3(),
-                   float linear_compliance = 0.0,
-                   float angular_compliance = 0.0,
-                   bool collision_filter_parent = true,
-                   bool enabled = true);
+                     int parent,
+                     int child,
+                     std::initializer_list<JointAxis> linear_axes = {},
+                     std::initializer_list<JointAxis> angular_axes = {},
+                     std::optional<std::string_view> name = std::nullopt,
+                     const TransformF &parent_xform = TransformF(),
+                     const TransformF &child_xform = TransformF(),
+                     float linear_compliance = 0.0,
+                     float angular_compliance = 0.0,
+                     bool collision_filter_parent = true,
+                     bool enabled = true);
 
-    void add_joint_revolute();
+    /// Adds a revolute (hinge) joint to the model. It has one degree of freedom.
+    /// \param parent The index of the parent body
+    /// \param child The index of the child body
+    /// \param parent_xform The transform of the joint in the parent body's local frame
+    /// \param child_xform The transform of the joint in the child body's local frame
+    /// \param axis The axis of rotation in the parent body's local frame, can be a JointAxis object whose settings will be used instead of the other arguments
+    /// \param target The target angle (in radians) of the joint
+    /// \param target_ke The stiffness of the joint target
+    /// \param target_kd The damping of the joint target
+    /// \param mode
+    /// \param limit_lower The lower limit of the joint
+    /// \param limit_upper The upper limit of the joint
+    /// \param limit_ke The stiffness of the joint limit
+    /// \param limit_kd The damping of the joint limit
+    /// \param linear_compliance The linear compliance of the joint
+    /// \param angular_compliance The angular compliance of the joint
+    /// \param name The name of the joint
+    /// \param collision_filter_parent Whether to filter collisions between shapes of the parent and child bodies
+    /// \param enabled Whether the joint is enabled
+    /// \return The index of the added joint
+    size_t add_joint_revolute(int parent,
+                              int child,
+                              const TransformF &parent_xform,
+                              const TransformF &child_xform,
+                              const Vector3F &axis,
+                              float target = 0.0,
+                              float target_ke = 0.0,
+                              float target_kd = 0.0,
+                              JointMode mode = JointMode::TARGET_POSITION,
+                              float limit_lower = -2 * kPiF,
+                              float limit_upper = 2 * kPiF,
+                              float limit_ke = default_joint_limit_ke,
+                              float limit_kd = default_joint_limit_kd,
+                              float linear_compliance = 0.0,
+                              float angular_compliance = 0.0,
+                              std::optional<std::string_view> name = std::nullopt,
+                              bool collision_filter_parent = true,
+                              bool enabled = true);
 
     void add_joint_prismatic();
 

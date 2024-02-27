@@ -15,8 +15,6 @@ set(COMMON_FILES
         quaternion.h
         ray.h
         bounding_box.h
-        transform.h
-        transform.cu
         spatial_vector.h
         spatial_matrix.h
 )
@@ -27,14 +25,9 @@ set(PROJECT_FILES
         ${COMMON_FILES}
 )
 
-add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})
+add_library(${PROJECT_NAME} INTERFACE ${PROJECT_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${PROJECT_NAME} PUBLIC
+target_include_directories(${PROJECT_NAME} INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR} .
         ../)
-
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:
-        --expt-relaxed-constexpr
-        --device-c
-        >)

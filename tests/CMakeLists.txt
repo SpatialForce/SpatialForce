@@ -31,8 +31,6 @@ set(MATH_TESTS
         math/bounding_box_tests.cu
         math/ray2_tests.cu
         math/ray3_tests.cu
-        math/transform2_tests.cu
-        math/transform3_tests.cu
 )
 
 set(TENSOR_FILES
