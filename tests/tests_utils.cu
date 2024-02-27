@@ -5,6 +5,7 @@
 //  property of any third parties.
 
 #include "math/matrix.h"
+#include "shape/intersect.h"
 
 #define STR(s) #s
 
