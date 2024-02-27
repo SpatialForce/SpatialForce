@@ -9,6 +9,8 @@ cmake_minimum_required(VERSION 3.16)
 project(rigidbody LANGUAGES C CXX CUDA)
 
 set(COMMON_FILES
+        joint.h
+        joint.cu
         model_builder.h
         model_builder.cu
 )

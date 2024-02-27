@@ -1,4 +1,4 @@
-//  Copyright (c) 2023 Feng Yang
+//  Copyright (c) 2024 Feng Yang
 //
 //  I am making my contributions/submissions to this project solely in my
 //  personal capacity and am not conveying any rights to any intellectual
@@ -9,7 +9,8 @@
 #include "tensor/tensor.h"
 #include "math/transform.h"
 #include "math/spatial_matrix.h"
-#include <unordered_set>
+#include "joint.h"
+#include <set>
 #include <unordered_map>
 #include <optional>
 
@@ -91,7 +92,7 @@ public:
     Tensor1<float> shape_ground_collision;
 
     // filtering to ignore certain collision pairs
-    std::unordered_set<int> shape_collision_filter_pairs{};
+    std::set<std::pair<size_t, size_t>> shape_collision_filter_pairs{};
 
     // geometry
     Tensor1<float> geo_meshes;
@@ -138,32 +139,32 @@ public:
     Tensor1<SpatialVectorF> body_qd;
     Tensor1<std::string_view> body_name;
     // mapping from body to shapes
-    std::unordered_map<size_t, float> body_shapes;
+    std::unordered_map<size_t, Tensor1<size_t>> body_shapes;
 
     // rigid joints
     Tensor1<float> joint;
     // index of the parent body  (constant)
-    Tensor1<float> joint_parent;
+    Tensor1<int> joint_parent;
     // mapping from joint to parent bodies
-    Tensor1<float> joint_parents;
+    std::unordered_map<int, Tensor1<int>> joint_parents;
     // index of the child body (constant)
-    Tensor1<float> joint_child;
+    Tensor1<int> joint_child;
     // joint axis in child joint frame (constant)
-    Tensor1<float> joint_axis;
+    Tensor1<Vector3F> joint_axis;
     // frame of joint in parent (constant)
-    Tensor1<float> joint_X_p;
+    Tensor1<Transform3> joint_X_p;
     // frame of child com (in child coordinates)  (constant)
-    Tensor1<float> joint_X_c;
+    Tensor1<Transform3> joint_X_c;
     Tensor1<float> joint_q;
     Tensor1<float> joint_qd;
 
     Tensor1<float> joint_type;
-    Tensor1<float> joint_name;
+    Tensor1<std::string_view> joint_name;
     Tensor1<float> joint_armature;
     Tensor1<float> joint_target;
     Tensor1<float> joint_target_ke;
     Tensor1<float> joint_target_kd;
-    Tensor1<float> joint_axis_mode;
+    Tensor1<JointMode> joint_axis_mode;
     Tensor1<float> joint_limit_lower;
     Tensor1<float> joint_limit_upper;
     Tensor1<float> joint_limit_ke;
@@ -180,12 +181,12 @@ public:
     Tensor1<size_t> joint_q_start;
     Tensor1<size_t> joint_qd_start;
     Tensor1<size_t> joint_axis_start;
-    Tensor1<float> joint_axis_dim;
+    Tensor1<std::pair<int32_t, int32_t>> joint_axis_dim;
     Tensor1<size_t> articulation_start;
 
-    int joint_dof_count = 0;
-    int joint_coord_count = 0;
-    int joint_axis_total_count = 0;
+    size_t joint_dof_count = 0;
+    size_t joint_coord_count = 0;
+    size_t joint_axis_total_count = 0;
 
     Vector3F up_vector;
     Vector3F up_axis;
@@ -260,14 +261,39 @@ public:
     /// \return The index of the body in the model
     ///
     /// \remark If the mass (m) is zero then the body is treated as kinematic with no dynamics
-    size_t add_body(const Transform3& origin = Transform3(),
-                  float armature = 0.0,
-                  const Vector3F& com = Vector3F(),
-                  const Matrix3x3F& I_m = Matrix3x3F(),
-                  float m = 0.0,
-                  std::optional<std::string_view> name = std::nullopt);
+    size_t add_body(const Transform3 &origin = Transform3(),
+                    float armature = 0.0,
+                    const Vector3F &com = Vector3F(),
+                    const Matrix3x3F &I_m = Matrix3x3F(),
+                    float m = 0.0,
+                    std::optional<std::string_view> name = std::nullopt);
 
-    void add_joint();
+    /// Generic method to add any type of joint to this ModelBuilder.
+    /// \param type The type of joint to add (see `Joint types`_)
+    /// \param parent The index of the parent body (-1 is the world)
+    /// \param child The index of the child body
+    /// \param linear_axes The linear axes (see :class:`JointAxis`) of the joint
+    /// \param angular_axes The angular axes (see :class:`JointAxis`) of the joint
+    /// \param name The name of the joint
+    /// \param parent_xform The transform of the joint in the parent body's local frame
+    /// \param child_xform The transform of the joint in the child body's local frame
+    /// \param linear_compliance The linear compliance of the joint
+    /// \param angular_compliance The angular compliance of the joint
+    /// \param collision_filter_parent Whether to filter collisions between shapes of the parent and child bodies
+    /// \param enabled Whether the joint is enabled
+    /// \return The index of the added joint
+    size_t add_joint(JointType type,
+                   int parent,
+                   int child,
+                   std::initializer_list<JointAxis> linear_axes = {},
+                   std::initializer_list<JointAxis> angular_axes = {},
+                   std::optional<std::string_view> name = std::nullopt,
+                   const Transform3& parent_xform = Transform3(),
+                   const Transform3& child_xform = Transform3(),
+                   float linear_compliance = 0.0,
+                   float angular_compliance = 0.0,
+                   bool collision_filter_parent = true,
+                   bool enabled = true);
 
     void add_joint_revolute();
 
@@ -348,5 +374,8 @@ public:
     /// \param index The simulation device to use
     /// \return A model object.
     void finalize(uint32_t index = 0);
+
+private:
+    void _add_axis_dim(const JointAxis &dim);
 };
 }// namespace vox
