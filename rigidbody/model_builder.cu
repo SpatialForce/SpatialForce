@@ -220,9 +220,9 @@ size_t ModelBuilder::add_joint(JointType type,
 
 size_t ModelBuilder::add_joint_revolute(int parent,
                                         int child,
-                                        const TransformF& parent_xform,
-                                        const TransformF& child_xform,
-                                        const Vector3F& axis,
+                                        const TransformF &parent_xform,
+                                        const TransformF &child_xform,
+                                        const Vector3F &axis,
                                         float target,
                                         float target_ke,
                                         float target_kd,
@@ -236,26 +236,223 @@ size_t ModelBuilder::add_joint_revolute(int parent,
                                         std::optional<std::string_view> name,
                                         bool collision_filter_parent,
                                         bool enabled) {
-    return 0;
+    auto ax = JointAxis(axis);
+
+    ax.limit_lower = limit_lower;
+    ax.limit_upper = limit_upper;
+    ax.target = target;
+    ax.target_ke = target_ke;
+    ax.target_kd = target_kd;
+    ax.mode = mode;
+    ax.limit_ke = limit_ke;
+    ax.limit_kd = limit_kd;
+
+    return add_joint(JointType::JOINT_REVOLUTE,
+                     parent,
+                     child,
+                     {}, {ax}, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
 }
 
-void ModelBuilder::add_joint_prismatic() {}
+size_t ModelBuilder::add_joint_prismatic(int parent,
+                                         int child,
+                                         const TransformF &parent_xform,
+                                         const TransformF &child_xform,
+                                         const Vector3F &axis,
+                                         float target,
+                                         float target_ke,
+                                         float target_kd,
+                                         JointMode mode,
+                                         float limit_lower,
+                                         float limit_upper,
+                                         float limit_ke,
+                                         float limit_kd,
+                                         float linear_compliance,
+                                         float angular_compliance,
+                                         std::optional<std::string_view> name,
+                                         bool collision_filter_parent,
+                                         bool enabled) {
+    auto ax = JointAxis(axis);
 
-void ModelBuilder::add_joint_ball() {}
+    ax.limit_lower = limit_lower;
+    ax.limit_upper = limit_upper;
+    ax.target = target;
+    ax.target_ke = target_ke;
+    ax.target_kd = target_kd;
+    ax.mode = mode;
+    ax.limit_ke = limit_ke;
+    ax.limit_kd = limit_kd;
+    return add_joint(JointType::JOINT_PRISMATIC,
+                     parent,
+                     child,
+                     {ax}, {}, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::add_joint_fixed() {}
+size_t ModelBuilder::add_joint_ball(int parent,
+                                    int child,
+                                    const TransformF &parent_xform,
+                                    const TransformF &child_xform,
+                                    float linear_compliance,
+                                    float angular_compliance,
+                                    std::optional<std::string_view> name,
+                                    bool collision_filter_parent,
+                                    bool enabled) {
+    return add_joint(JointType::JOINT_BALL,
+                     parent,
+                     child,
+                     {}, {}, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::add_joint_free() {}
+size_t ModelBuilder::add_joint_fixed(int parent,
+                                     int child,
+                                     const TransformF &parent_xform,
+                                     const TransformF &child_xform,
+                                     float linear_compliance,
+                                     float angular_compliance,
+                                     std::optional<std::string_view> name,
+                                     bool collision_filter_parent,
+                                     bool enabled) {
+    return add_joint(JointType::JOINT_FIXED,
+                     parent,
+                     child,
+                     {}, {}, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::add_joint_distance() {}
+size_t ModelBuilder::add_joint_free(int child,
+                                    const TransformF &parent_xform,
+                                    const TransformF &child_xform,
+                                    int parent,
+                                    std::optional<std::string_view> name,
+                                    bool collision_filter_parent,
+                                    bool enabled) {
+    return add_joint(JointType::JOINT_FREE,
+                     parent,
+                     child,
+                     {}, {}, name,
+                     parent_xform,
+                     child_xform,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::add_joint_universal() {}
+size_t ModelBuilder::add_joint_distance(int parent,
+                                        int child,
+                                        const TransformF &parent_xform,
+                                        const TransformF &child_xform,
+                                        float min_distance,
+                                        float max_distance,
+                                        float compliance,
+                                        bool collision_filter_parent,
+                                        bool enabled) {
+    auto ax = JointAxis({1.0, 0.0, 0.0});
+    ax.limit_lower = min_distance;
+    ax.limit_upper = max_distance;
 
-void ModelBuilder::add_joint_compound() {}
+    return add_joint(JointType::JOINT_DISTANCE,
+                     parent,
+                     child,
+                     {ax}, {}, std::nullopt,
+                     parent_xform,
+                     child_xform,
+                     compliance,
+                     0,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::add_joint_d6() {}
+size_t ModelBuilder::add_joint_universal(int parent,
+                                         int child,
+                                         const JointAxis &axis_0,
+                                         const JointAxis &axis_1,
+                                         const TransformF &parent_xform,
+                                         const TransformF &child_xform,
+                                         float linear_compliance,
+                                         float angular_compliance,
+                                         std::optional<std::string_view> name,
+                                         bool collision_filter_parent,
+                                         bool enabled) {
+    return add_joint(JointType::JOINT_UNIVERSAL,
+                     parent,
+                     child,
+                     {}, {axis_0, axis_1}, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
+}
 
-void ModelBuilder::collapse_fixed_joints() {}
+size_t ModelBuilder::add_joint_compound(int parent,
+                                        int child,
+                                        const JointAxis &axis_0,
+                                        const JointAxis &axis_1,
+                                        const JointAxis &axis_2,
+                                        const TransformF &parent_xform,
+                                        const TransformF &child_xform,
+                                        std::optional<std::string_view> name,
+                                        bool collision_filter_parent,
+                                        bool enabled) {
+    return add_joint(JointType::JOINT_COMPOUND,
+                     parent,
+                     child,
+                     {}, {axis_0, axis_1, axis_2}, name,
+                     parent_xform,
+                     child_xform,
+                     0, 0,
+                     collision_filter_parent,
+                     enabled);
+}
+
+size_t ModelBuilder::add_joint_d6(int parent,
+                                  int child,
+                                  std::initializer_list<JointAxis> linear_axes,
+                                  std::initializer_list<JointAxis> angular_axes,
+                                  std::optional<std::string_view> name,
+                                  const TransformF &parent_xform,
+                                  const TransformF &child_xform,
+                                  float linear_compliance,
+                                  float angular_compliance,
+                                  bool collision_filter_parent,
+                                  bool enabled) {
+    return add_joint(JointType::JOINT_D6,
+                     parent,
+                     child,
+                     linear_axes, angular_axes, name,
+                     parent_xform,
+                     child_xform,
+                     linear_compliance,
+                     angular_compliance,
+                     collision_filter_parent,
+                     enabled);
+}
+
+void ModelBuilder::collapse_fixed_joints() {
+    // todo
+}
 
 void ModelBuilder::add_muscle() {}
 
