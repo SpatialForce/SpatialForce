@@ -6,7 +6,7 @@
 
 #include "tests_utils.h"
 
-#include "math/bounding_box.h"
+#include "shape/bounding_box.h"
 
 using namespace vox;
 

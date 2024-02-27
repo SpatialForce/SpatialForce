@@ -26,11 +26,14 @@ set(MATH_TESTS
         math/matrix4x4_tests.cu
         math/matrix_tests.cu
         math/quaternion_tests.cu
-        math/bounding_box2_tests.cu
-        math/bounding_box3_tests.cu
-        math/bounding_box_tests.cu
-        math/ray2_tests.cu
-        math/ray3_tests.cu
+)
+
+set(SHAPE_TESTS
+        shape/bounding_box2_tests.cu
+        shape/bounding_box3_tests.cu
+        shape/bounding_box_tests.cu
+        shape/ray2_tests.cu
+        shape/ray3_tests.cu
 )
 
 set(TENSOR_FILES
@@ -56,6 +59,7 @@ set(SRC
         tests_utils.cu
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
+        ${SHAPE_TESTS}
         ${TENSOR_FILES}
 #        ${FIELDS_TESTS}
 )

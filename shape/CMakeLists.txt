@@ -10,6 +10,8 @@ project(shape LANGUAGES C CXX CUDA)
 
 set(COMMON_FILES
         intersect.h
+        ray.h
+        bounding_box.h
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

@@ -4,7 +4,7 @@
 //  personal capacity and am not conveying any rights to any intellectual
 //  property of any third parties.
 
-#include "math/bounding_box.h"
+#include "shape/bounding_box.h"
 #include "tests_utils.h"
 #include <limits>
 

@@ -13,8 +13,6 @@ set(COMMON_FILES
         matrix_dense_base.h
         matrix_expression.h
         quaternion.h
-        ray.h
-        bounding_box.h
         spatial_vector.h
         spatial_matrix.h
 )

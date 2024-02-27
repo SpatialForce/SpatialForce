@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "matrix.h"
+#include "../math/matrix.h"
 
 namespace vox {
 
