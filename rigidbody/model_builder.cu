@@ -133,19 +133,251 @@ size_t ModelBuilder::add_shape_plane(const Vector4F &plane,
         has_ground_collision);
 }
 
-void ModelBuilder::add_shape_sphere() {}
+size_t ModelBuilder::add_shape_sphere(int body,
+                                      const Vector3F &pos,
+                                      const QuaternionF &rot,
+                                      float radius,
+                                      float density,
+                                      float ke,
+                                      float kd,
+                                      float kf,
+                                      float mu,
+                                      float restitution,
+                                      bool is_solid,
+                                      float thickness,
+                                      bool has_ground_collision) {
+    return _add_shape(body,
+                      pos,
+                      rot,
+                      GeometryType::GEO_SPHERE,
+                      Vector3F(radius, 0.0, 0.0),
+                      std::nullopt,
+                      density,
+                      ke,
+                      kd,
+                      kf,
+                      mu,
+                      restitution,
+                      thickness + radius,
+                      is_solid, -1, true,
+                      has_ground_collision);
+}
 
-void ModelBuilder::add_shape_box() {}
+size_t ModelBuilder::add_shape_box(int body,
+                                   const Vector3F &pos,
+                                   const QuaternionF &rot,
+                                   float hx,
+                                   float hy,
+                                   float hz,
+                                   float density,
+                                   float ke,
+                                   float kd,
+                                   float kf,
+                                   float mu,
+                                   float restitution,
+                                   bool is_solid,
+                                   float thickness,
+                                   bool has_ground_collision) {
+    return _add_shape(body,
+                      pos,
+                      rot,
+                      GeometryType::GEO_BOX,
+                      Vector3F(hx, hy, hz),
+                      std::nullopt,
+                      density,
+                      ke,
+                      kd,
+                      kf,
+                      mu,
+                      restitution,
+                      thickness,
+                      is_solid, -1, true,
+                      has_ground_collision);
+}
 
-void ModelBuilder::add_shape_capsule() {}
+size_t ModelBuilder::add_shape_capsule(int body,
+                                       const Vector3F &pos,
+                                       const QuaternionF &rot,
+                                       float radius,
+                                       float half_height,
+                                       UpAxis axis,
+                                       float density,
+                                       float ke,
+                                       float kd,
+                                       float kf,
+                                       float mu,
+                                       float restitution,
+                                       bool is_solid,
+                                       float thickness,
+                                       bool has_ground_collision) {
+    auto q = rot;
+    float sqh = std::sqrt(0.5f);
+    if (axis == UpAxis::X) {
+        q *= QuaternionF(0.0, 0.0, -sqh, sqh);
+    } else if (axis == UpAxis::Z) {
+        q *= QuaternionF(sqh, 0.0, 0.0, sqh);
+    }
 
-void ModelBuilder::add_shape_cylinder() {}
+    return _add_shape(body,
+                      pos,
+                      q,
+                      GeometryType::GEO_CAPSULE,
+                      Vector3F(radius, half_height, 0.0),
+                      std::nullopt,
+                      density,
+                      ke,
+                      kd,
+                      kf,
+                      mu,
+                      restitution,
+                      thickness + radius,
+                      is_solid, -1, true,
+                      has_ground_collision);
+}
 
-void ModelBuilder::add_shape_cone() {}
+size_t ModelBuilder::add_shape_cylinder(int body,
+                                        const Vector3F &pos,
+                                        const QuaternionF &rot,
+                                        float radius,
+                                        float half_height,
+                                        UpAxis axis,
+                                        float density,
+                                        float ke,
+                                        float kd,
+                                        float kf,
+                                        float mu,
+                                        float restitution,
+                                        bool is_solid,
+                                        float thickness,
+                                        bool has_ground_collision) {
+    auto q = rot;
+    float sqh = std::sqrt(0.5f);
+    if (axis == UpAxis::X) {
+        q *= QuaternionF(0.0, 0.0, -sqh, sqh);
+    } else if (axis == UpAxis::Z) {
+        q *= QuaternionF(sqh, 0.0, 0.0, sqh);
+    }
 
-void ModelBuilder::add_shape_mesh() {}
+    return _add_shape(
+        body,
+        pos,
+        q,
+        GeometryType::GEO_CYLINDER,
+        Vector3F(radius, half_height, 0.0),
+        std::nullopt,
+        density,
+        ke,
+        kd,
+        kf,
+        mu,
+        restitution,
+        thickness,
+        is_solid, -1, true,
+        has_ground_collision);
+}
 
-void ModelBuilder::add_shape_sdf() {}
+size_t ModelBuilder::add_shape_cone(int body,
+                                    const Vector3F &pos,
+                                    const QuaternionF &rot,
+                                    float radius,
+                                    float half_height,
+                                    UpAxis axis,
+                                    float density,
+                                    float ke,
+                                    float kd,
+                                    float kf,
+                                    float mu,
+                                    float restitution,
+                                    bool is_solid,
+                                    float thickness,
+                                    bool has_ground_collision) {
+    auto q = rot;
+    float sqh = std::sqrt(0.5f);
+    if (axis == UpAxis::X) {
+        q *= QuaternionF(0.0, 0.0, -sqh, sqh);
+    } else if (axis == UpAxis::Z) {
+        q *= QuaternionF(sqh, 0.0, 0.0, sqh);
+    }
+
+    return _add_shape(
+        body,
+        pos,
+        q,
+        GeometryType::GEO_CONE,
+        Vector3F(radius, half_height, 0.0),
+        std::nullopt,
+        density,
+        ke,
+        kd,
+        kf,
+        mu,
+        restitution,
+        thickness,
+        is_solid, -1, true,
+        has_ground_collision);
+}
+
+size_t ModelBuilder::add_shape_mesh(int body,
+                                    const Vector3F &pos,
+                                    const QuaternionF &rot,
+                                    std::optional<int> mesh,
+                                    const Vector3F &scale,
+                                    float density,
+                                    float ke,
+                                    float kd,
+                                    float kf,
+                                    float mu,
+                                    float restitution,
+                                    bool is_solid,
+                                    float thickness,
+                                    bool has_ground_collision) {
+    return _add_shape(body,
+                      pos,
+                      rot,
+                      GeometryType::GEO_MESH,
+                      scale,
+                      mesh,
+                      density,
+                      ke,
+                      kd,
+                      kf,
+                      mu,
+                      restitution,
+                      thickness,
+                      is_solid, -1, true,
+                      has_ground_collision);
+}
+
+size_t ModelBuilder::add_shape_sdf(int body,
+                                   const Vector3F &pos,
+                                   const QuaternionF &rot,
+                                   std::optional<int> sdf,
+                                   const Vector3F &scale,
+                                   float density,
+                                   float ke,
+                                   float kd,
+                                   float kf,
+                                   float mu,
+                                   float restitution,
+                                   bool is_solid,
+                                   float thickness,
+                                   bool has_ground_collision) {
+    return _add_shape(body,
+                      pos,
+                      rot,
+                      GeometryType::GEO_SDF,
+                      scale,
+                      sdf,
+                      density,
+                      ke,
+                      kd,
+                      kf,
+                      mu,
+                      restitution,
+                      thickness,
+                      is_solid, -1, true,
+                      has_ground_collision);
+}
 
 float ModelBuilder::_shape_radius(GeometryType type, const Vector3F &scale, std::optional<int> src) {
     if (type == GeometryType::GEO_SPHERE) {

@@ -28,6 +28,12 @@ enum class GeometryType {
     GEO_NONE
 };
 
+enum class UpAxis : int {
+    X,
+    Y,
+    Z
+};
+
 // A helper class for building simulation models at runtime.
 //
 //    Use the ModelBuilder to construct a simulation scene. The ModelBuilder
@@ -250,19 +256,228 @@ public:
                            float thickness = 0.0,
                            bool has_ground_collision = false);
 
-    void add_shape_sphere();
+    /// Adds a sphere collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param radius The radius of the sphere
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid Whether the sphere is solid or hollow
+    /// \param thickness Thickness to use for computing inertia of a hollow sphere, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_sphere(int body,
+                            const Vector3F &pos = {0.0, 0.0, 0.0},
+                            const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                            float radius = 1.0,
+                            float density = default_shape_density,
+                            float ke = default_shape_ke,
+                            float kd = default_shape_kd,
+                            float kf = default_shape_kf,
+                            float mu = default_shape_mu,
+                            float restitution = default_shape_restitution,
+                            bool is_solid = true,
+                            float thickness = default_geo_thickness,
+                            bool has_ground_collision = true);
 
-    void add_shape_box();
+    /// Adds a box collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param hx The half-extent along the x-axis
+    /// \param hy The half-extent along the y-axis
+    /// \param hz  The half-extent along the z-axis
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid Whether the box is solid or hollow
+    /// \param thickness Thickness to use for computing inertia of a hollow box, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_box(int body,
+                         const Vector3F &pos = Vector3F(0.0, 0.0, 0.0),
+                         const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                         float hx = 0.5,
+                         float hy = 0.5,
+                         float hz = 0.5,
+                         float density = default_shape_density,
+                         float ke = default_shape_ke,
+                         float kd = default_shape_kd,
+                         float kf = default_shape_kf,
+                         float mu = default_shape_mu,
+                         float restitution = default_shape_restitution,
+                         bool is_solid = true,
+                         float thickness = default_geo_thickness,
+                         bool has_ground_collision = true);
 
-    void add_shape_capsule();
+    /// Adds a capsule collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param radius The radius of the capsule
+    /// \param half_height The half length of the center cylinder along the up axis
+    /// \param axis The axis along which the capsule is aligned (0=x, 1=y, 2=z)
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid Whether the capsule is solid or hollow
+    /// \param thickness Thickness to use for computing inertia of a hollow capsule, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_capsule(int body,
+                             const Vector3F &pos = Vector3F(0.0, 0.0, 0.0),
+                             const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                             float radius = 1.0,
+                             float half_height = 0.5,
+                             UpAxis axis = UpAxis::Y,
+                             float density = default_shape_density,
+                             float ke = default_shape_ke,
+                             float kd = default_shape_kd,
+                             float kf = default_shape_kf,
+                             float mu = default_shape_mu,
+                             float restitution = default_shape_restitution,
+                             bool is_solid = true,
+                             float thickness = default_geo_thickness,
+                             bool has_ground_collision = true);
 
-    void add_shape_cylinder();
+    /// Adds a cylinder collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param radius The radius of the cylinder
+    /// \param half_height The half length of the cylinder along the up axis
+    /// \param up_axis The axis along which the cylinder is aligned (0=x, 1=y, 2=z)
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid Whether the cylinder is solid or hollow
+    /// \param thickness Thickness to use for computing inertia of a hollow cylinder, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_cylinder(int body,
+                              const Vector3F &pos = Vector3F(0.0, 0.0, 0.0),
+                              const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                              float radius = 1.0,
+                              float half_height = 0.5,
+                              UpAxis up_axis = UpAxis::Y,
+                              float density = default_shape_density,
+                              float ke = default_shape_ke,
+                              float kd = default_shape_kd,
+                              float kf = default_shape_kf,
+                              float mu = default_shape_mu,
+                              float restitution = default_shape_restitution,
+                              bool is_solid = true,
+                              float thickness = default_geo_thickness,
+                              bool has_ground_collision = true);
 
-    void add_shape_cone();
+    /// Adds a cone collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param radius The radius of the cone
+    /// \param half_height The half length of the cone along the up axis
+    /// \param up_axis The axis along which the cone is aligned (0=x, 1=y, 2=z)
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid Whether the cone is solid or hollow
+    /// \param thickness Thickness to use for computing inertia of a hollow cone, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_cone(int body,
+                          const Vector3F &pos = Vector3F(0.0, 0.0, 0.0),
+                          const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                          float radius = 1.0,
+                          float half_height = 0.5,
+                          UpAxis up_axis = UpAxis::Y,
+                          float density = default_shape_density,
+                          float ke = default_shape_ke,
+                          float kd = default_shape_kd,
+                          float kf = default_shape_kf,
+                          float mu = default_shape_mu,
+                          float restitution = default_shape_restitution,
+                          bool is_solid = true,
+                          float thickness = default_geo_thickness,
+                          bool has_ground_collision = true);
 
-    void add_shape_mesh();
+    /// Adds a triangle mesh collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param mesh The mesh object
+    /// \param scale Scale to use for the collider
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid If True, the mesh is solid, otherwise it is a hollow surface with the given wall thickness
+    /// \param thickness Thickness to use for computing inertia of a hollow mesh, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_mesh(int body,
+                          const Vector3F &pos = Vector3F(0.0, 0.0, 0.0),
+                          const QuaternionF &rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                          std::optional<int> mesh = std::nullopt,
+                          const Vector3F &scale = Vector3F(1.0, 1.0, 1.0),
+                          float density = default_shape_density,
+                          float ke = default_shape_ke,
+                          float kd = default_shape_kd,
+                          float kf = default_shape_kf,
+                          float mu = default_shape_mu,
+                          float restitution = default_shape_restitution,
+                          bool is_solid = true,
+                          float thickness = default_geo_thickness,
+                          bool has_ground_collision = true);
 
-    void add_shape_sdf();
+    /// Adds SDF collision shape to a body.
+    /// \param body The index of the parent body this shape belongs to (use -1 for static shapes)
+    /// \param pos The location of the shape with respect to the parent frame
+    /// \param rot The rotation of the shape with respect to the parent frame
+    /// \param sdf The sdf object
+    /// \param scale Scale to use for the collider
+    /// \param density The density of the shape
+    /// \param ke The contact elastic stiffness
+    /// \param kd The contact damping stiffness
+    /// \param kf The contact friction stiffness
+    /// \param mu The coefficient of friction
+    /// \param restitution The coefficient of restitution
+    /// \param is_solid If True, the mesh is solid, otherwise it is a hollow surface with the given wall thickness
+    /// \param thickness Thickness to use for computing inertia of a hollow mesh, and for collision handling
+    /// \param has_ground_collision If True, the mesh will collide with the ground plane if `Model.ground` is True
+    /// \return The index of the added shape
+    size_t add_shape_sdf(int body,
+                         const Vector3F& pos = Vector3F(0.0, 0.0, 0.0),
+                         const QuaternionF& rot = QuaternionF(0.0, 0.0, 0.0, 1.0),
+                         std::optional<int> sdf = std::nullopt,
+                         const Vector3F& scale = Vector3F(1.0, 1.0, 1.0),
+                         float density = default_shape_density,
+                         float ke = default_shape_ke,
+                         float kd = default_shape_kd,
+                         float kf = default_shape_kf,
+                         float mu = default_shape_mu,
+                         float restitution = default_shape_restitution,
+                         bool is_solid = true,
+                         float thickness = default_geo_thickness,
+                         bool has_ground_collision = true);
 
     /// Calculates the radius of a sphere that encloses the shape, used for broadphase collision detection.
     static float _shape_radius(GeometryType type, const Vector3F &scale, std::optional<int> src);
@@ -309,7 +524,7 @@ public:
 
     void add_soft_mesh();
 
-    void _update_body_mass(int i, float m, const Matrix3x3F& I, const Vector3F& p, const QuaternionF& q);
+    void _update_body_mass(int i, float m, const Matrix3x3F &I, const Vector3F &p, const QuaternionF &q);
 
     void set_ground_plane();
 
