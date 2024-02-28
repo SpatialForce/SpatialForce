@@ -8,13 +8,14 @@
 
 #include "bvh.h"
 #include "runtime/cuda_buffer.h"
+#include "runtime/cuda_tensor_view.h"
 
 namespace vox {
 class BvhHost {
 public:
-    BVH *view;
+    BVH *view{};
 
-    BvhHost(Vector3F *lowers, Vector3F *uppers, int num_items);
+    BvhHost(CudaTensorView1<Vector3F> lowers, CudaTensorView1<Vector3F> uppers);
 
     void refit();
 
@@ -24,5 +25,6 @@ private:
     CudaBuffer<int> node_parents;
     CudaBuffer<int> node_counts;
     CudaBuffer<int> root;
+    CudaBuffer<BVH> bvh;
 };
 }// namespace vox
