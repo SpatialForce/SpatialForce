@@ -12,6 +12,9 @@ set(COMMON_FILES
         intersect.h
         ray.h
         bounding_box.h
+        bvh.h
+        bvh_host.h
+        bvh_host.cu
 )
 
 source_group("common\\" FILES ${COMMON_FILES})
@@ -20,9 +23,9 @@ set(PROJECT_FILES
         ${COMMON_FILES}
 )
 
-add_library(${PROJECT_NAME} INTERFACE ${PROJECT_FILES})
+add_library(${PROJECT_NAME} OBJECT ${PROJECT_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR} .
         ../)

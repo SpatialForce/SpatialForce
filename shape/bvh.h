@@ -214,6 +214,7 @@ CUDA_CALLABLE inline bvh_query_t BVH::bvh_query_ray(const Vector3F &start, const
     return bvh_query(true, start, dir);
 }
 
+//--------------------------------------------------------------------------------------------------------------------------
 CUDA_CALLABLE inline int clz(int x) {
     int n;
     if (x == 0) return 32;
