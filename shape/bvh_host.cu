@@ -5,6 +5,7 @@
 //  property of any third parties.
 
 #include "bvh_host.h"
+#include "radix_sort.h"
 #include "runtime/transform.h"
 #include <cub/cub.cuh>
 
@@ -21,7 +22,7 @@ CUDA_CALLABLE_DEVICE void compute_morton_codes(const Vector3F *__restrict__ item
 
         Vector3F center = 0.5f * (lower + upper);
 
-        Vector3F local = cw_mul((center - grid_lower[0]), grid_inv_edges[0]);
+        Vector3F local = elemMul((center - grid_lower[0]), grid_inv_edges[0]);
 
         // 10-bit Morton codes stored in lower 30bits (1024^3 effective resolution)
         int key = morton3<1024>(local[0], local[1], local[2]);
@@ -189,8 +190,8 @@ CUDA_CALLABLE_DEVICE void compute_total_bounds(const Vector3F *item_lowers, cons
 
         if (threadIdx.x == 0) {
             // write out block results, expanded by the radius
-            atomic_max(total_upper, block_upper);
-            atomic_min(total_lower, block_lower);
+            atomic_max(*total_upper, block_upper);
+            atomic_min(*total_lower, block_lower);
         }
     }
 }
@@ -216,7 +217,7 @@ public:
 
     // takes a bvh (host ref), and pointers to the GPU lower and upper bounds for each triangle
     void build(BVH &bvh, CudaTensorView1<Vector3F> lowers, CudaTensorView1<Vector3F> uppers, BoundingBox3F *total_bounds) {
-        auto num_items = lowers.width();
+        int num_items = lowers.width();
         indices.resize(num_items * 2);// *2 for radix sort
         keys.resize(num_items * 2);   // *2 for radix sort
         deltas.resize(num_items);     // highest differenting bit between keys for item i and i+1
@@ -267,7 +268,7 @@ public:
         transform(compute_morton_codes_callable, num_items, device().stream);
 
         // sort items based on Morton key (note the 32-bit sort key corresponds to the template parameter to morton3, i.e. 3x9 bit keys combined)
-        radix_sort_pairs_device(WP_CURRENT_CONTEXT, keys, indices, num_items);
+        sort.execute(keys.data(), indices.data(), num_items);
 
         // calculate deltas between adjacent keys
         auto compute_key_deltas_callable = [num_items,
@@ -306,6 +307,8 @@ public:
     }
 
 private:
+    RadixSort sort;
+
     // temporary data used during building
     CudaBuffer<int> indices;
     CudaBuffer<int> keys;

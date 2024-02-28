@@ -194,3 +194,17 @@ TEST_F(CudaTensor1Test, Launch) {
         EXPECT_FLOAT_EQ(i, val);
     }
 }
+
+__global__ void test(Vector2F *vec1, Vector2F *vec2) {
+    Vector2F c = atomic_add(vec1[0], vec2[0]);
+}
+
+TEST_F(CudaTensor1Test, Atomics) {
+    CudaTensor1<Vector2F> tensor1(1, Vector2F{3.f, 4.f});
+    CudaTensor1<Vector2F> tensor2(1, Vector2F{5.f, 6.f});
+
+    test<<<1, 1>>>(tensor1.data(), tensor2.data());
+    Vector2F vec = tensor1[0];
+    EXPECT_FLOAT_EQ(8.f, vec.x);
+    EXPECT_FLOAT_EQ(10.f, vec.y);
+}

@@ -12,6 +12,8 @@ set(COMMON_FILES
         intersect.h
         ray.h
         bounding_box.h
+        radix_sort.h
+        radix_sort.cu
         bvh.h
         bvh_host.h
         bvh_host.cu

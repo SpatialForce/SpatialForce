@@ -269,6 +269,83 @@ template<typename T>
 CUDA_CALLABLE std::enable_if_t<std::is_arithmetic<T>::value, T>//
 monotonicCatmullRom(const T &f0, const T &f1, const T &f2, const T &f3, T t);
 
+//---------------------------------------------------------------------------------------------------------------
+template<typename T>
+inline CUDA_CALLABLE T atomic_add(T *buf, T value) {
+#if !defined(__CUDA_ARCH__)
+    T old = buf[0];
+    buf[0] += value;
+    return old;
+#else
+    return atomicAdd(buf, value);
+#endif
+}
+
+// emulate atomic float max
+inline CUDA_CALLABLE float atomic_max(float *address, float val) {
+#if defined(__CUDA_ARCH__)
+    int *address_as_int = (int *)address;
+    int old = *address_as_int, assumed;
+
+    while (val > __int_as_float(old)) {
+        assumed = old;
+        old = atomicCAS(address_as_int, assumed,
+                        __float_as_int(val));
+    }
+
+    return __int_as_float(old);
+
+#else
+    float old = *address;
+    *address = max(old, val);
+    return old;
+#endif
+}
+
+// emulate atomic float min/max with atomicCAS()
+inline CUDA_CALLABLE float atomic_min(float *address, float val) {
+#if defined(__CUDA_ARCH__)
+    int *address_as_int = (int *)address;
+    int old = *address_as_int, assumed;
+
+    while (val < __int_as_float(old)) {
+        assumed = old;
+        old = atomicCAS(address_as_int, assumed,
+                        __float_as_int(val));
+    }
+
+    return __int_as_float(old);
+
+#else
+    float old = *address;
+    *address = min(old, val);
+    return old;
+#endif
+}
+
+inline CUDA_CALLABLE int atomic_max(int *address, int val) {
+#if defined(__CUDA_ARCH__)
+    return atomicMax(address, val);
+
+#else
+    int old = *address;
+    *address = max(old, val);
+    return old;
+#endif
+}
+
+// atomic int min
+inline CUDA_CALLABLE int atomic_min(int *address, int val) {
+#if defined(__CUDA_ARCH__)
+    return atomicMin(address, val);
+
+#else
+    int old = *address;
+    *address = min(old, val);
+    return old;
+#endif
+}
+
 }// namespace vox
 
 #include "math_utils-inl.h"

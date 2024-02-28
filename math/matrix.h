@@ -87,6 +87,33 @@ private:
     CudaStdArray<T, Rows * Cols> _elements;
 };
 
+template<typename T, size_t Rows, size_t Cols>
+CUDA_CALLABLE Matrix<T, Rows, Cols> atomic_add(Matrix<T, Rows, Cols> &a, const Matrix<T, Rows, Cols> &b) {
+    Matrix<T, Rows, Cols> result;
+    for (size_t i = 0; i < Rows * Cols; i++) {
+        result[i] = vox::atomic_add(&a[i], b[i]);
+    }
+    return result;
+}
+
+template<typename T, size_t Rows, size_t Cols>
+CUDA_CALLABLE Matrix<T, Rows, Cols> atomic_min(Matrix<T, Rows, Cols> &a, const Matrix<T, Rows, Cols> &b) {
+    Matrix<T, Rows, Cols> result;
+    for (size_t i = 0; i < Rows * Cols; i++) {
+        result[i] = vox::atomic_min(&a[i], b[i]);
+    }
+    return result;
+}
+
+template<typename T, size_t Rows, size_t Cols>
+CUDA_CALLABLE Matrix<T, Rows, Cols> atomic_max(Matrix<T, Rows, Cols> &a, const Matrix<T, Rows, Cols> &b) {
+    Matrix<T, Rows, Cols> result;
+    for (size_t i = 0; i < Rows * Cols; i++) {
+        result[i] = vox::atomic_max(&a[i], b[i]);
+    }
+    return result;
+}
+
 #pragma endregion
 
 #pragma region Specialized Matrix for 1, 2, 3, and 4-D Vector Types

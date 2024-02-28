@@ -1211,22 +1211,19 @@ template<typename T, size_t R1, size_t R2, size_t C2, typename M2>
     Matrix<T, R1, 1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
     assert(a.rows() == b.rows() && a.cols() == b.cols());
 
-    a = MatrixElemWiseMul<T, R1, 1, const Matrix<T, R1, 1> &, const M2 &>{
-        a, b.derived()};
+    a = MatrixElemWiseMul<T, R1, 1, const Matrix<T, R1, 1> &, const M2 &>{a, b.derived()};
 }
 
 template<typename T, size_t R1, size_t C1, size_t R2, size_t C2, typename M2>
 CUDA_CALLABLE void elemIMul(Matrix<T, R1, C1> &a, const MatrixExpression<T, R2, C2, M2> &b) {
     assert(a.rows() == b.rows() && a.cols() == b.cols());
 
-    a = MatrixElemWiseMul<T, R1, C1, const Matrix<T, R1, C1> &, const M2 &>{
-        a, b.derived()};
+    a = MatrixElemWiseMul<T, R1, C1, const Matrix<T, R1, C1> &, const M2 &>{a, b.derived()};
 }
 
 template<typename T, size_t Rows, size_t Cols>
 CUDA_CALLABLE void operator*=(Matrix<T, Rows, Cols> &a, const T &b) {
-    a = MatrixScalarElemWiseMul<T, Rows, Cols, const Matrix<T, Rows, Cols> &>{a,
-                                                                              b};
+    a = MatrixScalarElemWiseMul<T, Rows, Cols, const Matrix<T, Rows, Cols> &>{a, b};
 }
 
 // /=
