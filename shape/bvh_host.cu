@@ -210,20 +210,20 @@ CUDA_CALLABLE_DEVICE void compute_total_inv_edges(const Vector3F *total_lower, c
 class LinearBVHBuilderGPU {
 public:
     LinearBVHBuilderGPU() {
-        total_lower.resize(1);
-        total_upper.resize(1);
-        total_inv_edges.resize(1);
+        _total_lower.resize(1);
+        _total_upper.resize(1);
+        _total_inv_edges.resize(1);
     }
 
     // takes a bvh (host ref), and pointers to the GPU lower and upper bounds for each triangle
     void build(BVH &bvh, CudaTensorView1<Vector3F> lowers, CudaTensorView1<Vector3F> uppers, BoundingBox3F *total_bounds) {
         int num_items = lowers.width();
-        indices.resize(num_items * 2);// *2 for radix sort
-        keys.resize(num_items * 2);   // *2 for radix sort
-        deltas.resize(num_items);     // highest differenting bit between keys for item i and i+1
-        range_lefts.resize(bvh.max_nodes);
-        range_rights.resize(bvh.max_nodes);
-        num_children.resize(bvh.max_nodes);
+        _indices.resize(num_items * 2);// *2 for radix sort
+        _keys.resize(num_items * 2);   // *2 for radix sort
+        _deltas.resize(num_items);     // highest differenting bit between keys for item i and i+1
+        _range_lefts.resize(bvh.max_nodes);
+        _range_rights.resize(bvh.max_nodes);
+        _num_children.resize(bvh.max_nodes);
 
         // if total bounds supplied by the host then we just
         // compute our edge length and upload it to the GPU directly
@@ -238,20 +238,20 @@ public:
             // memcpy_h2d(WP_CURRENT_CONTEXT, total_upper, &total_bounds->upper[0], sizeof(vec3));
             // memcpy_h2d(WP_CURRENT_CONTEXT, total_inv_edges, &inv_edges[0], sizeof(vec3));
         } else {
-            total_lower.fill(Vector3F(FLT_MAX, FLT_MAX, FLT_MAX));
-            total_upper.fill(Vector3F(-FLT_MAX, -FLT_MAX, -FLT_MAX));
+            _total_lower.fill(Vector3F(FLT_MAX, FLT_MAX, FLT_MAX));
+            _total_upper.fill(Vector3F(-FLT_MAX, -FLT_MAX, -FLT_MAX));
 
             // compute the total bounds on the GPU
             auto compute_total_bounds_callable = [item_lowers = lowers.data(), item_uppers = uppers.data(),
-                                                  total_lower = total_lower.data(), total_upper = total_upper.data(),
+                                                  total_lower = _total_lower.data(), total_upper = _total_upper.data(),
                                                   num_items = (int)lowers.width()] CUDA_CALLABLE_DEVICE(int index) {
                 compute_total_bounds(item_lowers, item_uppers, total_lower, total_upper, num_items);
             };
             transform(compute_total_bounds_callable, num_items, device().stream);
 
             // compute the total edge length
-            auto compute_total_inv_edges_callable = [total_lower = total_lower.data(), total_upper = total_upper.data(),
-                                                     total_inv_edges = total_inv_edges.data()] CUDA_CALLABLE_DEVICE(int index) {
+            auto compute_total_inv_edges_callable = [total_lower = _total_lower.data(), total_upper = _total_upper.data(),
+                                                     total_inv_edges = _total_inv_edges.data()] CUDA_CALLABLE_DEVICE(int index) {
                 compute_total_inv_edges(total_lower, total_upper, total_inv_edges);
             };
             transform(compute_total_inv_edges_callable, 1, device().stream);
@@ -259,30 +259,30 @@ public:
 
         // assign 30-bit Morton code based on the centroid of each triangle and bounds for each leaf
         auto compute_morton_codes_callable = [item_lowers = lowers.data(), item_uppers = uppers.data(), num_items,
-                                              total_lower = total_lower.data(),
-                                              total_inv_edges = total_inv_edges.data(),
-                                              indices = indices.data(),
-                                              keys = keys.data()] CUDA_CALLABLE_DEVICE(int index) {
+                                              total_lower = _total_lower.data(),
+                                              total_inv_edges = _total_inv_edges.data(),
+                                              indices = _indices.data(),
+                                              keys = _keys.data()] CUDA_CALLABLE_DEVICE(int index) {
             compute_morton_codes(item_lowers, item_uppers, num_items, total_lower, total_inv_edges, indices, keys);
         };
         transform(compute_morton_codes_callable, num_items, device().stream);
 
         // sort items based on Morton key (note the 32-bit sort key corresponds to the template parameter to morton3, i.e. 3x9 bit keys combined)
-        sort.execute(keys.data(), indices.data(), num_items);
+        sort.execute(_keys.data(), _indices.data(), num_items);
 
         // calculate deltas between adjacent keys
         auto compute_key_deltas_callable = [num_items,
-                                            keys = keys.data(),
-                                            deltas = deltas.data()] CUDA_CALLABLE_DEVICE(int index) {
+                                            keys = _keys.data(),
+                                            deltas = _deltas.data()] CUDA_CALLABLE_DEVICE(int index) {
             compute_key_deltas(keys, deltas, num_items - 1);
         };
         transform(compute_key_deltas_callable, num_items, device().stream);
 
         // initialize leaf nodes
         auto build_leaves_callable = [item_lowers = lowers.data(), item_uppers = uppers.data(), num_items,
-                                      indices = indices.data(),
-                                      range_lefts = range_lefts.data(),
-                                      range_rights = range_rights.data(),
+                                      indices = _indices.data(),
+                                      range_lefts = _range_lefts.data(),
+                                      range_rights = _range_rights.data(),
                                       node_lowers = bvh.node_lowers,
                                       node_uppers = bvh.node_uppers] CUDA_CALLABLE_DEVICE(int index) {
             build_leaves(item_lowers, item_uppers, num_items, indices, range_lefts, range_rights, node_lowers, node_uppers);
@@ -290,14 +290,14 @@ public:
         transform(build_leaves_callable, num_items, device().stream);
 
         // reset children count, this is our atomic counter so we know when an internal node is complete, only used during building
-        num_children.fill(0);
+        _num_children.fill(0);
 
         // build the tree and internal node bounds
         auto build_hierarchy_callable = [root = bvh.root, num_items,
-                                         num_children = num_children.data(),
-                                         deltas = deltas.data(),
-                                         range_lefts = range_lefts.data(),
-                                         range_rights = range_rights.data(),
+                                         num_children = _num_children.data(),
+                                         deltas = _deltas.data(),
+                                         range_lefts = _range_lefts.data(),
+                                         range_rights = _range_rights.data(),
                                          node_parents = bvh.node_parents,
                                          node_lowers = bvh.node_lowers,
                                          node_uppers = bvh.node_uppers] CUDA_CALLABLE_DEVICE(int index) {
@@ -310,17 +310,17 @@ private:
     RadixSort sort;
 
     // temporary data used during building
-    CudaBuffer<int> indices;
-    CudaBuffer<int> keys;
-    CudaBuffer<int> deltas;
-    CudaBuffer<int> range_lefts;
-    CudaBuffer<int> range_rights;
-    CudaBuffer<int> num_children;
+    CudaBuffer<int> _indices;
+    CudaBuffer<int> _keys;
+    CudaBuffer<int> _deltas;
+    CudaBuffer<int> _range_lefts;
+    CudaBuffer<int> _range_rights;
+    CudaBuffer<int> _num_children;
 
     // bounds data when total item bounds built on GPU
-    CudaBuffer<Vector3F> total_lower;
-    CudaBuffer<Vector3F> total_upper;
-    CudaBuffer<Vector3F> total_inv_edges;
+    CudaBuffer<Vector3F> _total_lower;
+    CudaBuffer<Vector3F> _total_upper;
+    CudaBuffer<Vector3F> _total_inv_edges;
 };
 
 CUDA_CALLABLE_DEVICE void bvh_refit_kernel(int n, const int *__restrict__ parents, int *__restrict__ child_count,
@@ -402,6 +402,18 @@ CUDA_CALLABLE_DEVICE void bvh_refit_kernel(int n, const int *__restrict__ parent
 
 BvhHost::BvhHost(CudaTensorView1<Vector3F> lowers, CudaTensorView1<Vector3F> uppers) {
     BVH bvh_host;
+    bvh_host.num_items = lowers.width();
+    bvh_host.max_nodes = 2 * lowers.width();
+    node_lowers.resizeUninitialized(bvh_host.max_nodes);
+    bvh_host.node_lowers = node_lowers.data();
+    node_uppers.resizeUninitialized(bvh_host.max_nodes);
+    bvh_host.node_uppers = node_uppers.data();
+    node_parents.resizeUninitialized(bvh_host.max_nodes);
+    bvh_host.node_parents = node_parents.data();
+    node_counts.resizeUninitialized(bvh_host.max_nodes);
+    bvh_host.node_counts = node_counts.data();
+    root.resizeUninitialized(1);
+    bvh_host.root = root.data();
     bvh_host.item_lowers = lowers.data();
     bvh_host.item_uppers = uppers.data();
 
