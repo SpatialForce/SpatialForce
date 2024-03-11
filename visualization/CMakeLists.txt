@@ -9,8 +9,12 @@ cmake_minimum_required(VERSION 3.16)
 project(visualization LANGUAGES C CXX)
 
 set(COMMON_FILES
-        visualization.h
-        visualization.cpp
+        renderer.h
+        renderer.cpp
+        interactor.h
+        interactor.cpp
+        windows.h
+        windows.cpp
 )
 
 source_group("common\\" FILES ${COMMON_FILES})

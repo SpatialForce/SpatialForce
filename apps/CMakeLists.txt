@@ -12,9 +12,8 @@ set(SRC
 )
 
 add_executable(${PROJECT_NAME} ${SRC})
-
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        runtime math tensor visualization
+        runtime math tensor visualization ${VTK_LIBRARIES}
         CUDA::cuda_driver
 )
 

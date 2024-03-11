@@ -6,6 +6,16 @@
 
 #pragma once
 
+#include <vtkRenderWindow.h>
+
 namespace vox {
-void entry();
-}
+class Windows {
+public:
+    Windows(std::string_view title, int width, int height);
+
+    void render();
+
+private:
+    vtkNew<vtkRenderWindow> _handle;
+};
+}// namespace vox
