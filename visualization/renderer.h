@@ -7,8 +7,11 @@
 #pragma once
 
 #include <vtkRenderer.h>
+#include <vtkCameraOrientationWidget.h>
+#include <vtkRenderWindowInteractor.h>
 
 namespace vox {
+class Windows;
 class Renderer {
 public:
     static Renderer &instance();
@@ -21,7 +24,10 @@ public:
 
     void addActor(vtkProp *actor);
 
+    void bindWindow(Windows* win);
+
 private:
     vtkNew<vtkRenderer> _handle;
+    vtkNew<vtkRenderWindowInteractor> _interactor;
 };
 }// namespace vox

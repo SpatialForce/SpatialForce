@@ -5,6 +5,7 @@
 //  property of any third parties.
 
 #include "renderer.h"
+#include "windows.h"
 #include <vtkNamedColors.h>
 
 namespace vox {
@@ -23,6 +24,17 @@ Renderer::Renderer() {
 
 vtkNew<vtkRenderer> &Renderer::handle() {
     return _handle;
+}
+
+void Renderer::bindWindow(Windows* win) {
+    _interactor->SetRenderWindow(win->handle());
+    win->handle()->AddRenderer(_handle);
+
+    vtkNew<vtkCameraOrientationWidget> orientationWidget;
+    orientationWidget->SetParentRenderer(_handle);
+    orientationWidget->On();
+
+    _interactor->Start();
 }
 
 void Renderer::resetCamera() {

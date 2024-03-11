@@ -15,6 +15,8 @@ public:
 
     void render();
 
+    vtkNew<vtkRenderWindow> &handle() { return _handle; }
+
 private:
     vtkNew<vtkRenderWindow> _handle;
 };

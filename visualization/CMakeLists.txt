@@ -11,8 +11,6 @@ project(visualization LANGUAGES C CXX)
 set(COMMON_FILES
         renderer.h
         renderer.cpp
-        interactor.h
-        interactor.cpp
         windows.h
         windows.cpp
 )

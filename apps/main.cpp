@@ -36,6 +36,6 @@ int main(int, char *[]) {
     cylinderActor->RotateY(-45.0);
     vox::Renderer::instance().addActor(cylinderActor);
 
-    vox::Windows windows("Viewer", 1024, 640);
+    vox::Windows windows("Viewer", 2048, 1152);
     windows.render();
 }

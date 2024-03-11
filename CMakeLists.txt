@@ -20,6 +20,7 @@ find_package(VTK COMPONENTS
         CommonCore
         FiltersSources
         InteractionStyle
+        InteractionWidgets
         RenderingContextOpenGL2
         RenderingCore
         RenderingFreeType
