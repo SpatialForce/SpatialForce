@@ -15,6 +15,18 @@ find_package(CUDAToolkit)
 set(GMSH_LIB ~/Desktop/gmsh/lib)
 set(GMSH_INCLUDE ~/Desktop/gmsh/include)
 
+find_package(VTK COMPONENTS
+        CommonColor
+        CommonCore
+        FiltersSources
+        InteractionStyle
+        RenderingContextOpenGL2
+        RenderingCore
+        RenderingFreeType
+        RenderingGL2PSOpenGL2
+        RenderingOpenGL2
+)
+
 add_subdirectory(core)
 
 add_subdirectory(math)
@@ -25,4 +37,6 @@ add_subdirectory(rigidbody)
 
 add_subdirectory(fields)
 
+add_subdirectory(visualization)
 add_subdirectory(tests)
+add_subdirectory(apps)
