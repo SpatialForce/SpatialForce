@@ -61,6 +61,7 @@ set(SRC
         ${MATH_TESTS}
         ${SHAPE_TESTS}
         ${TENSOR_FILES}
+        io/gmsh_io.tests.cpp
 #        ${FIELDS_TESTS}
 )
 
@@ -68,14 +69,18 @@ add_executable(${PROJECT_NAME} ${SRC})
 
 find_package(GTest CONFIG REQUIRED)
 
+target_link_directories(${PROJECT_NAME} PRIVATE ${GMSH_LIB})
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
         runtime math tensor
         GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
         CUDA::cuda_driver
+        gmsh
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR} .
+        ${GMSH_INCLUDE}
         ../)
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:

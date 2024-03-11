@@ -12,6 +12,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_ARCHITECTURES 89)
 
 find_package(CUDAToolkit)
+set(GMSH_LIB ~/Desktop/gmsh/lib)
+set(GMSH_INCLUDE ~/Desktop/gmsh/include)
 
 add_subdirectory(core)
 
