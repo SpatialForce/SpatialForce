@@ -28,14 +28,6 @@ set(MATH_TESTS
         math/quaternion_tests.cu
 )
 
-set(SHAPE_TESTS
-        shape/bounding_box2_tests.cu
-        shape/bounding_box3_tests.cu
-        shape/bounding_box_tests.cu
-        shape/ray2_tests.cu
-        shape/ray3_tests.cu
-)
-
 set(TENSOR_FILES
         tensor/tensor1_tests.cu
         tensor/tensor2_tests.cu
@@ -48,21 +40,14 @@ set(TENSOR_FILES
         tensor/tensor_view_tests.cu
 )
 
-set(FIELDS_TESTS
-        fields/compile_tests.cu
-        fields/volume_integrator_tests.cu
-)
-
 set(SRC
         cuda_gtest_plugin.h
         tests_utils.h
         tests_utils.cu
         ${RUNTIME_TESTS}
         ${MATH_TESTS}
-        ${SHAPE_TESTS}
         ${TENSOR_FILES}
         io/gmsh_io.tests.cpp
-#        ${FIELDS_TESTS}
 )
 
 add_executable(${PROJECT_NAME} ${SRC})

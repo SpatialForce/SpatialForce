@@ -31,12 +31,8 @@ find_package(VTK COMPONENTS
 add_subdirectory(core)
 
 add_subdirectory(math)
-add_subdirectory(shape)
 add_subdirectory(tensor)
 add_subdirectory(runtime)
-add_subdirectory(rigidbody)
-
-add_subdirectory(fields)
 
 add_subdirectory(visualization)
 add_subdirectory(tests)
